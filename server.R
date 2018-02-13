@@ -3,8 +3,7 @@ library(ggplot2)
 library(HDF5Array)
 library(viridis)
 library(reshape2)
-
-# CLUSTER TYPES
+#### COLOURS
 all_names = c("Mesendoderm",
               "Ex. Emb. Ect. late",
               "Epiblast",
@@ -124,14 +123,9 @@ scale_fill_Publication <- function(...){
 }
 
 link = HDF5Array(file = "counts.hdf5", name = "logcounts")
-# link = HDF5Array(file = "~/Desktop/test_shiny_chim/counts.hdf5", name = "logcounts")
-
-
 
 load("data.RData")
-# load("~/Desktop/test_shiny_chim/data.RData")
-#REMOVE
-# genes = genes_all
+
 
 shinyServer(
   function(input, output){
@@ -139,7 +133,7 @@ shinyServer(
     run = reactive({return(input$password == "gastrulationisgreat")})
     dummy_plot = ggplot(mapping = aes(x = 1:2, y = 1:2)) + annotate("text", x = 1.5, y= 1.5, label = "password locked")
     
-    #### CHANGE VARIABLES ACCORDING TO USER INPUT
+    #### FUNCTIONS TO GET DATA
     
     get_meta = reactive({
       #subset embryonic
@@ -193,15 +187,12 @@ shinyServer(
     
     get_count = reactive({
       
-      # print(input$gene)
-      # print(match(as.character(input$gene), as.character(genes[,2])))
-      
       return(link[meta$cell %in% get_meta()$cell,
                   match(as.character(input$gene), as.character(genes[,2]))])
       
     })
     
-    #### MAKE PLOTS
+    #### OVERALL VIS
     
     output$data = output$data_dummy = renderPlot({
       if(!run()){
@@ -267,6 +258,8 @@ shinyServer(
         
     })
     
+    #### DOUBLETS
+    
     output$doublets = renderPlot({
       if(!run()){
         return(dummy_plot)
@@ -302,6 +295,8 @@ shinyServer(
       return(plot)
     })
     
+    #### LIBRARY SIZES
+    
     output$libs = renderPlot({
       if(!run()){
         return(dummy_plot)
@@ -329,6 +324,8 @@ shinyServer(
       }
       return(plot)
     })
+    
+    #### GENE EXPRESSION PLOTS
     
     output$gene = renderPlot({
       
@@ -390,30 +387,8 @@ shinyServer(
     })
     
     
-    output$cluster1select = renderUI({
-      selectInput("cluster1", "Cluster 1", choices = unique(get_clusters())[order(unique(get_clusters()))])
-    })
     
-    # output$cluster2select = renderUI({
-    #   selectInput("cluster2", "Cluster 2", choices = unique(get_clusters()))
-    # })
-    
-    # output$intercluster = renderTable({
-    #   
-    #   tab = de.markers[[input$cluster1]]
-    #   broke = strsplit(names(tab), split = ".", fixed = TRUE)
-    #   clusts = sapply(broke[3:length(broke)], function(x) x[2])
-    #   target = which(clusts == input$cluster2) + 2
-    #   
-    #   tab = tab[order(abs(tab[,target]), decreasing = TRUE),]
-    #   tab$gene = genes[match(rownames(tab), genes[,1]),2]
-    #   
-    #   return(tab[1:input$n.genes, c(ncol(tab), target)])
-    #   
-    # })
-    
-    
-    #MARKER SECTION
+    #MARKERS
     
     output$subset_marker = renderUI({
       options = switch(input$marker_cluster_type,
@@ -450,11 +425,5 @@ shinyServer(
       
     })
     
-    # output$intracluster = renderTable({
-    #   tab = cluster_comp[[input$cluster1]][[1]]
-    #   return(data.frame(gene = genes[match(rownames(tab), genes[,1]), 2],
-    #                     fdr = tab[,2],
-    #                     FC = tab[,3])[1:input$n.genes,])
-    # })
   }
 )
