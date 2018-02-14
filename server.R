@@ -57,9 +57,9 @@ legend_order = match(c("Epiblast",
 ), all_names)
 
 # COLOURS
-all_colours = c("Mesendoderm" = "darkorange2",#light Brown
-                "Ex. Emb. Ect. late" = "grey20",#dark Grey
-                "Epiblast" = "burlywood2",#beige
+all_colours = c("Mesendoderm" = "darkorange2",#grey-brown ###
+                "Ex. Emb. Ect. late" = "sienna4",#dark brown###
+                "Epiblast" = "brown",#beige
                 "Cardiac Mesenchyme" = "thistle3",#light pink
                 "Neural crest" = "palegreen3",#light green
                 "Late parax/somit. meso." = "royalblue3",#blue
@@ -74,11 +74,11 @@ all_colours = c("Mesendoderm" = "darkorange2",#light Brown
                 "Early Parax. Meso" = "steelblue3",#lightblue
                 "Cardiac" = "pink4",#dark pink
                 "Ex. Emb. Tissue" = "grey10",#???
-                "AVE/Def. End" = "coral2",#dark goldenrod
-                "PE" = "chocolate4",#goldenrod
+                "AVE/Def. End" = "coral1",#dark goldenrod
+                "PE" = "sienna3",#light brown ###
                 "Ex. Emb. Ect. mid" = "grey40",#mid grey
                 "Mesoderm proj." = "cadetblue1",#skyblue
-                "Notochord"="black",#black
+                "Notochord"="deepskyblue2",#bright blue
                 "Erythroid" = "firebrick3",#darkred
                 "Older erythroid" = "red4")#scarlet
 names(all_colours) = 1:length(all_colours)
