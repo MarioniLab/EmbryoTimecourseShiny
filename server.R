@@ -37,8 +37,8 @@ legend_order = match(c("Epiblast",
                        "Late parax/somit. meso.",
                        "Somites",
                        "NMP",
-                       "Cardiac",
                        "Cardiac Mesenchyme",
+                       "Cardiac",
                        "Endothelium",
                        "Hem-endo",
                        "Erythroid",
@@ -57,9 +57,9 @@ legend_order = match(c("Epiblast",
 ), all_names)
 
 # COLOURS
-all_colours = c("Mesendoderm" = "darkorange2",#grey-brown ###
-                "Ex. Emb. Ect. late" = "sienna4",#dark brown###
-                "Epiblast" = "brown",#beige
+all_colours = c("Mesendoderm" = "#85705C",#grey-brown ###
+                "Ex. Emb. Ect. late" = "grey20",#darkgrey###
+                "Epiblast" = "#663300",#dark brown###
                 "Cardiac Mesenchyme" = "thistle3",#light pink
                 "Neural crest" = "palegreen3",#light green
                 "Late parax/somit. meso." = "royalblue3",#blue
@@ -74,8 +74,8 @@ all_colours = c("Mesendoderm" = "darkorange2",#grey-brown ###
                 "Early Parax. Meso" = "steelblue3",#lightblue
                 "Cardiac" = "pink4",#dark pink
                 "Ex. Emb. Tissue" = "grey10",#???
-                "AVE/Def. End" = "coral1",#dark goldenrod
-                "PE" = "sienna3",#light brown ###
+                "AVE/Def. End" = "coral2",#dark goldenrod
+                "PE" = "#A38566",#light brown ###
                 "Ex. Emb. Ect. mid" = "grey40",#mid grey
                 "Mesoderm proj." = "cadetblue1",#skyblue
                 "Notochord"="deepskyblue2",#bright blue
