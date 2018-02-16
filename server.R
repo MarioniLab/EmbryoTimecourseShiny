@@ -200,7 +200,7 @@ shinyServer(
       }
       
       
-      unq = as.character(unique(meta[, input$colourby]))
+      unq = as.character(unique(get_meta()[, input$colourby]))
       factor_levels = unq[order(nchar(unq), unq)]
       
       new_order = sample(nrow(get_coord()), nrow(get_coord()))
