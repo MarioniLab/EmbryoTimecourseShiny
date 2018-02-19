@@ -3,7 +3,7 @@ library(ggplot2)
 library(HDF5Array)
 library(viridis)
 library(reshape2)
-#### COLOURS
+# CLUSTER TYPES
 all_names = c("Mesendoderm",
               "Ex. Emb. Ect. late",
               "Epiblast",
@@ -65,11 +65,11 @@ all_colours = c("Mesendoderm" = "#85705C",#grey-brown ###
                 "Late parax/somit. meso." = "royalblue3",#blue
                 "Neuroectoderm" = "greenyellow",#midgreen
                 "Allantois" = "purple3",#purple
-                "Endothelium" = "tomato1",#lightred
+                "Endothelium" = "orange",#orange
                 "Neural tube" = "olivedrab",#darkgreen
                 "Ex. Emb. Ect. early" = "grey60",#light grey
                 "Hem-endo" = "firebrick1",#mid red
-                "NMP" = "orange",#orange
+                "NMP" = "#FAFF0A",#yellow
                 "Somites" = "navy",#navy
                 "Early Parax. Meso" = "steelblue3",#lightblue
                 "Cardiac" = "pink4",#dark pink
