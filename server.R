@@ -4,85 +4,85 @@ library(HDF5Array)
 library(viridis)
 library(reshape2)
 # CLUSTER TYPES
-all_names = c("Mesendoderm",
-              "Ex. Emb. Ect. late",
+# CLUSTER TYPES
+all_names = c("PS/Mesendoderm",
+              "ExEct 2",
               "Epiblast",
-              "Cardiac Mesenchyme",
+              "Cardiac mesenchyme",
               "Neural crest",
               "Late parax/somit. meso.",
               "Neuroectoderm",
               "Allantois",
               "Endothelium",
               "Neural tube",
-              "Ex. Emb. Ect. early",
+              "ExEct 1",
               "Hem-endo",
               "NMP",
               "Somites",
-              "Early Parax. Meso",
-              "Cardiac",
-              "Ex. Emb. Tissue",
-              "AVE/Def. End",
-              "PE",
-              "Ex. Emb. Ect. mid",
-              "Mesoderm proj.",
+              "Early parax. meso.",
+              "Cardiac myocytes",
+              "ExEmb tissue",
+              "AVE/Def. endoderm",
+              "Prim. endoderm",
+              "ExEct doubs",
+              "Mesoderm prog.",
               "Notochord",
-              "Erythroid",
-              "Older erythroid")
+              "Erythroid 1",
+              "Erythroid 2")
 names(all_names) = 1:length(all_names)
 
 legend_order = match(c("Epiblast",
-                       "Mesendoderm", 
-                       "Mesoderm proj.",
-                       "Early Parax. Meso",
+                       "PS/Mesendoderm", 
+                       "Mesoderm prog.",
+                       "Early parax. meso.",
                        "Late parax/somit. meso.",
                        "Somites",
                        "NMP",
-                       "Cardiac Mesenchyme",
-                       "Cardiac",
+                       "Cardiac mesenchyme",
+                       "Cardiac myocytes",
                        "Endothelium",
                        "Hem-endo",
-                       "Erythroid",
-                       "Older erythroid",
-                       "AVE/Def. End",
-                       "PE",
+                       "Erythroid 1",
+                       "Erythroid 2",
+                       "AVE/Def. endoderm",
+                       "Prim. endoderm",
                        "Neuroectoderm",
                        "Neural crest",
                        "Neural tube",
                        "Notochord",
                        "Allantois",
-                       "Ex. Emb. Ect. early",
-                       "Ex. Emb. Ect. mid",
-                       "Ex. Emb. Ect. late",
-                       "Ex. Emb. Tissue"
+                       "ExEct 1",
+                       "ExEct doubs",
+                       "ExEct 2",
+                       "ExEmb tissue"
 ), all_names)
 
 # COLOURS
-all_colours = c("Mesendoderm" = "#85705C",#grey-brown ###
-                "Ex. Emb. Ect. late" = "grey20",#darkgrey###
+all_colours = c("PS/Mesendoderm" = "#efd5a0",#grey-brown ###
+                "ExEct 2" = "grey20",#darkgrey###
                 "Epiblast" = "#663300",#dark brown###
-                "Cardiac Mesenchyme" = "thistle3",#light pink
+                "Cardiac mesenchyme" = "thistle3",#light pink
                 "Neural crest" = "palegreen3",#light green
                 "Late parax/somit. meso." = "royalblue3",#blue
                 "Neuroectoderm" = "greenyellow",#midgreen
                 "Allantois" = "purple3",#purple
                 "Endothelium" = "orange",#orange
                 "Neural tube" = "olivedrab",#darkgreen
-                "Ex. Emb. Ect. early" = "grey60",#light grey
+                "ExEct 2" = "grey60",#light grey
                 "Hem-endo" = "firebrick1",#mid red
                 "NMP" = "#FAFF0A",#yellow
                 "Somites" = "navy",#navy
-                "Early Parax. Meso" = "steelblue3",#lightblue
+                "Early parax. meso." = "steelblue3",#lightblue
                 "Cardiac" = "pink4",#dark pink
-                "Ex. Emb. Tissue" = "grey10",#???
-                "AVE/Def. End" = "coral2",#dark goldenrod
-                "PE" = "#A38566",#light brown ###
-                "Ex. Emb. Ect. mid" = "grey40",#mid grey
-                "Mesoderm proj." = "cadetblue1",#skyblue
-                "Notochord"="deepskyblue2",#bright blue
-                "Erythroid" = "firebrick3",#darkred
-                "Older erythroid" = "red4")#scarlet
+                "ExEmb tissue" = "grey10",#???
+                "AVE/Def. endoderm" = "coral2",#dark goldenrod
+                "Prim. Endoderm" = "#A38566",#light brown ###
+                "ExEct doubs" = "grey40",#mid grey
+                "Mesoderm prog." = "#c4fffe",#skyblue
+                "Notochord"="turquoise",#bright blue
+                "Erythroid 1" = "firebrick3",#darkred
+                "Erythroid 2" = "red4")#scarlet
 names(all_colours) = 1:length(all_colours)
-
 
 scale_colour_Publication <- function(...){
   library(scales)
@@ -145,7 +145,8 @@ shinyServer(
       out = switch(substr(input$stage,1,1),
              "a" = out,
              "T" = out[out$theiler == input$stage,],
-             "E" = out[out$stage == input$stage,])
+             "E" = out[out$stage == input$stage,],
+             "m" = out[out$stage == input$stage,])
       
       return(out)
     })
