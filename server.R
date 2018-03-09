@@ -4,7 +4,6 @@ library(HDF5Array)
 library(viridis)
 library(reshape2)
 # CLUSTER TYPES
-# CLUSTER TYPES
 all_names = c("PS/Mesendoderm",
               "ExEct 2",
               "Epiblast",
@@ -18,10 +17,10 @@ all_names = c("PS/Mesendoderm",
               "ExEct 1",
               "Hem-endo",
               "NMP",
-              "Somites",
+              "Mixed mesoderm",
               "Early parax. meso.",
               "Cardiac myocytes",
-              "ExEmb tissue",
+              "Parietal endoderm",
               "AVE/Def. endoderm",
               "Prim. endoderm",
               "ExEct doubs",
@@ -36,7 +35,7 @@ legend_order = match(c("Epiblast",
                        "Mesoderm prog.",
                        "Early parax. meso.",
                        "Late parax/somit. meso.",
-                       "Somites",
+                       "Mixed mesoderm",
                        "NMP",
                        "Cardiac mesenchyme",
                        "Cardiac myocytes",
@@ -44,8 +43,8 @@ legend_order = match(c("Epiblast",
                        "Hem-endo",
                        "Erythroid 1",
                        "Erythroid 2",
-                       "AVE/Def. endoderm",
                        "Prim. endoderm",
+                       "AVE/Def. endoderm",
                        "Neuroectoderm",
                        "Neural crest",
                        "Neural tube",
@@ -54,7 +53,7 @@ legend_order = match(c("Epiblast",
                        "ExEct 1",
                        "ExEct doubs",
                        "ExEct 2",
-                       "ExEmb tissue"
+                       "Parietal endoderm"
 ), all_names)
 
 # COLOURS
@@ -71,10 +70,10 @@ all_colours = c("PS/Mesendoderm" = "#efd5a0",#grey-brown ###
                 "ExEct 2" = "grey60",#light grey
                 "Hem-endo" = "firebrick1",#mid red
                 "NMP" = "#FAFF0A",#yellow
-                "Somites" = "navy",#navy
+                "Mixed mesoderm" = "navy",#navy
                 "Early parax. meso." = "steelblue3",#lightblue
                 "Cardiac" = "pink4",#dark pink
-                "ExEmb tissue" = "grey10",#???
+                "Parietal endoderm" = "grey10",#???
                 "AVE/Def. endoderm" = "coral2",#dark goldenrod
                 "Prim. Endoderm" = "#A38566",#light brown ###
                 "ExEct doubs" = "grey40",#mid grey
