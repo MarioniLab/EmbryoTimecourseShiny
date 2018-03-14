@@ -11,7 +11,7 @@ all_names = c("PS/Mesendoderm",
               "Neural crest",
               "Late parax/somit. meso.",
               "Neuroectoderm",
-              "Allantois",
+              "Extraembryonic mesoderm",
               "Endothelium",
               "Neural tube",
               "ExEct 1",
@@ -49,7 +49,7 @@ legend_order = match(c("Epiblast",
                        "Neural crest",
                        "Neural tube",
                        "Notochord",
-                       "Allantois",
+                       "Extraembryonic mesoderm",
                        "ExEct 1",
                        "ExEct doubs",
                        "ExEct 2",
@@ -64,7 +64,7 @@ all_colours = c("PS/Mesendoderm" = "#efd5a0",#grey-brown ###
                 "Neural crest" = "palegreen3",#light green
                 "Late parax/somit. meso." = "royalblue3",#blue
                 "Neuroectoderm" = "greenyellow",#midgreen
-                "Allantois" = "purple3",#purple
+                "Extraembryonic mesoderm" = "purple3",#purple
                 "Endothelium" = "orange",#orange
                 "Neural tube" = "olivedrab",#darkgreen
                 "ExEct 2" = "grey60",#light grey
