@@ -201,7 +201,11 @@ shinyServer(
       
       
       unq = as.character(unique(get_meta()[, input$colourby]))
-      factor_levels = unq[order(nchar(unq), unq)]
+      if(grepl("TS", unq[1])){
+        factor_levels = unq[order(nchar(unq), unq)]
+      } else {
+        factor_levels = unq[order(unq)]
+      }
       
       new_order = sample(nrow(get_coord()), nrow(get_coord()))
       if(input$annot)
@@ -232,6 +236,10 @@ shinyServer(
       
       if(input$annot){
         plot = plot + scale_color_manual(values = all_colours, labels = all_names, drop = FALSE, name = "")
+      }
+      
+      if(input$colourby == "stage" | input$colourby == "theiler"){
+        plot = plot + scale_color_manual(values = c(brewer_pal(palette = "Spectral")(length(factor_levels)-1), "darkgrey"), name = "")
       }
 
       return(plot)
