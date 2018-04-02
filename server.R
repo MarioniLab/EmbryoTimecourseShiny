@@ -266,42 +266,6 @@ shinyServer(
         
     })
     
-    #### DOUBLETS
-    
-    output$doublets = renderPlot({
-      if(!run()){
-        return(dummy_plot)
-      }
-      
-      coord = get_coord()
-      doub = get_meta()$doub.clust
-      
-      coord = coord[order(doub),]
-      doub = doub[order(doub)]
-      
-      plot = ggplot(data = coord, 
-                    mapping = aes(x = X, 
-                                  y = Y, 
-                                  col = factor(doub))) +
-        geom_point(size = 2, 
-                   alpha = 0.9) +
-        scale_colour_manual(name = "Doublet call", values = c("TRUE" = "navy", "FALSE" = "darkgrey")) +
-        ggtitle(input$stage) +
-        guides(colour = guide_legend(override.aes = list(size=10, 
-                                                         alpha = 1))) +
-        theme_bw()
-      
-      if(input$numbers){
-        plot = plot + geom_label(data = get_cluster_centroids(), 
-                                 mapping = aes(x = X, 
-                                               y = Y, 
-                                               label = num), 
-                                 col = "black", 
-                                 alpha = 0.8, 
-                                 size = 7)
-      }
-      return(plot)
-    })
     
     #### LIBRARY SIZES
     

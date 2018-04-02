@@ -63,10 +63,6 @@ fluidPage(
                    )
                  )
                  ),
-                 
-        tabPanel("Doublets",
-                 plotOutput("doublets", height = "800px")
-                 ),
         tabPanel("Library sizes",
                  plotOutput("libs", height = "800px")
                  )
