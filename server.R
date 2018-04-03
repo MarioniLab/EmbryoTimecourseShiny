@@ -4,84 +4,74 @@ library(HDF5Array)
 library(viridis)
 library(reshape2)
 # CLUSTER TYPES
-all_names = c("PS/Mesendoderm",
-              "ExEct 2",
-              "Epiblast",
-              "Cardiac mesenchyme",
-              "Neural crest",
-              "Late parax/somit. meso.",
-              "Neuroectoderm",
-              "Extraembryonic mesoderm",
-              "Endothelium",
-              "Neural tube",
-              "ExEct 1",
-              "Hem-endo",
-              "NMP",
-              "Mixed mesoderm",
-              "Early parax. meso.",
-              "Cardiac myocytes",
-              "Parietal endoderm",
-              "AVE/Def. endoderm",
-              "Prim. endoderm",
-              "ExEct doubs",
-              "Mesoderm prog.",
-              "Notochord",
+all_names = c("Epiblast",
+              "PS/mesendoderm",
               "Erythroid 1",
-              "Erythroid 2")
+              "NMPs",
+              "Neural tube",
+              "ExE endoderm",
+              "ExE mesoderm",
+              "ExE ectoderm 1",
+              "Neuroectoderm",
+              "Hemato-endothelial",
+              "Early parax. mesoderm",
+              "ExE ectoderm 2",
+              "Late parax. mesoderm",
+              "AVE/def. endo/notochord",
+              "Erythroid 2",
+              "Mixed mesoderm",
+              "Visceral endoderm",
+              "Mesoderm progenitors",
+              "Parietal endoderm",
+              "Neural crest")
 names(all_names) = 1:length(all_names)
 
 legend_order = match(c("Epiblast",
-                       "PS/Mesendoderm", 
-                       "Mesoderm prog.",
-                       "Early parax. meso.",
-                       "Late parax/somit. meso.",
+                       "PS/mesendoderm", 
+                       "AVE/def. endo/notochord",
+                       "Mesoderm progenitors",
+                       "Early parax. mesoderm",
+                       "Late parax. mesoderm",
                        "Mixed mesoderm",
-                       "NMP",
-                       "Cardiac mesenchyme",
-                       "Cardiac myocytes",
-                       "Endothelium",
-                       "Hem-endo",
+                       "Hemato-endothelial",
                        "Erythroid 1",
                        "Erythroid 2",
-                       "Prim. endoderm",
-                       "AVE/Def. endoderm",
+                       "ExE mesoderm",
+                       "NMPs",
                        "Neuroectoderm",
-                       "Neural crest",
                        "Neural tube",
-                       "Notochord",
-                       "Extraembryonic mesoderm",
-                       "ExEct 1",
-                       "ExEct doubs",
-                       "ExEct 2",
+                       "ExE endoderm",
+                       "Visceral endoderm",
+                       "Neural crest",
+                       "ExE ectoderm 1",
+                       "ExE ectoderm 2",
                        "Parietal endoderm"
 ), all_names)
 
 # COLOURS
-all_colours = c("PS/Mesendoderm" = "#efd5a0",#grey-brown ###
-                "ExEct 2" = "grey20",#darkgrey###
+all_colours = c("PS/mesendoderm" = "#efd5a0",#grey-brown ###
+                "ExE ectoderm 2" = "grey20",#darkgrey###
                 "Epiblast" = "#663300",#dark brown###
-                "Cardiac mesenchyme" = "thistle3",#light pink
                 "Neural crest" = "palegreen3",#light green
-                "Late parax/somit. meso." = "royalblue3",#blue
+                "Late parax. mesoderm" = "royalblue3",#blue
                 "Neuroectoderm" = "greenyellow",#midgreen
-                "Extraembryonic mesoderm" = "purple3",#purple
-                "Endothelium" = "orange",#orange
+                "ExE mesoderm" = "purple3",#purple
+                "Hemato-endothelial" = "orange",#orange
                 "Neural tube" = "olivedrab",#darkgreen
-                "ExEct 2" = "grey60",#light grey
-                "Hem-endo" = "firebrick1",#mid red
-                "NMP" = "#FAFF0A",#yellow
+                "ExE ectoderm 1" = "grey60",#light grey
+                "NMPs" = "#FAFF0A",#yellow
                 "Mixed mesoderm" = "navy",#navy
-                "Early parax. meso." = "steelblue3",#lightblue
-                "Cardiac" = "pink4",#dark pink
+                "Early parax. mesoderm" = "steelblue1",#lightblue
                 "Parietal endoderm" = "grey10",#???
-                "AVE/Def. endoderm" = "coral2",#dark goldenrod
-                "Prim. Endoderm" = "#A38566",#light brown ###
-                "ExEct doubs" = "grey40",#mid grey
-                "Mesoderm prog." = "#c4fffe",#skyblue
-                "Notochord"="turquoise",#bright blue
+                "AVE/def. endo/notochord" = "coral2",#dark goldenrod
+                "ExE endoderm" = "plum4",#plum ###
+                "Mesoderm progenitors" = "#c4fffe",#skyblue
                 "Erythroid 1" = "firebrick3",#darkred
-                "Erythroid 2" = "red4")#scarlet
+                "Erythroid 2" = "red4",
+                "Visceral endoderm" = "lightpink1")#pink
+all_colours = all_colours[match(all_names, names(all_colours))]
 names(all_colours) = 1:length(all_colours)
+
 
 scale_colour_Publication <- function(...){
   library(scales)
@@ -253,15 +243,19 @@ shinyServer(
         
         tab = table(get_clusters(), get_meta()$stage)
         fractions = sweep(tab, 1, rowSums(tab), "/")
-        means = apply(fractions, 1, function(x) sum(x * 1:length(x)))
-        
+        frac_nomixed = fractions[,colnames(fractions)!="mixed_gastrulation"]
+        means = apply(frac_nomixed, 1, function(x) sum(x * 1:length(x)))
+
         melt = melt(fractions)
+        
+        palette = c(brewer_pal(palette = "Spectral")(length(unique(meta$stage))-1), "darkgrey")
+        names(palette) = unique(meta$stage)[order(unique(meta$stage))]
         
         plot = ggplot(melt, aes(x = factor(Var1, levels = names(means)[order(means)]), y = value, fill = Var2)) +
           geom_bar(stat = "identity") +
           labs(x = "Cluster", y = "Fraction of cells") +
           theme_bw() +
-          scale_fill_Publication(name= "")
+          scale_fill_manual(values = palette, name= "")
         
         return(plot)
         
@@ -404,46 +398,95 @@ shinyServer(
     output$subcluster_marker_choice = renderUI({
       options = unique(meta$cluster.sub[meta$cluster == input$subcluster_choice])
       options = options[order(options)]
-      selectInput("subcluster_marker_choice", "Marker choice", choices = options)
+      selectInput("subcluster_marker_choice", "Selected subcluster (for markers)", choices = options)
     })
     
-    output$subcluster_plot = renderPlot({
-      coords = layouts_sub[[as.character(input$subcluster_choice)]]
+    output$subcluster_plot = output$subcluster_plot_dummy = renderPlot({
+      if(input$coord == "tsne"){
+        coords = tsnes_sub[[as.character(input$subcluster_choice)]]
+      } else {
+        coords = layouts_sub[[as.character(input$subcluster_choice)]]
+      }
+                      
       clusters = meta$cluster.sub[meta$cluster == input$subcluster_choice]
       
-      select = input$colourby
-      if(select == "cluster")
-        select = "cluster.sub"
-      variable = meta[meta$cluster == input$subcluster_choice, select]
+      variable = meta[meta$cluster == input$subcluster_choice, input$subcluster_colouring]
       
       pdf = data.frame(x = coords[,1], y = coords[,2], col = variable)
+      rand = sample(nrow(pdf), nrow(pdf))
+      pdf = pdf[rand,]
       
       p = ggplot(pdf, aes(x = x, y= y, col = factor(col))) +
-        geom_point(size = 2) +
+        geom_point(size = 1) +
         scale_colour_Publication(name = "Sub-cluster", drop = FALSE) +
         ggtitle(paste("Cluster", input$subcluster_choice)) +
         guides(colour = guide_legend(override.aes = list(size=10, 
                                                          alpha = 1))) +
         theme_bw()   
       
-      if(select %in% c("stage", "theiler"))
+      
+      
+      if(input$subcluster_colouring %in% c("stage", "theiler"))
         p = p + scale_color_manual(values = c(brewer_pal(palette = "Spectral")(length(unique(variable))-1), "darkgrey"), name = "")
+      #TODO: doesn't handle absence of mixed_gastrulation well
       
       return(p)
     })
     
+    output$subcluster_contribution = renderPlot({
+      sub_meta = meta[meta$cluster == input$subcluster_choice,]
+      tab = table(sub_meta$cluster.sub, sub_meta$stage)
+      fractions = sweep(tab, 1, rowSums(tab), "/")
+      frac_nomixed = fractions[,colnames(fractions)!="mixed_gastrulation"]
+      means = apply(frac_nomixed, 1, function(x) sum(x * 1:length(x)))
+      
+      melt = melt(fractions)
+      
+      palette = c(brewer_pal(palette = "Spectral")(length(unique(meta$stage))-1), "darkgrey")
+      names(palette) = unique(meta$stage)[order(unique(meta$stage))]
+      
+      plot = ggplot(melt, aes(x = factor(Var1, levels = names(means)[order(means)]), y = value, fill = Var2)) +
+        geom_bar(stat = "identity") +
+        labs(x = "Cluster", y = "Fraction of cells") +
+        theme_bw() +
+        scale_fill_manual(values = palette, name = "")      
+      return(plot)
+    })
+    
     output$subcluster_genes = renderPlot({
-      coords = layouts_sub[[as.character(input$subcluster_choice)]]
-      expr = link[meta$cluster == input$subcluster_choice,
-           match(as.character(input$gene), as.character(genes[,2]))]
+      if(input$coord == "tsne"){
+        coords = tsnes_sub[[as.character(input$subcluster_choice)]]
+      } else {
+        coords = layouts_sub[[as.character(input$subcluster_choice)]]
+      }
+      
+      expr = as.vector(link[,match(as.character(input$subcluster_gene), as.character(genes[,2]))])
+      expr = expr[meta$cluster == input$subcluster_choice]
 
       pdf = data.frame(x = coords[,1], y = coords[,2], col = expr)
+      rand = sample(nrow(pdf), nrow(pdf))
+      pdf = pdf[rand,]
       
       p = ggplot(pdf, aes(x = x, y= y, col = col)) +
-        geom_point(size = 2) +
-        scale_color_gradient2(name = "Log2\ncounts", mid = "cornflowerblue", low = "gray75", high = "black", midpoint = max(get_count())/2) +
+        geom_point(size = 1) +
+        scale_color_gradient2(name = "Log2\ncounts", mid = "cornflowerblue", low = "gray75", high = "black", midpoint = max(expr)/2) +
         ggtitle(paste("Cluster", input$subcluster_choice)) +
         theme_bw()   
+      
+      return(p)
+    })
+    
+    output$subcluster_violin = renderPlot({
+      expr = as.vector(link[,match(as.character(input$subcluster_gene), as.character(genes[,2]))])
+      expr = expr[meta$cluster == input$subcluster_choice]
+      
+      pdf = data.frame(expr = expr, clust = meta$cluster.sub[meta$cluster == input$subcluster_choice])
+      
+      p = ggplot(pdf, aes(x = clust, y= expr, fill = factor(clust))) +
+        geom_violin(scale = "width") +
+        ggtitle(paste("Cluster", input$subcluster_choice)) +
+        theme_bw() +
+        scale_fill_Publication()
       
       return(p)
     })
@@ -453,7 +496,7 @@ shinyServer(
       subclust = input$subcluster_marker_choice
       
       tab = markers_sub[[as.character(clust)]][[as.character(subclust)]]
-      tab = tab[order(tab$IUT.p)]
+      tab = tab[order(tab$IUT.p),]
       genes_mark = genes[match(rownames(tab), genes[,1]), 2]
       return(data.frame(genes = genes_mark, p.unadj = tab[,1])[1:input$n.genes,])
     })

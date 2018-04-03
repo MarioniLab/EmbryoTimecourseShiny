@@ -68,13 +68,26 @@ fluidPage(
                  sidebarLayout(
                    sidebarPanel(
                      selectInput("subcluster_choice", "All-data cluster", choices = unique(meta$cluster)[order(unique(meta$cluster))], selected = "1"),
+                     selectInput("subcluster_colouring", "Plot colouring", choices = c("Timepoint" = "stage",
+                                                                                       "Theiler" = "theiler",
+                                                                                       "Sub-cluster" = "cluster.sub"),
+                                 selected = "cluster.sub"),
+                     selectInput("subcluster_gene", "Selected gene", choices = genes[,2], selected = "Hbb-bh1"),
                      #specifies the clusters that are allowed
                      uiOutput("subcluster_marker_choice")
                    ),
                    mainPanel(
-                     plotOutput("subcluster_plot"),
-                     plotOutput("subcluster_genes"),
-                     tableOutput("subcluster_markers")
+                     tabsetPanel(
+                     tabPanel("Cluster overview",
+                              plotOutput("subcluster_plot"),
+                              plotOutput("subcluster_contribution")),
+                     tabPanel("Gene interrogation",
+                              plotOutput("subcluster_plot_dummy"),
+                              plotOutput("subcluster_genes"),
+                              plotOutput("subcluster_violin")),
+                     tabPanel("Markers",
+                              tableOutput("subcluster_markers"))
+                     )
                    )
                  )
                  ),
