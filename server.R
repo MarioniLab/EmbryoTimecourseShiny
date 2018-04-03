@@ -413,7 +413,7 @@ shinyServer(
       
       pdf = data.frame(x = coords[,1], y = coords[,2], col = clusters)
       
-      p = ggplot(pdf, aes(x = x, y= y, col = col)) +
+      p = ggplot(pdf, aes(x = x, y= y, col = factor(col))) +
         geom_point(size = 2) +
         scale_colour_Publication(name = "Sub-cluster", drop = FALSE) +
         ggtitle(paste("Cluster", input$subcluster_choice)) +
