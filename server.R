@@ -411,7 +411,12 @@ shinyServer(
       coords = layouts_sub[[as.character(input$subcluster_choice)]]
       clusters = meta$cluster.sub[meta$cluster == input$subcluster_choice]
       
-      pdf = data.frame(x = coords[,1], y = coords[,2], col = clusters)
+      select = input$colourby
+      if(select == "cluster")
+        select = "cluster.sub"
+      variable = meta[meta$cluster == input$subcluster_choice, select]
+      
+      pdf = data.frame(x = coords[,1], y = coords[,2], col = variable)
       
       p = ggplot(pdf, aes(x = x, y= y, col = factor(col))) +
         geom_point(size = 2) +
@@ -420,6 +425,9 @@ shinyServer(
         guides(colour = guide_legend(override.aes = list(size=10, 
                                                          alpha = 1))) +
         theme_bw()   
+      
+      if(select %in% c("stage", "theiler"))
+        p = p + scale_color_manual(values = c(brewer_pal(palette = "Spectral")(length(unique(variable))-1), "darkgrey"), name = "")
       
       return(p)
     })
