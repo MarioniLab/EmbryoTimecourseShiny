@@ -201,10 +201,11 @@ shinyServer(
       
       
       unq = as.character(unique(get_meta()[, input$colourby]))
-      if(grepl("TS", unq[1])){
-        factor_levels = unq[order(nchar(unq), unq)]
-      } else {
+      if(grepl("E", unq[1])){
         factor_levels = unq[order(unq)]
+      } else {
+        factor_levels = unq[order(nchar(unq), unq)]
+        
       }
       
       new_order = sample(nrow(get_coord()), nrow(get_coord()))
@@ -395,6 +396,58 @@ shinyServer(
       genes_mark = genes[match(rownames(tab), genes[,1]), 2]
       return(data.frame(genes = genes_mark, p.unadj = tab[,1])[1:input$n.genes,])
       
+    })
+    
+    # SUBCLUSTERS
+    #note that this doesn't depend at all on the get_* functions, as it operates on a different scale.
+    
+    output$subcluster_marker_choice = renderUI({
+      options = unique(meta$cluster.sub[meta$cluster == input$subcluster_choice])
+      options = options[order(options)]
+      selectInput("subcluster_marker_choice", "Marker choice", choices = options)
+    })
+    
+    output$subcluster_plot = renderPlot({
+      coords = layouts_sub[[as.character(input$subcluster_choice)]]
+      clusters = meta$cluster.sub[meta$cluster == input$subcluster_choice]
+      
+      pdf = data.frame(x = coords[,1], y = coords[,2], col = clusters)
+      
+      p = ggplot(pdf, aes(x = x, y= y, col = col)) +
+        geom_point(size = 2) +
+        scale_colour_Publication(name = "Sub-cluster", drop = FALSE) +
+        ggtitle(paste("Cluster", input$subcluster_choice)) +
+        guides(colour = guide_legend(override.aes = list(size=10, 
+                                                         alpha = 1))) +
+        theme_bw()   
+      
+      return(p)
+    })
+    
+    output$subcluster_genes = renderPlot({
+      coords = layouts_sub[[as.character(input$subcluster_choice)]]
+      expr = link[meta$cluster == input$subcluster_choice,
+           match(as.character(input$gene), as.character(genes[,2]))]
+
+      pdf = data.frame(x = coords[,1], y = coords[,2], col = expr)
+      
+      p = ggplot(pdf, aes(x = x, y= y, col = col)) +
+        geom_point(size = 2) +
+        scale_color_gradient2(name = "Log2\ncounts", mid = "cornflowerblue", low = "gray75", high = "black", midpoint = max(get_count())/2) +
+        ggtitle(paste("Cluster", input$subcluster_choice)) +
+        theme_bw()   
+      
+      return(p)
+    })
+    
+    output$subcluster_markers = renderTable({
+      clust = input$subcluster_choice
+      subclust = input$subcluster_marker_choice
+      
+      tab = markers_sub[[as.character(clust)]][[as.character(subclust)]]
+      tab = tab[order(tab$IUT.p)]
+      genes_mark = genes[match(rownames(tab), genes[,1]), 2]
+      return(data.frame(genes = genes_mark, p.unadj = tab[,1])[1:input$n.genes,])
     })
     
   }

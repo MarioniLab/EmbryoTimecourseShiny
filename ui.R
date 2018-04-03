@@ -63,6 +63,22 @@ fluidPage(
                    )
                  )
                  ),
+        
+        tabPanel("All-data subclusters",
+                 sidebarLayout(
+                   sidebarPanel(
+                     selectInput("subcluster_choice", "All-data cluster", choices = unique(meta$cluster), selected = "1"),
+                     #specifies the clusters that are allowed
+                     uiOutput("subcluster_marker_choice")
+                   ),
+                   mainPanel(
+                     plotOutput("subcluster_plot"),
+                     plotOutput("subcluster_genes"),
+                     tableOutput("subcluster_markers")
+                   )
+                 )
+                 ),
+        
         tabPanel("Library sizes",
                  plotOutput("libs", height = "800px")
                  )
