@@ -8,7 +8,7 @@ all_names = c("Epiblast",
               "PS/mesendoderm",
               "Erythroid 1",
               "NMPs",
-              "Neural tube",
+              "Late neural tube/spinal cord",
               "ExE endoderm",
               "ExE mesoderm",
               "ExE ectoderm 1",
@@ -19,30 +19,30 @@ all_names = c("Epiblast",
               "Late parax. mesoderm",
               "AVE/def. endo/notochord",
               "Erythroid 2",
-              "Mixed mesoderm",
+              "Late mixed mesoderm",
               "Visceral endoderm",
-              "Mesoderm progenitors",
+              "Early mixed mesoderm",
               "Parietal endoderm",
-              "Neural crest")
+              "Neural crest/non-neural ectoderm")
 names(all_names) = 1:length(all_names)
 
 legend_order = match(c("Epiblast",
                        "PS/mesendoderm", 
                        "AVE/def. endo/notochord",
-                       "Mesoderm progenitors",
+                       "Early mixed mesoderm",
                        "Early parax. mesoderm",
                        "Late parax. mesoderm",
-                       "Mixed mesoderm",
+                       "Late mixed mesoderm",
                        "Hemato-endothelial",
                        "Erythroid 1",
                        "Erythroid 2",
                        "ExE mesoderm",
                        "NMPs",
                        "Neuroectoderm",
-                       "Neural tube",
+                       "Late neural tube/spinal cord",
                        "ExE endoderm",
                        "Visceral endoderm",
-                       "Neural crest",
+                       "Neural crest/non-neural ectoderm",
                        "ExE ectoderm 1",
                        "ExE ectoderm 2",
                        "Parietal endoderm"
@@ -52,20 +52,20 @@ legend_order = match(c("Epiblast",
 all_colours = c("PS/mesendoderm" = "#efd5a0",#grey-brown ###
                 "ExE ectoderm 2" = "grey20",#darkgrey###
                 "Epiblast" = "#663300",#dark brown###
-                "Neural crest" = "palegreen3",#light green
+                "Neural crest/non-neural ectoderm" = "palegreen3",#light green
                 "Late parax. mesoderm" = "royalblue3",#blue
                 "Neuroectoderm" = "greenyellow",#midgreen
                 "ExE mesoderm" = "purple3",#purple
                 "Hemato-endothelial" = "orange",#orange
-                "Neural tube" = "olivedrab",#darkgreen
+                "Late neural tube/spinal cord" = "olivedrab",#darkgreen
                 "ExE ectoderm 1" = "grey60",#light grey
                 "NMPs" = "#FAFF0A",#yellow
-                "Mixed mesoderm" = "navy",#navy
+                "Late mixed mesoderm" = "navy",#navy
                 "Early parax. mesoderm" = "steelblue1",#lightblue
                 "Parietal endoderm" = "grey10",#???
                 "AVE/def. endo/notochord" = "coral2",#dark goldenrod
                 "ExE endoderm" = "plum4",#plum ###
-                "Mesoderm progenitors" = "#c4fffe",#skyblue
+                "Early mixed mesoderm" = "turquoise",#skyblue
                 "Erythroid 1" = "firebrick3",#darkred
                 "Erythroid 2" = "red4",
                 "Visceral endoderm" = "lightpink1")#pink
