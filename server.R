@@ -207,7 +207,7 @@ shinyServer(
                                   y = Y, 
                                   col = factor(get_meta()[new_order,input$colourby], 
                                                levels = factor_levels))) +
-        geom_point(size = 2, 
+        geom_point(size = 1, 
                    alpha = 0.9) +
         scale_colour_Publication(name = input$colourby, drop = FALSE) +
         ggtitle(input$stage) +
@@ -274,7 +274,7 @@ shinyServer(
                     mapping = aes(x = X, 
                                   y = Y, 
                                   col = log10(libs[meta$cell %in% get_meta()$cell]))) +
-        geom_point(size = 2, 
+        geom_point(size = 1, 
                    alpha = 0.9) +
         scale_colour_viridis(name = "log10 Library size") +
         ggtitle(input$stage) +
@@ -308,7 +308,7 @@ shinyServer(
       
       plot = ggplot(data = dat,
                     mapping = aes(x = X, y = Y, col = count)) +
-        geom_point(size = 2, alpha = 1) +
+        geom_point(size = 1) +
         scale_color_gradient2(name = "Log2\ncounts", mid = "cornflowerblue", low = "gray75", high = "black", midpoint = max(get_count())/2) +
         ggtitle(paste(input$stage, input$gene, sep = ", ")) +
         theme_bw()
