@@ -397,12 +397,17 @@ shinyServer(
         labs(x = "Cluster number", y = "Log2 count") + 
         ggtitle(as.character(names[ifelse(grepl("cluster", input$colourby), input$colourby, "cluster")])) +
         theme(axis.title = element_text(face = "bold", size = 12),
-              axis.text = element_text(size = 10)) +
+              axis.text = element_text(size = 10),
+              legend.position = "none") +
         annotate("text", 
                  x = factor(names(clust.sizes)), 
                  y = rep(c(max(get_count())*1.05, max(get_count()) * 1.1), 
                          round(length(clust.sizes)/2))[1:length(clust.sizes)], 
                  label = as.vector(clust.sizes))
+      
+      if(input$colourby == "cluster.ann"){
+        plot= plot + theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
+      }
       
       return(plot)
       
