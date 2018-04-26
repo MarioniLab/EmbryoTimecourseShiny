@@ -19,7 +19,7 @@ fluidPage(
                                                            "All-data cluster" = "cluster",
                                                            "Stage (Ex.x) cluster" = "cluster.stage",
                                                            "Theiler cluster" = "cluster.theiler",
-                                                           "Predicted cell type" = "celltype",
+                                                           "Cell type" = "cluster.ann",
                                                            "Timepoint" = "stage",
                                                            "Theiler stage" = "theiler"),
                     selected = "cluster"),
@@ -60,6 +60,18 @@ fluidPage(
                    ),
                    mainPanel(
                      tableOutput("markers")
+                   )
+                 )
+                 ),
+        
+        tabPanel("Cell-type markers",
+                 sidebarLayout(
+                   sidebarPanel(
+                     selectInput("celltype", "Cell type", unique(meta$cluster.ann))
+                   ),
+                   mainPanel(
+                     plotOutput("celltype_presence_plot", height = "300px", width = "300px"),
+                     tableOutput("celltype_markers")
                    )
                  )
                  ),

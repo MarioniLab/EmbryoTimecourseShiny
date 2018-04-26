@@ -39,10 +39,10 @@ legend_order = match(c("Epiblast",
                        "ExE mesoderm",
                        "NMPs",
                        "Neuroectoderm",
+                       "Neural crest/non-neural ectoderm",
                        "Late neural tube/spinal cord",
                        "ExE endoderm",
                        "Visceral endoderm",
-                       "Neural crest/non-neural ectoderm",
                        "ExE ectoderm 1",
                        "ExE ectoderm 2",
                        "Parietal endoderm"
@@ -71,6 +71,57 @@ all_colours = c("PS/mesendoderm" = "#efd5a0",#grey-brown ###
                 "Visceral endoderm" = "lightpink1")#pink
 all_colours = all_colours[match(all_names, names(all_colours))]
 names(all_colours) = 1:length(all_colours)
+
+
+celltype_colours = c(
+  
+  "Allantois" = "#520892",#[32] "Allantois"
+  "Anterior epiblast" =  "#bf8040",#[28] "Anterior epiblast"
+  "Cardiac mesenchyme" = "#9187c4",#[23] "Cardiac mesenchyme"
+  "Cardiomyocytes" = "#301aff",#[34] "Cardiomyocytes"
+  "Def. endoderm" = "#ff80b0",#[24] "Def. endoderm"
+  "Early ExE mesoderm" = "#d9b3ff",#[26] "Early ExE mesoderm"
+  "Early mixed mesoderm" = "#ee99ff",#[7] "Early mixed mesoderm"
+  
+  "Early neurectoderm" = "greenyellow",#[10] "Early neurectoderm"
+  
+  "Early paraxial mesoderm" = "#7eaacd",#[17] "Early paraxial mesoderm"
+  "Endothelium" = "#ff7300",#[20] "Endothelium"
+  
+  
+  "Epiblast" = "#663300",#[1] "Epiblast"
+  "Erythroid 1" = "firebrick3",#[15] "Erythroid 1"
+  "Erythroid 2" = "red4",#[37] "Erythroid2"
+  "ExE ectoderm 1" = "grey60",#[30] "ExE ectoderm 1"
+  
+  "ExE ectoderm 2" = "grey20",#[4] "ExE ectoderm 2"
+  "ExE endoderm" = "plum4",#[5] "ExE endoderm"
+  "ExE mesoderm" = "#8c1aff",#[12] "ExE mesoderm"
+  "Forebrain" = "#6bb300",#[8] "Forebrain"
+  "Foregut" = "#ff0062",#[19] "Foregut"
+  
+  #"Hemato-endothelial progenitors" = "#ffcf99",#[9] "Hemato-endothelial progenitors"
+  "Hemato-endothelial progenitors" = "#ffa880",
+  
+  "Intermediate mesoderm" = "#008080",#[31] "Intermediate mesoderm"
+  "Late mixed mesoderm" = "#aa00cc",#[13] "Late mixed mesoderm"
+  "Late parax. mesoderm" = "#4785b8",#[33] "Late paraxial mesoderm (presomitic mesoderm)"
+  "Midgut/Hindgut"= "#cc0052",#[35] "Midgut/Hindgut"
+  "Midbrain/Hindbrain" = "#2e4d00",#[11] "Midbrain/Hindbrain"
+  "Neural crest" = "#77773c",#[18] "Neural crest"
+  "NMP" = "#FAFF0A",#[14] "NMPs"
+  "Notochord" = "#b3e6ff",#[21] "Notochord"
+  "PGC" = "#b3ffff",#[25] "PGC"
+  "Placodes" = "#b3ffb3",#[27] "Placodes"
+  "Parietal endoderm" = "grey10",#[29] "Parietal endoderm"
+  "Pre-migratory neural crest" = "#c3c388",#[36] "Pre-migratory neural crest"
+  "PS/mesendoderm" = "#f2dfc0",#[2] "Primitive Streak"
+  "Somites" = "#2b506e",#[16] "Somites"
+  "Spinal cord" = "#ebed5e",#[38] "Spinal cord"
+  "Surface ectoderm" = "#8cd9b3",#[22] "Surface ectoderm"
+  "Visceral endoderm" = "lightpink1"#[3] "Visceral endoderm"
+  
+)
 
 
 scale_colour_Publication <- function(...){
@@ -191,7 +242,7 @@ shinyServer(
       
       
       unq = as.character(unique(get_meta()[, input$colourby]))
-      if(grepl("E", unq[1])){
+      if(grepl("E[6-8]", unq[1]) | grepl("cluster.ann", input$colourby)){
         factor_levels = unq[order(unq)]
       } else {
         factor_levels = unq[order(nchar(unq), unq)]
@@ -227,6 +278,10 @@ shinyServer(
       
       if(input$annot){
         plot = plot + scale_color_manual(values = all_colours, labels = all_names, drop = FALSE, name = "")
+      }
+      
+      if(input$colourby == "cluster.ann"){
+        plot = plot + scale_color_manual(values = celltype_colours, labels = names(celltype_colours), drop = FALSE, name = "")
       }
       
       if(input$colourby == "stage" | input$colourby == "theiler"){
@@ -391,6 +446,31 @@ shinyServer(
       return(data.frame(genes = genes_mark, p.unadj = tab[,1])[1:input$n.genes,])
       
     })
+    
+    # CELLTYPE MARKERS
+    output$celltype_markers = renderTable({
+
+      
+      tab = markers_celltype[[input$celltype]]
+      tab = tab[order(tab$IUT.p),]
+      genes_mark = genes[match(rownames(tab), genes[,1]), 2]
+      return(data.frame(genes = genes_mark, p.unadj = tab[,1])[1:input$n.genes,])
+    })
+    
+    output$celltype_presence_plot = renderPlot({
+      coords = tsnes$all
+      meta = meta
+      order = order(meta$cluster.ann == input$celltype)
+      
+      p = ggplot(as.data.frame(coords)[order,], aes(x = V1, y = V2, col = (meta$cluster.ann == input$celltype)[order])) +
+        geom_point() +
+        scale_color_manual(values = c("TRUE" = "navy", "FALSE" = "darkgrey")) +
+        theme_bw() +
+        theme(legend.position = "none")
+      return(p)
+    })
+    
+    
     
     # SUBCLUSTERS
     #note that this doesn't depend at all on the get_* functions, as it operates on a different scale.
