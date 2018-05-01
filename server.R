@@ -281,7 +281,7 @@ shinyServer(
       }
       
       if(input$colourby == "cluster.ann"){
-        plot = plot + scale_color_manual(values = celltype_colours, labels = names(celltype_colours), drop = FALSE, name = "")
+        plot = plot + scale_color_manual(values = celltype_colours, drop = FALSE, name = "")
       }
       
       if(input$colourby == "stage" | input$colourby == "theiler"){
