@@ -104,10 +104,6 @@ fluidPage(
                      )
                    )
                  )
-                 ),
-        
-        tabPanel("Library sizes",
-                 plotOutput("libs", height = "800px")
                  )
 
       )

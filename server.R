@@ -333,35 +333,6 @@ shinyServer(
     })
     
     
-    #### LIBRARY SIZES
-    
-    output$libs = renderPlot({
-      if(!run()){
-        return(dummy_plot)
-      }
-      
-      
-      plot = ggplot(data = get_coord(), 
-                    mapping = aes(x = X, 
-                                  y = Y, 
-                                  col = log10(libs[meta$cell %in% get_meta()$cell]))) +
-        geom_point(size = 1, 
-                   alpha = 0.9) +
-        scale_colour_viridis(name = "log10 Library size") +
-        ggtitle(input$stage) +
-        theme_bw()
-      
-      if(input$numbers){
-        plot = plot + geom_label(data = get_cluster_centroids(), 
-                                 mapping = aes(x = X, 
-                                               y = Y, 
-                                               label = num), 
-                                 col = "black", 
-                                 alpha = 0.8, 
-                                 size = 7)
-      }
-      return(plot)
-    })
     
     #### GENE EXPRESSION PLOTS
     
