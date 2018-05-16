@@ -150,6 +150,32 @@ scale_fill_Publication <- function(...){
                    "#5B4534", "#FDE8DC", "#404E55", "#0089A3", "#CB7E98", "#A4E804", "#324E72", "#6A3A4C")), ...)
 }
 
+# taken from iSEE
+subsetPointsByGrid <- function(X, Y, resolution=200, seed = 42) {
+  set.seed(seed)
+  # Avoid integer overflow when computing ids.
+  resolution <- max(resolution, 1L)
+  resolution <- min(resolution, sqrt(.Machine$integer.max))
+  resolution <- as.integer(resolution)
+  
+  # X and Y MUST be numeric.
+  rangeX <- range(X)
+  rangeY <- range(Y)
+  
+  binX <- (rangeX[2] - rangeX[1])/resolution
+  xid <- (X - rangeX[1])/binX
+  xid <- as.integer(xid)
+  
+  binY <- (rangeY[2] - rangeY[1])/resolution
+  yid <- (Y - rangeY[1])/binY
+  yid <- as.integer(yid)
+  
+  # Getting unique IDs, provided resolution^2 < .Machine$integer.max
+  # We use fromLast=TRUE as the last points get plotted on top.
+  id <- xid + yid * resolution 
+  !duplicated(id, fromLast=TRUE)
+}
+
 link = HDF5Array(file = "counts.hdf5", name = "logcounts")
 
 load("data.RData")
@@ -164,10 +190,7 @@ shinyServer(
     #### FUNCTIONS TO GET DATA
     
     get_meta = reactive({
-      #subset embryonic
-      out = switch(input$embryonic+1,
-                   meta,
-                   meta[meta$embryonic,])
+      out = meta
       
       #select stage
       out = switch(substr(input$stage,1,1),
@@ -183,12 +206,9 @@ shinyServer(
   
       
       coord = switch(input$coord,
-                     tsne = switch(input$embryonic + 1,
-                                   tsnes[[input$stage]],
-                                   tsnes_emb[[input$stage]]),
-                     graph = switch(input$embryonic + 1,
-                                    layouts[[input$stage]],
-                                    layouts_emb[[input$stage]]))
+                     tsne = tsnes[[input$stage]],
+                     graph = layouts[[input$stage]])
+                                    
     
       coord = as.data.frame(coord)
       names(coord) = c("X", "Y")
@@ -264,7 +284,7 @@ shinyServer(
                                  size = 7)
       }
       
-      if(input$annot){
+      if(input$colourby == "cluster"){
         plot = plot + scale_color_manual(values = all_colours, labels = all_names, drop = FALSE, name = "")
       }
       
