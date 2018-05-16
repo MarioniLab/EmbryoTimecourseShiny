@@ -258,8 +258,6 @@ shinyServer(
       }
       
       new_order = sample(nrow(get_coord()), nrow(get_coord()))
-      if(input$annot)
-        factor_levels = legend_order
       
       plot = ggplot(data = get_coord()[new_order,], 
                     mapping = aes(x = X, 

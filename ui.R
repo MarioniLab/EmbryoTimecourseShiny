@@ -23,7 +23,6 @@ fluidPage(
                                                            "Theiler cluster" = "cluster.theiler"
                                                            ),
                     selected = "cluster.ann"),
-        checkboxInput("annot", "Use annotation? (with all-data clusters only!)"),
         checkboxInput("numbers", "Number clusters in plot?"),
         selectizeInput("gene", "Gene", choices = genes[,2], selected = "Hbb-bh1"),
 
