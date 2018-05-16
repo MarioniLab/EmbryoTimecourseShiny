@@ -23,10 +23,13 @@ fluidPage(
                                                            "Theiler cluster" = "cluster.theiler"
                                                            ),
                     selected = "cluster.ann"),
-        checkboxInput("numbers", "Number clusters in plot?"),
+        checkboxInput("numbers", "Annotate clusters in plot"),
+
         selectizeInput("gene", "Gene", choices = genes[,2], selected = "Hbb-bh1"),
 
         numericInput("n.genes", "Number of DE genes", value = 20),
+        checkboxInput("subset", "Subset cells (speed benefit)"),
+        selectInput("subset_degree", label = "Subsetting severity", choices = c("Low" = 200, "High" = 100)),
         fixed = TRUE,
         left = "2%",
         top = "2%",

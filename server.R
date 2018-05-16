@@ -241,6 +241,15 @@ shinyServer(
       
     })
     
+    get_subset = reactive({
+      coord = get_coord()
+      if(input$subset){
+        return(subsetPointsByGrid(coord[,1], coord[,2], input$subset_degree))
+      } else {
+        return(rep(TRUE, nrow(coord)))
+      }
+    })
+    
     #### OVERALL VIS
     
     output$data = output$data_dummy = renderPlot({
@@ -256,8 +265,9 @@ shinyServer(
         factor_levels = unq[order(nchar(unq), unq)]
         
       }
-      
-      new_order = sample(nrow(get_coord()), nrow(get_coord()))
+      allowed = get_subset()
+      #scramble, and subset if asked
+      new_order = sample(allowed, length(allowed))
       
       plot = ggplot(data = get_coord()[new_order,], 
                     mapping = aes(x = X, 
@@ -364,11 +374,15 @@ shinyServer(
       dat = get_coord()
       count = as.vector(get_count())
       
+
+      allowed = get_subset()
+      #order so that highest expressing cells are not hidden behind others
       dat = dat[order(count),]
+      allowed = allowed[order(count)]
       count = count[order(count)]
       
-      plot = ggplot(data = dat,
-                    mapping = aes(x = X, y = Y, col = count)) +
+      plot = ggplot(data = dat[allowed,],
+                    mapping = aes(x = X, y = Y, col = count[allowed])) +
         geom_point(size = 1) +
         scale_color_gradient2(name = "Log2\ncounts", mid = "cornflowerblue", low = "gray75", high = "black", midpoint = max(get_count())/2) +
         ggtitle(paste(input$stage, input$gene, sep = ", ")) +
