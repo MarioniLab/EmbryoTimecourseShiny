@@ -74,54 +74,42 @@ names(all_colours) = 1:length(all_colours)
 
 
 celltype_colours = c(
-  
-  "Allantois" = "#520892",#[32] "Allantois"
-  "Anterior epiblast" =  "#bf8040",#[28] "Anterior epiblast"
-  "Cardiac mesenchyme" = "#9187c4",#[23] "Cardiac mesenchyme"
-  "Cardiomyocytes" = "#301aff",#[34] "Cardiomyocytes"
-  "Def. endoderm" = "#ff80b0",#[24] "Def. endoderm"
-  "Early ExE mesoderm" = "#d9b3ff",#[26] "Early ExE mesoderm"
-  "Early mixed mesoderm" = "#ee99ff",#[7] "Early mixed mesoderm"
-  
-  "Early neurectoderm" = "greenyellow",#[10] "Early neurectoderm"
-  
-  "Early paraxial mesoderm" = "#7eaacd",#[17] "Early paraxial mesoderm"
-  "Endothelium" = "#ff7300",#[20] "Endothelium"
-  
-  
-  "Epiblast" = "#663300",#[1] "Epiblast"
-  "Erythroid 1" = "firebrick3",#[15] "Erythroid 1"
-  "Erythroid 2" = "red4",#[37] "Erythroid2"
-  "ExE ectoderm 1" = "grey60",#[30] "ExE ectoderm 1"
-  
-  "ExE ectoderm 2" = "grey20",#[4] "ExE ectoderm 2"
-  "ExE endoderm" = "plum4",#[5] "ExE endoderm"
-  "ExE mesoderm" = "#8c1aff",#[12] "ExE mesoderm"
-  "Forebrain" = "#6bb300",#[8] "Forebrain"
-  "Foregut" = "#ff0062",#[19] "Foregut"
-  
-  #"Hemato-endothelial progenitors" = "#ffcf99",#[9] "Hemato-endothelial progenitors"
-  "Hemato-endothelial progenitors" = "#ffa880",
-  
-  "Intermediate mesoderm" = "#008080",#[31] "Intermediate mesoderm"
-  "Late mixed mesoderm" = "#aa00cc",#[13] "Late mixed mesoderm"
-  "Late parax. mesoderm" = "#4785b8",#[33] "Late paraxial mesoderm (presomitic mesoderm)"
-  "Midgut/Hindgut"= "#cc0052",#[35] "Midgut/Hindgut"
-  "Midbrain/Hindbrain" = "#2e4d00",#[11] "Midbrain/Hindbrain"
-  "Neural crest" = "#77773c",#[18] "Neural crest"
-  "NMP" = "#FAFF0A",#[14] "NMPs"
-  "Notochord" = "#b3e6ff",#[21] "Notochord"
-  "PGC" = "#b3ffff",#[25] "PGC"
-  "Placodes" = "#b3ffb3",#[27] "Placodes"
-  "Parietal endoderm" = "grey10",#[29] "Parietal endoderm"
-  "Pre-migratory neural crest" = "#c3c388",#[36] "Pre-migratory neural crest"
-  "PS/mesendoderm" = "#f2dfc0",#[2] "Primitive Streak"
-  "Somites" = "#2b506e",#[16] "Somites"
-  "Spinal cord" = "#ebed5e",#[38] "Spinal cord"
-  "Surface ectoderm" = "#8cd9b3",#[22] "Surface ectoderm"
-  "Visceral endoderm" = "lightpink1"#[3] "Visceral endoderm"
-  
-)
+  "Epiblast"	= "#683612",
+  "PS/mesendoderm"	= "#DABE99",
+  "PGC"	= "#FACB12",
+  "Early mixed mesoderm"	= "#C594BF",
+  "Early ExE mesoderm"	= "#DFCDE4",
+  "ExE mesoderm"	= "#7253A2",
+  "Allantois"	= "#532C8A",
+  "Endothelium"	= "#B3793B",
+  "Hemato-endothelial progenitors"	= "#FBBE92",
+  "Erythroid 1"	= "#C72228",
+  "Erythroid 2"	= "#EF4E22",
+  "Cardiac mesenchyme"	= "#F7901D",
+  "Cardiomyocytes"	= "#B51D8D",
+  "Early paraxial mesoderm"	= "#3F84AA",
+  "Late mixed mesoderm"	= "#C9EBFB",#pharyngeal mesoderm?
+  "Intermediate mesoderm"	= "#139992",
+  "Late parax. mesoderm"	= "#8DB5CE",
+  "Somites"	= "#005579",
+  "Early neurectoderm"	= "#A0CC47",
+  "Forebrain"	= "#65A83E",
+  "Midbrain/Hindbrain"	= "#354E23",
+  "Pre-migratory neural crest"	= "#C3C388",#Cranial Neural Crest?
+  "Neural crest"	= "#77783C",#Trunk Neural Crest?
+  "Placodes"	= "#BBDCA8",
+  "NMP"	= "#8EC792",
+  "Spinal cord"	= "#CDE088",
+  "Surface ectoderm"	= "#FFF574",
+  "Notochord"	= "#0F4A9C",
+  "Def. endoderm"	= "#F397C0",
+  "Foregut"	= "#EF5A9D",
+  "Midgut/Hindgut"	= "#CE4E82",
+  "Visceral endoderm"	= "#F6BFCB",
+  "Parietal endoderm"	= "#1A1A1A",
+  "ExE endoderm"	= "#7F6874",
+  "ExE ectoderm 1"	= "#989898",
+  "ExE ectoderm 2"	= "#333333")
 
 
 scale_colour_Publication <- function(...){
