@@ -3,6 +3,7 @@ library(ggplot2)
 library(HDF5Array)
 library(viridis)
 library(reshape2)
+library(cowplot)
 # CLUSTER TYPES
 all_names = c("Epiblast",
               "PS/mesendoderm",
@@ -178,7 +179,7 @@ subsetPointsByGrid <- function(X, Y, resolution=200, seed = 42) {
 
 link = HDF5Array(file = "counts.hdf5", name = "logcounts")
 
-load("data.RData")
+load("data_mini.RData")
 
 
 shinyServer(
@@ -205,9 +206,7 @@ shinyServer(
     get_coord = reactive({
   
       
-      coord = switch(input$coord,
-                     tsne = tsnes[[input$stage]],
-                     graph = layouts[[input$stage]])
+      coord = tsnes[[input$stage]]
                                     
     
       coord = as.data.frame(coord)
@@ -314,7 +313,7 @@ shinyServer(
         
         tab = table(get_clusters(), get_meta()$stage)
         fractions = sweep(tab, 1, rowSums(tab), "/")
-        frac_nomixed = fractions[,colnames(fractions)!="mixed_gastrulation"]
+        frac_nomixed = fractions[,colnames(fractions)!="mixed_gastrulation", drop = FALSE]
         means = apply(frac_nomixed, 1, function(x) sum(x * 1:length(x)))
 
         melt = melt(fractions)
@@ -326,7 +325,8 @@ shinyServer(
           geom_bar(stat = "identity") +
           labs(x = "Cluster", y = "Fraction of cells") +
           theme_bw() +
-          scale_fill_manual(values = palette, name= "")
+          scale_fill_manual(values = palette, name= "") +
+          theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust =1))
         
         return(plot)
         
@@ -355,11 +355,12 @@ shinyServer(
       plot = ggplot(data = dat[allowed,],
                     mapping = aes(x = X, y = Y, col = count[allowed])) +
         geom_point(size = 1) +
-        scale_color_gradient2(name = "Log2\ncounts", mid = "cornflowerblue", low = "gray75", high = "black", midpoint = max(get_count())/2) +
+        scale_color_gradient2(name = "Log2\ncounts", mid = "cornflowerblue", low = "gray75", high = "black", midpoint = max(count)/2) +
         ggtitle(paste(input$stage, input$gene, sep = ", ")) +
         theme_bw()
-      
+
       return(plot)
+
     })
     
     output$gene_violin = renderPlot({
@@ -397,51 +398,14 @@ shinyServer(
                  label = as.vector(clust.sizes))
       
       if(input$colourby == "cluster.ann"){
-        plot= plot + theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
+        plot= plot + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
       }
       
       return(plot)
       
     })
     
-    
-    
-    #MARKERS
-    
-    output$subset_marker = renderUI({
-      options = switch(input$marker_cluster_type,
-                       "all" = c("all"),
-                       "theiler" = paste0("TS", 9:12),
-                       "timepoint" = unique(meta$stage)[order(unique(meta$stage))])
-      selectInput("marker_data_subset", "Data subset", choices = options)
-    })
-    
-    output$cluster_marker = renderUI({
-      column = switch(input$marker_cluster_type,
-                      "all" = "cluster",
-                      "theiler" = "cluster.theiler",
-                      "timepoint" = "cluster.stage")
-      
-      keep = switch(input$marker_cluster_type,
-                    "all" = rep(TRUE, nrow(meta)),
-                    "theiler" = meta$theiler == input$marker_data_subset,
-                    "timepoint" = meta$stage == input$marker_data_subset)
-          
-      clusters = unique(meta[keep, column])
-      clusters = as.numeric(as.character(clusters))
-      clusters = clusters[order(clusters)]
-      selectInput("cluster_marker", "Cluster number", choices = clusters)
-    })
-    
-    output$markers = renderTable({
-      
-      type = input$marker_data_subset
-      
-      tab = markers[[type]][[as.character(input$cluster_marker)]]
-      genes_mark = genes[match(rownames(tab), genes[,1]), 2]
-      return(data.frame(genes = genes_mark, p.unadj = tab[,1])[1:input$n.genes,])
-      
-    })
+  
     
     # CELLTYPE MARKERS
     output$celltype_markers = renderTable({
@@ -466,116 +430,6 @@ shinyServer(
       return(p)
     })
     
-    
-    
-    # SUBCLUSTERS
-    #note that this doesn't depend at all on the get_* functions, as it operates on a different scale.
-    
-    output$subcluster_marker_choice = renderUI({
-      options = unique(meta$cluster.sub[meta$cluster == input$subcluster_choice])
-      options = options[order(options)]
-      selectInput("subcluster_marker_choice", "Selected subcluster (for markers)", choices = options)
-    })
-    
-    output$subcluster_plot = output$subcluster_plot_dummy = renderPlot({
-      if(input$coord == "tsne"){
-        coords = tsnes_sub[[as.character(input$subcluster_choice)]]
-      } else {
-        coords = layouts_sub[[as.character(input$subcluster_choice)]]
-      }
-                      
-      clusters = meta$cluster.sub[meta$cluster == input$subcluster_choice]
-      
-      variable = meta[meta$cluster == input$subcluster_choice, input$subcluster_colouring]
-      
-      pdf = data.frame(x = coords[,1], y = coords[,2], col = variable)
-      rand = sample(nrow(pdf), nrow(pdf))
-      pdf = pdf[rand,]
-      
-      p = ggplot(pdf, aes(x = x, y= y, col = factor(col))) +
-        geom_point(size = 1) +
-        scale_colour_Publication(name = "Sub-cluster", drop = FALSE) +
-        ggtitle(paste("Cluster", input$subcluster_choice)) +
-        guides(colour = guide_legend(override.aes = list(size=10, 
-                                                         alpha = 1))) +
-        theme_bw()   
-      
-      
-      
-      if(input$subcluster_colouring %in% c("stage", "theiler"))
-        p = p + scale_color_manual(values = c(brewer_pal(palette = "Spectral")(length(unique(variable))-1), "darkgrey"), name = "")
-      #TODO: doesn't handle absence of mixed_gastrulation well
-      
-      return(p)
-    })
-    
-    output$subcluster_contribution = renderPlot({
-      sub_meta = meta[meta$cluster == input$subcluster_choice,]
-      tab = table(sub_meta$cluster.sub, sub_meta$stage)
-      fractions = sweep(tab, 1, rowSums(tab), "/")
-      frac_nomixed = fractions[,colnames(fractions)!="mixed_gastrulation"]
-      means = apply(frac_nomixed, 1, function(x) sum(x * 1:length(x)))
-      
-      melt = melt(fractions)
-      
-      palette = c(brewer_pal(palette = "Spectral")(length(unique(meta$stage))-1), "darkgrey")
-      names(palette) = unique(meta$stage)[order(unique(meta$stage))]
-      
-      plot = ggplot(melt, aes(x = factor(Var1, levels = names(means)[order(means)]), y = value, fill = Var2)) +
-        geom_bar(stat = "identity") +
-        labs(x = "Cluster", y = "Fraction of cells") +
-        theme_bw() +
-        scale_fill_manual(values = palette, name = "")      
-      return(plot)
-    })
-    
-    output$subcluster_genes = renderPlot({
-      if(input$coord == "tsne"){
-        coords = tsnes_sub[[as.character(input$subcluster_choice)]]
-      } else {
-        coords = layouts_sub[[as.character(input$subcluster_choice)]]
-      }
-      
-      expr = as.vector(link[,match(as.character(input$subcluster_gene), as.character(genes[,2]))])
-      expr = expr[meta$cluster == input$subcluster_choice]
-
-      pdf = data.frame(x = coords[,1], y = coords[,2], col = expr)
-      rand = sample(nrow(pdf), nrow(pdf))
-      pdf = pdf[rand,]
-      
-      p = ggplot(pdf, aes(x = x, y= y, col = col)) +
-        geom_point(size = 1) +
-        scale_color_gradient2(name = "Log2\ncounts", mid = "cornflowerblue", low = "gray75", high = "black", midpoint = max(expr)/2) +
-        ggtitle(paste("Cluster", input$subcluster_choice)) +
-        theme_bw()   
-      
-      return(p)
-    })
-    
-    output$subcluster_violin = renderPlot({
-      expr = as.vector(link[,match(as.character(input$subcluster_gene), as.character(genes[,2]))])
-      expr = expr[meta$cluster == input$subcluster_choice]
-      
-      pdf = data.frame(expr = expr, clust = meta$cluster.sub[meta$cluster == input$subcluster_choice])
-      
-      p = ggplot(pdf, aes(x = clust, y= expr, fill = factor(clust))) +
-        geom_violin(scale = "width") +
-        ggtitle(paste("Cluster", input$subcluster_choice)) +
-        theme_bw() +
-        scale_fill_Publication()
-      
-      return(p)
-    })
-    
-    output$subcluster_markers = renderTable({
-      clust = input$subcluster_choice
-      subclust = input$subcluster_marker_choice
-      
-      tab = markers_sub[[as.character(clust)]][[as.character(subclust)]]
-      tab = tab[order(tab$IUT.p),]
-      genes_mark = genes[match(rownames(tab), genes[,1]), 2]
-      return(data.frame(genes = genes_mark, p.unadj = tab[,1])[1:input$n.genes,])
-    })
     
   }
 )
