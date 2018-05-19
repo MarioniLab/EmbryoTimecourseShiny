@@ -365,7 +365,7 @@ shinyServer(
       plot = ggplot(pdf, aes(x = factor(cluster, levels = unique(cluster[order(cluster)])), 
                              y = count, 
                              fill = factor(cluster, levels = unique(cluster[order(cluster)])))) +
-        geom_violin(scale = "width")
+        geom_violin(scale = "width") +
         scale_fill_Publication(name = paste(input$gene, input$colourby, sep = ", ")) +
         labs(x = "Cluster number", y = "Log2 count") + 
         ggtitle(paste(input$gene, "-", input$stage)) +
@@ -406,7 +406,7 @@ shinyServer(
       
       p = ggplot(as.data.frame(coords)[order,], aes(x = V1, y = V2, col = (meta$cluster.ann == input$celltype)[order])) +
         geom_point() +
-        scale_color_manual(values = c("TRUE" = "navy", "FALSE" = "darkgrey"))
+        scale_color_manual(values = c("TRUE" = "navy", "FALSE" = "darkgrey")) +
         theme(legend.position = "none")
       return(p)
     })
