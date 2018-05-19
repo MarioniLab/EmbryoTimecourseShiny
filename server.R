@@ -184,10 +184,6 @@ load("data_mini.RData")
 
 shinyServer(
   function(input, output){
-    #### HELPFUL BITS
-    run = reactive({return(input$password == "gastrulationisgreat")})
-    dummy_plot = ggplot(mapping = aes(x = 1:2, y = 1:2)) + annotate("text", x = 1.5, y= 1.5, label = "password locked")
-    
     #### FUNCTIONS TO GET DATA
     
     get_meta = reactive({
@@ -216,7 +212,7 @@ shinyServer(
     
     get_clusters = reactive({
       meta = get_meta()
-      method = ifelse(grepl("cluster", input$colourby), input$colourby, "cluster")
+      method = ifelse(grepl("cluster", input$colourby), input$colourby, "cluster.ann")
       return(meta[, method])
     })
     
@@ -252,9 +248,6 @@ shinyServer(
     #### OVERALL VIS
     
     output$data = output$data_dummy = renderPlot({
-      if(!run()){
-        return(dummy_plot)
-      }
       
       
       unq = as.character(unique(get_meta()[, input$colourby]))
@@ -278,8 +271,7 @@ shinyServer(
         scale_colour_Publication(name = input$colourby, drop = FALSE) +
         ggtitle(input$stage) +
         guides(colour = guide_legend(override.aes = list(size=10, 
-                                                         alpha = 1))) +
-        theme_bw()
+                                                         alpha = 1)))
       
       if(input$numbers){
         plot = plot + geom_label(data = get_cluster_centroids(), 
@@ -307,9 +299,7 @@ shinyServer(
     })
     
     output$stage_contribution = renderPlot({
-        if(!run()){
-          return(dummy_plot)
-        }
+
         
         tab = table(get_clusters(), get_meta()$stage)
         fractions = sweep(tab, 1, rowSums(tab), "/")
@@ -324,7 +314,6 @@ shinyServer(
         plot = ggplot(melt, aes(x = factor(Var1, levels = names(means)[order(means)]), y = value, fill = Var2)) +
           geom_bar(stat = "identity") +
           labs(x = "Cluster", y = "Fraction of cells") +
-          theme_bw() +
           scale_fill_manual(values = palette, name= "") +
           theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust =1))
         
@@ -338,9 +327,6 @@ shinyServer(
     
     output$gene = renderPlot({
       
-      if(!run()){
-        return(dummy_plot)
-      }
       
       dat = get_coord()
       count = as.vector(get_count())
@@ -356,18 +342,14 @@ shinyServer(
                     mapping = aes(x = X, y = Y, col = count[allowed])) +
         geom_point(size = 1) +
         scale_color_gradient2(name = "Log2\ncounts", mid = "cornflowerblue", low = "gray75", high = "black", midpoint = max(count)/2) +
-        ggtitle(paste(input$stage, input$gene, sep = ", ")) +
-        theme_bw()
+        ggtitle(paste(input$stage, input$gene, sep = ", "))
 
       return(plot)
 
     })
     
     output$gene_violin = renderPlot({
-      
-      if(!run()){
-        return(dummy_plot)
-      }
+
       
       pdf = data.frame(count = get_count(), cluster = get_clusters())
       
@@ -383,14 +365,14 @@ shinyServer(
       plot = ggplot(pdf, aes(x = factor(cluster, levels = unique(cluster[order(cluster)])), 
                              y = count, 
                              fill = factor(cluster, levels = unique(cluster[order(cluster)])))) +
-        geom_violin(scale = "width") +
-        theme_bw() +
+        geom_violin(scale = "width")
         scale_fill_Publication(name = paste(input$gene, input$colourby, sep = ", ")) +
         labs(x = "Cluster number", y = "Log2 count") + 
-        ggtitle(as.character(names[ifelse(grepl("cluster", input$colourby), input$colourby, "cluster")])) +
+        ggtitle(paste(input$gene, "-", input$stage)) +
         theme(axis.title = element_text(face = "bold", size = 12),
-              axis.text = element_text(size = 10),
-              legend.position = "none") +
+              axis.text = element_text(size = 12, face = "bold"),
+              legend.position = "none",
+              axis.title.x = element_blank()) +
         annotate("text", 
                  x = factor(names(clust.sizes)), 
                  y = rep(c(max(get_count())*1.05, max(get_count()) * 1.1), 
@@ -424,8 +406,7 @@ shinyServer(
       
       p = ggplot(as.data.frame(coords)[order,], aes(x = V1, y = V2, col = (meta$cluster.ann == input$celltype)[order])) +
         geom_point() +
-        scale_color_manual(values = c("TRUE" = "navy", "FALSE" = "darkgrey")) +
-        theme_bw() +
+        scale_color_manual(values = c("TRUE" = "navy", "FALSE" = "darkgrey"))
         theme(legend.position = "none")
       return(p)
     })

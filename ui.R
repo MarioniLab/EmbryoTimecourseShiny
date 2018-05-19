@@ -10,7 +10,6 @@ fluidPage(
     sidebarPanel(
       absolutePanel(
         #SIDEBAR INPUTS
-        textInput("password", "Password", value = "replace me"),
         selectInput("stage", "Stage to plot", choices = c(sort(c(as.character(unique(meta$stage)), as.character(unique(meta$theiler)), "all"))), selected = "all"),
         selectInput("colourby", "Colour plot", choices = c("Cell type" = "cluster.ann",
                                                            "Top level cluster" = "cluster",
@@ -38,6 +37,13 @@ fluidPage(
     mainPanel(
       #put plots here
       tabsetPanel(
+        tabPanel("Landing page",
+                 h5("This is the accompanying server for the paper XXXXXX. There are three tabs, above:"),
+                 h5("Dataset overview: this shows the t-SNE from Figure 1, with customisable colouring."),
+                 h5("Gene interrogation: this may be used to assay gene expression information from the data. Use the gene dropdown on the left sidebar."),
+                 h5("Cell-type markers: This lists the genes that are highly expressed in one cell-type more than any other."),
+                 h5("To report any issues please contact jag216 {at} cam.ac.uk.")
+        ),
         tabPanel("Dataset overview",
                  plotOutput("data", height = "800px"),
                  plotOutput("stage_contribution")
