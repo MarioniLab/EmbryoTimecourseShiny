@@ -180,7 +180,7 @@ subsetPointsByGrid <- function(X, Y, resolution=200, seed = 42) {
 link = HDF5Array(file = "counts.hdf5", name = "logcounts")
 
 load("data_mini.RData")
-
+endo_meta = readRDS("endo_meta.rds")
 
 shinyServer(
   function(input, output){
@@ -411,6 +411,125 @@ shinyServer(
       return(p)
     })
     
+    # ENDODERM PLOTS
+    get_endo_count = reactive({
+      return(link[meta$cell %in% endo_meta$cell,
+                  match(as.character(input$gene), as.character(genes[,2]))])
+    })
+    
+    output$endo_pc1 = renderPlot({
+      pdf = data.frame(X = endo_meta$all_PC1,
+                       Y = endo_meta$all_PC2,
+                       expr = get_endo_count())
+      
+      pdf = pdf[order(pdf$expr),]
+      
+      p = ggplot(pdf, aes(x = X, y = Y, col = expr)) +
+        geom_point(size = 2) +
+        scale_color_gradient2(name = "Log2\ncounts", mid = "cornflowerblue", low = "gray75", high = "black", midpoint = max(pdf$expr)/2) +
+        ggtitle(input$gene) +
+        labs(x = "PC1", y = "PC2")
+      
+      return(p)
+      
+    })
+    
+    output$endo_pc3 = renderPlot({
+      pdf = data.frame(X = endo_meta$all_PC3,
+                       Y = endo_meta$all_PC2,
+                       expr = get_endo_count())
+      
+      pdf = pdf[order(pdf$expr),]
+      
+      
+      p = ggplot(pdf, aes(x = X, y = Y, col = expr)) +
+        geom_point(size = 2) +
+        scale_color_gradient2(name = "Log2\ncounts", mid = "cornflowerblue", low = "gray75", high = "black", midpoint = max(pdf$expr)/2) +
+        ggtitle(input$gene) +
+        labs(x = "PC1", y = "PC2")
+      
+      return(p)
+      
+    })
+    
+    gut_clust_cols = c("Immature gut" = "black", "Pharyngeal endoderm" = "gray", "Foregut" = "#D7191C", "Midgut" = "#FDAE61", "Hind/midgut" = "#ABDDA4", "Hindgut" = "#2B83BA")
+
+    
+    output$endo_late_ref = renderPlot({
+      pdf = endo_meta
+      pdf = pdf[!is.na(endo_meta$late_DC1),]
+      
+      p = ggplot(pdf, aes(x = late_DC1, y = late_DC2, col = gut_cluster)) +
+        geom_point(size = 2) +
+        scale_colour_manual(values = gut_clust_cols, 
+                            name = "Cluster") +
+        ggtitle("TS12 endoderm cells") +
+        labs(x = "DC1", y = "DC2") +
+        guides(colour = guide_legend(override.aes = list(size=10, 
+                                                         alpha = 1)))
+      
+      return(p)
+    })
+    
+    output$endo_late_gene = renderPlot({
+      pdf = data.frame(X = endo_meta$late_DC1,
+                       Y = endo_meta$late_DC2,
+                       expr = get_endo_count())
+      pdf = pdf[!is.na(endo_meta$late_DC1),]
+      
+      pdf = pdf[order(pdf$expr),]
+      
+      
+      p = ggplot(pdf, aes(x = X, y = Y, col = expr)) +
+        geom_point(size = 2) +
+        scale_color_gradient2(name = "Log2\ncounts", mid = "cornflowerblue", low = "gray75", high = "black", midpoint = max(pdf$expr)/2) +
+        ggtitle(input$gene) +
+        labs(x = "DC1", y = "DC2")
+      
+      return(p)
+    })
+    
+    output$endo_gut_axis = renderPlot({
+      pdf = endo_meta
+      pdf = pdf[!is.na(endo_meta$late_DC1),]
+      
+      p = ggplot(pdf, aes(x = gut_DC1, fill = gut_cluster)) +
+        geom_density(alpha = 0.5) +
+        scale_fill_manual(values = gut_clust_cols, 
+                            name = "Cluster") +
+        ggtitle("Embryonic gut axis") +
+        labs(x = "DC1", y = "Density")
+      
+      return(p)
+    })
+    
+    output$endo_gut_gene = renderPlot({
+      pdf = data.frame(X = endo_meta$gut_DC1,
+                       expr = get_endo_count())
+      pdf = pdf[!is.na(endo_meta$gut_DC1),]
+      
+      p = ggplot(pdf, aes(x = X, y = expr)) +
+        geom_point(size = 1, col = "darkgrey") +
+        geom_smooth(se = FALSE, method = "loess", col = "black") +
+        ggtitle(input$gene) +
+        labs(x = "DC1", y = "log2 count")
+      
+      return(p)
+    })
+    
+    output$endo_traj_gene = renderPlot({
+      pdf = data.frame(X = endo_meta$ve_hind_dpt,
+                       expr = get_endo_count())
+      pdf = pdf[!is.na(endo_meta$ve_hind_dpt),]
+      
+      p = ggplot(pdf, aes(x = X, y = expr)) +
+        geom_point(size = 1, col = "darkgrey") +
+        geom_smooth(se = FALSE, method = "loess", col = "black") +
+        ggtitle(input$gene) +
+        labs(x = "VE-Hindgut DPT", y = "log2 count")
+      
+      return(p)
+    })
     
   }
 )

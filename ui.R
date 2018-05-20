@@ -22,7 +22,7 @@ fluidPage(
                     selected = "cluster.ann"),
         checkboxInput("numbers", "Annotate clusters in plot"),
 
-        selectizeInput("gene", "Gene", choices = genes[,2], selected = "Hbb-bh1"),
+        selectizeInput("gene", "Gene", choices = genes[,2], selected = "Ttr"),
 
         numericInput("n.genes", "Number of DE genes", value = 20),
         checkboxInput("subset", "Subset cells (speed benefit)"),
@@ -63,6 +63,23 @@ fluidPage(
                      tableOutput("celltype_markers")
                    )
                  )
+                 ),
+        tabPanel("Endoderm analysis",
+                 h3("These plots are interactive versions of visualisations that were present in the paper."),
+                 h4("Principal components for all considered endoderm cells (i.e. embryonic + visceral) are shown."),
+                 fluidRow(
+                   splitLayout(cellWidths = c("50%", "50%"), plotOutput("endo_pc1"), plotOutput("endo_pc3"))
+                 ),
+                 h4("Diffusion components for E8.0-E8.5 endoderm cells are shown."),
+                 fluidRow(
+                   splitLayout(cellWidths = c("50%", "50%"), plotOutput("endo_late_ref"), plotOutput("endo_late_gene"))
+                 ),
+                 h4("The axis of the embryonic gut is shown."),
+                 fluidRow(
+                   splitLayout(cellWidths = c("50%", "50%"), plotOutput("endo_gut_axis"), plotOutput("endo_gut_gene"))
+                 ),
+                 h4("The pseudotime trajectory for Visceral Endoderm to Hindgut cells is shown."),
+                 plotOutput("endo_traj_gene", width = "50%")
                  )
 
       )
