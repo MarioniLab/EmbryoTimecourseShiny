@@ -10,13 +10,13 @@ fluidPage(
     sidebarPanel(
       absolutePanel(
         #SIDEBAR INPUTS
-        selectInput("stage", "Stage to plot", choices = c(sort(c(as.character(unique(meta$stage)), as.character(unique(meta$theiler)), "all"))), selected = "all"),
-        selectInput("colourby", "Colour plot", choices = c("Cell type" = "cluster.ann",
+        selectInput("stage", "Subset to plot", choices = c(sort(c(as.character(unique(meta$stage)), as.character(unique(meta$theiler)), "all"))), selected = "all"),
+        selectInput("colourby", "Plot colours", choices = c("Cell type" = "cluster.ann",
                                                            "Top level cluster" = "cluster",
                                                            "Timepoint" = "stage",
                                                            "Theiler stage" = "theiler",
                                                            "Sample" = "sample",
-                                                           "Stage (Ex.x) cluster" = "cluster.stage",
+                                                           "Timepoint cluster" = "cluster.stage",
                                                            "Theiler cluster" = "cluster.theiler"
                                                            ),
                     selected = "cluster.ann"),
@@ -38,11 +38,21 @@ fluidPage(
       #put plots here
       tabsetPanel(
         tabPanel("Landing page",
-                 h5("This is the accompanying server for the paper XXXXXX. There are three tabs, above:"),
+                 h5("This is the accompanying server for the paper XXXXXX."),
+                 h3("Tabs:"),
                  h5("Dataset overview: this shows the t-SNE from Figure 1, with customisable colouring."),
-                 h5("Gene interrogation: this may be used to assay gene expression information from the data. Use the gene dropdown on the left sidebar."),
-                 h5("Cell-type markers: This lists the genes that are highly expressed in one cell-type more than any other."),
-                 h5("To report any issues please contact jag216 {at} cam.ac.uk.")
+                 h5("Gene interrogation: this may be used to assay gene expression information from the data."),
+                 h5("Cell-type markers: This lists the genes that are more highly expressed in one cell-type more than any other."),
+                 h5("Endoderm Analysis: This shows plots from the endoderm analysis (Fig 2)"),
+                 h3("Options:"),
+                 h5("Subset to plot: Choose the set of cells you would like to visualise."),
+                 h5("Plot colours: Choose the method to colour the overview t-SNEs. Most options are straightforward; we have also included clusters calculated per timepoint or per Theiler stage if one timepoint only is of interest."),
+                 h5("Annotate clusters: This will annotate clusters on the plot for easier comparison to violin plots."),
+                 h5("Gene: Select a gene for expression analyses"),
+                 h5("Number of DE genes: Controls the size of the table for the Marker tab"),
+                 h5("Subset + Subsetting severity: These options may enhance the speed of plotting, as cells are excluded in a density-dependent manner."),
+                 h3("Other:"),
+                 h5("To report any issues please contact Jonny at jag216 {at} cam.ac.uk, or John at marioni {at} ebi.ac.uk.")
         ),
         tabPanel("Dataset overview",
                  plotOutput("data", height = "800px"),

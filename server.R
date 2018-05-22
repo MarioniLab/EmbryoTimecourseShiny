@@ -231,8 +231,10 @@ shinyServer(
     
     get_count = reactive({
       
-      return(link[meta$cell %in% get_meta()$cell,
-                  match(as.character(input$gene), as.character(genes[,2]))])
+      #get the gene count into memory
+      count = as.numeric(link[,match(as.character(input$gene), as.character(genes[,2]))])
+      #subsetting is much quicker now
+      return(count[meta$cell %in% get_meta()$cell])
       
     })
     
@@ -259,7 +261,7 @@ shinyServer(
       }
       allowed = get_subset()
       #scramble, and subset if asked
-      new_order = sample(allowed, length(allowed))
+      new_order = sample(length(allowed), length(allowed))
       
       plot = ggplot(data = get_coord()[new_order,], 
                     mapping = aes(x = X, 
@@ -366,7 +368,7 @@ shinyServer(
                              y = count, 
                              fill = factor(cluster, levels = unique(cluster[order(cluster)])))) +
         geom_violin(scale = "width") +
-        scale_fill_Publication(name = paste(input$gene, input$colourby, sep = ", ")) +
+        scale_fill_manual(values = celltype_colours, name = paste(input$gene, input$colourby, sep = ", ")) +
         labs(x = "Cluster number", y = "Log2 count") + 
         ggtitle(paste(input$gene, "-", input$stage)) +
         theme(axis.title = element_text(face = "bold", size = 12),
@@ -413,8 +415,10 @@ shinyServer(
     
     # ENDODERM PLOTS
     get_endo_count = reactive({
-      return(link[meta$cell %in% endo_meta$cell,
-                  match(as.character(input$gene), as.character(genes[,2]))])
+      #get the gene count into memory
+      count = as.numeric(link[,match(as.character(input$gene), as.character(genes[,2]))])
+      #subsetting is much quicker now
+      return(count[meta$cell %in% endo_meta$cell])
     })
     
     output$endo_pc1 = renderPlot({
@@ -447,9 +451,10 @@ shinyServer(
         scale_color_gradient2(name = "Log2\ncounts", mid = "cornflowerblue", low = "gray75", high = "black", midpoint = max(pdf$expr)/2) +
         ggtitle(input$gene) +
         labs(x = "PC1", y = "PC2")
-      
+
+      # plot(x = pdf$X, y = pdf$Y)
+    
       return(p)
-      
     })
     
     gut_clust_cols = c("Immature gut" = "black", "Pharyngeal endoderm" = "gray", "Foregut" = "#D7191C", "Midgut" = "#FDAE61", "Hind/midgut" = "#ABDDA4", "Hindgut" = "#2B83BA")
@@ -491,7 +496,7 @@ shinyServer(
     
     output$endo_gut_axis = renderPlot({
       pdf = endo_meta
-      pdf = pdf[!is.na(endo_meta$late_DC1),]
+      pdf = pdf[!is.na(endo_meta$gut_DC1),]
       
       p = ggplot(pdf, aes(x = gut_DC1, fill = gut_cluster)) +
         geom_density(alpha = 0.5) +
