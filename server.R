@@ -1,7 +1,6 @@
 library(shiny)
 library(ggplot2)
 library(HDF5Array)
-library(viridis)
 library(reshape2)
 library(cowplot)
 # CLUSTER TYPES
