@@ -46,7 +46,7 @@ fluidPage(
                  h5("Endoderm Analysis: This shows plots from the endoderm analysis (Fig 2)"),
                  h3("Options:"),
                  h5("Subset to plot: Choose the set of cells you would like to visualise."),
-                 h5("Plot colours: Choose the method to colour the overview t-SNEs. Most options are straightforward; we have also included clusters calculated per timepoint or per Theiler stage if one timepoint only is of interest."),
+                 h5("Plot colours: Choose the method to colour the overview t-SNEs. Most options are straightforward; we have also included clusters calculated per timepoint or per Theiler stage if one timepoint only is of interest. Please note that these will not make sense if you visualise more than one timepoint or theiler stage."),
                  h5("Annotate clusters: This will annotate clusters on the plot for easier comparison to violin plots."),
                  h5("Gene: Select a gene for expression analyses"),
                  h5("Number of DE genes: Controls the size of the table for the Marker tab"),
@@ -90,7 +90,10 @@ fluidPage(
                  ),
                  h4("The pseudotime trajectory for Visceral Endoderm to Hindgut cells is shown."),
                  plotOutput("endo_traj_gene", width = "50%")
-                 )
+                 ),
+        tabPanel("Haematoendothelium",
+                 plotOutput("haem_clusters"),
+                 plotOutput("haem_gene"))
 
       )
     )

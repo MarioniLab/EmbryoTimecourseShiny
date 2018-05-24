@@ -75,28 +75,28 @@ names(all_colours) = 1:length(all_colours)
 
 celltype_colours = c(
   "Epiblast"	= "#683612",
-  "PS/mesendoderm"	= "#DABE99",
+  "Primitive Streak"	= "#DABE99", #was PS/mesendoderm
   "PGC"	= "#FACB12",
   "Early mixed mesoderm"	= "#C594BF",
-  "Early ExE mesoderm"	= "#DFCDE4",
+  "Early posterior mesoderm"	= "#DFCDE4",#was Early ExE mesoderm
   "ExE mesoderm"	= "#7253A2",
   "Allantois"	= "#532C8A",
   "Endothelium"	= "#B3793B",
-  "Hemato-endothelial progenitors"	= "#FBBE92",
+  "Haemato-endothelial progenitors"	= "#FBBE92",#was Hemato-
   "Erythroid 1"	= "#C72228",
   "Erythroid 2"	= "#EF4E22",
   "Cardiac mesenchyme"	= "#F7901D",
   "Cardiomyocytes"	= "#B51D8D",
   "Early paraxial mesoderm"	= "#3F84AA",
-  "Late mixed mesoderm"	= "#C9EBFB",#pharyngeal mesoderm?
+  "Pharyngeal mesoderm"	= "#C9EBFB",#was "Late mixed mesoderm
   "Intermediate mesoderm"	= "#139992",
-  "Late parax. mesoderm"	= "#8DB5CE",
+  "Late paraxial mesoderm"	= "#8DB5CE", #was Late parax. mesoderm
   "Somites"	= "#005579",
   "Early neurectoderm"	= "#A0CC47",
   "Forebrain"	= "#65A83E",
   "Midbrain/Hindbrain"	= "#354E23",
-  "Pre-migratory neural crest"	= "#C3C388",#Cranial Neural Crest?
-  "Neural crest"	= "#77783C",#Trunk Neural Crest?
+  "Cranial neural crest"	= "#C3C388",#was Pre-migratory Neural Crest?
+  "Trunk neural crest"	= "#77783C",#was Neural crest
   "Placodes"	= "#BBDCA8",
   "NMP"	= "#8EC792",
   "Spinal cord"	= "#CDE088",
@@ -110,7 +110,6 @@ celltype_colours = c(
   "ExE endoderm"	= "#7F6874",
   "ExE ectoderm 1"	= "#989898",
   "ExE ectoderm 2"	= "#333333")
-
 
 scale_colour_Publication <- function(...){
   library(scales)
@@ -180,6 +179,7 @@ link = HDF5Array(file = "counts.hdf5", name = "logcounts")
 
 load("data_mini.RData")
 endo_meta = readRDS("endo_meta.rds")
+haem_meta = readRDS("haem_meta.rds")
 
 shinyServer(
   function(input, output){
@@ -271,7 +271,7 @@ shinyServer(
                    alpha = 0.9) +
         scale_colour_Publication(name = input$colourby, drop = FALSE) +
         ggtitle(input$stage) +
-        guides(colour = guide_legend(override.aes = list(size=10, 
+        guides(colour = guide_legend(override.aes = list(size=9, 
                                                          alpha = 1)))
       
       if(input$numbers){
@@ -414,9 +414,7 @@ shinyServer(
     
     # ENDODERM PLOTS
     get_endo_count = reactive({
-      #get the gene count into memory
-      count = as.numeric(link[,match(as.character(input$gene), as.character(genes[,2]))])
-      #subsetting is much quicker now
+      count = get_count()
       return(count[meta$cell %in% endo_meta$cell])
     })
     
@@ -535,5 +533,54 @@ shinyServer(
       return(p)
     })
     
+    # ENDOTHELIUM PLOTS
+    
+    haem_colours <- c(
+      'D' = '#00264d',
+      'G'= '#cc6600',
+      'C'= '#3377ff',
+      'B'= "#cce6ff",
+      'A'="#ff8000",
+      'F'= "#ffff00",
+      'E' = "#ffd11a",
+      'I'= "#b3b300",
+      'L'="#ff4da6",
+      'K'="#ffbf80",
+      'J'="#996633",
+      'H'="#009900"
+      
+    )
+    
+    get_haem_count = reactive({
+      count = get_count()
+      return(count[meta$cell %in% haem_meta$cell])
+    })
+    
+    output$haem_clusters = renderPlot({
+      pdf = haem_meta
+      pdf = pdf[sample(nrow(pdf), nrow(pdf)),]
+      
+      p = ggplot(pdf, aes(x = -haem.X, y = haem.Y, col = haem.clust)) +
+        geom_point(size = 1) +
+        scale_color_manual(values = c(celltype_colours, haem_colours), name = "Cluster") +
+        guides(colour = guide_legend(override.aes = list(size=9, 
+                                                         alpha = 1))) +
+        theme(axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), axis.line = element_blank())
+      
+      return(p)
+    })
+    
+    output$haem_gene = renderPlot({
+      pdf = haem_meta
+      pdf$expr = get_haem_count()
+      pdf = pdf[order(pdf$expr),]
+      
+      p = ggplot(pdf, aes(x = -haem.X, y = haem.Y, col = expr)) +
+        geom_point(size = 1) +
+        scale_color_gradient2(name = "Log2\ncounts", mid = "cornflowerblue", low = "gray75", high = "black", midpoint = max(pdf$expr)/2) +
+        theme(axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), axis.line = element_blank())
+      
+      return(p)
+    })
   }
 )
