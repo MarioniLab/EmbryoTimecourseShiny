@@ -4,6 +4,13 @@ library(ggplot2)
 genes = readRDS("genes.rds")
 meta = readRDS("meta.rds")
 
+big_plot_width = "900px"
+big_plot_height = "500px"
+
+narrower_plot_width = "650px"
+
+half_plot_width = "450px"
+half_plot_height = "300px"
 
 fluidPage(
   sidebarLayout(
@@ -30,9 +37,9 @@ fluidPage(
         fixed = TRUE,
         left = "2%",
         top = "2%",
-        width = "20%"
+        width = paste0(20*2/3, "%")
       ),
-      width = 3
+      width = 2
     ),
     mainPanel(
       #put plots here
@@ -55,13 +62,13 @@ fluidPage(
                  h5("To report any issues please contact Jonny at jag216 {at} cam.ac.uk, or John at marioni {at} ebi.ac.uk.")
         ),
         tabPanel("Dataset overview",
-                 plotOutput("data", height = "800px"),
-                 plotOutput("stage_contribution")
+                 plotOutput("data", width = big_plot_width, height = big_plot_height),
+                 plotOutput("stage_contribution", width = big_plot_width)
         ),
         tabPanel("Gene interrogation",
-                 plotOutput("data_dummy", height = "500px"), #second binding of data plot needed here
-                 plotOutput("gene", height = "500px"),
-                 plotOutput("gene_violin")
+                 plotOutput("data_dummy", width = big_plot_width, height = big_plot_height), #second binding of data plot needed here
+                 plotOutput("gene", width = narrower_plot_width, height = big_plot_height),
+                 plotOutput("gene_violin", width = big_plot_width)
         ),
         tabPanel("Cell-type markers",
                  sidebarLayout(
@@ -69,7 +76,7 @@ fluidPage(
                      selectInput("celltype", "Cell type", unique(meta$cluster.ann))
                    ),
                    mainPanel(
-                     plotOutput("celltype_presence_plot", height = "300px", width = "300px"),
+                     plotOutput("celltype_presence_plot", height = half_plot_height, width = half_plot_height),
                      tableOutput("celltype_markers")
                    )
                  )
@@ -78,22 +85,28 @@ fluidPage(
                  h3("These plots are interactive versions of visualisations that were present in the paper."),
                  h4("Principal components for all considered endoderm cells (i.e. embryonic + visceral) are shown."),
                  fluidRow(
-                   splitLayout(cellWidths = c("50%", "50%"), plotOutput("endo_pc1"), plotOutput("endo_pc3"))
+                   splitLayout(cellWidths = c("50%", "50%"), 
+                               plotOutput("endo_pc1", width = half_plot_width, height = half_plot_height), 
+                               plotOutput("endo_pc3", width = half_plot_width, height = half_plot_height))
                  ),
                  h4("Diffusion components for E8.0-E8.5 endoderm cells are shown."),
                  fluidRow(
-                   splitLayout(cellWidths = c("50%", "50%"), plotOutput("endo_late_ref"), plotOutput("endo_late_gene"))
+                   splitLayout(cellWidths = c("50%", "50%"), 
+                               plotOutput("endo_late_ref", width = half_plot_width, height = half_plot_height), 
+                               plotOutput("endo_late_gene", width = half_plot_width, height = half_plot_height))
                  ),
                  h4("The axis of the embryonic gut is shown."),
                  fluidRow(
-                   splitLayout(cellWidths = c("50%", "50%"), plotOutput("endo_gut_axis"), plotOutput("endo_gut_gene"))
+                   splitLayout(cellWidths = c("50%", "50%"), 
+                               plotOutput("endo_gut_axis", width = half_plot_width, height = half_plot_height), 
+                               plotOutput("endo_gut_gene", width = half_plot_width, height = half_plot_height))
                  ),
                  h4("The pseudotime trajectory for Visceral Endoderm to Hindgut cells is shown."),
-                 plotOutput("endo_traj_gene", width = "50%")
+                 plotOutput("endo_traj_gene", width = half_plot_width, height = half_plot_height)
                  ),
         tabPanel("Haematoendothelium",
-                 plotOutput("haem_clusters"),
-                 plotOutput("haem_gene"))
+                 plotOutput("haem_clusters", width = big_plot_width, height = big_plot_height),
+                 plotOutput("haem_gene", width = big_plot_width, height = big_plot_height))
 
       )
     )

@@ -272,7 +272,8 @@ shinyServer(
         scale_colour_Publication(name = input$colourby, drop = FALSE) +
         ggtitle(input$stage) +
         guides(colour = guide_legend(override.aes = list(size=9, 
-                                                         alpha = 1)))
+                                                         alpha = 1))) +
+        theme(axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), axis.line = element_blank())
       
       if(input$numbers){
         plot = plot + geom_label(data = get_cluster_centroids(), 
@@ -343,7 +344,8 @@ shinyServer(
                     mapping = aes(x = X, y = Y, col = count[allowed])) +
         geom_point(size = 1) +
         scale_color_gradient2(name = "Log2\ncounts", mid = "cornflowerblue", low = "gray75", high = "black", midpoint = max(count)/2) +
-        ggtitle(paste(input$stage, input$gene, sep = ", "))
+        ggtitle(paste0(input$stage, " cells, ", input$gene)) +
+        theme(axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), axis.line = element_blank())
 
       return(plot)
 
@@ -369,7 +371,7 @@ shinyServer(
         geom_violin(scale = "width") +
         scale_fill_manual(values = celltype_colours, name = paste(input$gene, input$colourby, sep = ", ")) +
         labs(x = "Cluster number", y = "Log2 count") + 
-        ggtitle(paste(input$gene, "-", input$stage)) +
+        ggtitle(paste(input$gene, "-", input$stage, "cells")) +
         theme(axis.title = element_text(face = "bold", size = 12),
               axis.text = element_text(size = 12, face = "bold"),
               legend.position = "none",
