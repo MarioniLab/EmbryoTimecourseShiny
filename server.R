@@ -246,6 +246,7 @@ shinyServer(
       }
     })
     
+    
     #### OVERALL VIS
     
     output$data = output$data_dummy = renderPlot({
@@ -416,7 +417,7 @@ shinyServer(
     
     # ENDODERM PLOTS
     get_endo_count = reactive({
-      count = get_count()
+      count = as.numeric(link[,match(as.character(input$gene), as.character(genes[,2]))])
       return(count[meta$cell %in% endo_meta$cell])
     })
     
@@ -554,7 +555,7 @@ shinyServer(
     )
     
     get_haem_count = reactive({
-      count = get_count()
+      count = as.numeric(link[,match(as.character(input$gene), as.character(genes[,2]))])
       return(count[meta$cell %in% haem_meta$cell])
     })
     

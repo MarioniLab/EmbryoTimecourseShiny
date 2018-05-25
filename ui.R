@@ -16,9 +16,10 @@ fluidPage(
   sidebarLayout(
     sidebarPanel(
       absolutePanel(
+        h3("Plot options"),
         #SIDEBAR INPUTS
-        selectInput("stage", "Subset to plot", choices = c(sort(c(as.character(unique(meta$stage)), as.character(unique(meta$theiler)), "all"))), selected = "all"),
-        selectInput("colourby", "Plot colours", choices = c("Cell type" = "cluster.ann",
+        selectInput("stage", "Cell subset", choices = c(sort(c(as.character(unique(meta$stage)), as.character(unique(meta$theiler)), "all"))), selected = "all"),
+        selectInput("colourby", "Plot colour", choices = c("Cell type" = "cluster.ann",
                                                            "Top level cluster" = "cluster",
                                                            "Timepoint" = "stage",
                                                            "Theiler stage" = "theiler",
@@ -28,11 +29,8 @@ fluidPage(
                                                            ),
                     selected = "cluster.ann"),
         checkboxInput("numbers", "Annotate clusters in plot"),
-
         selectizeInput("gene", "Gene", choices = genes[,2], selected = "Ttr"),
-
-        numericInput("n.genes", "Number of DE genes", value = 20),
-        checkboxInput("subset", "Subset cells (speed benefit)"),
+        checkboxInput("subset", "Subset cells"),
         selectInput("subset_degree", label = "Subsetting severity", choices = c("Low" = 200, "High" = 100)),
         fixed = TRUE,
         left = "2%",
@@ -42,24 +40,56 @@ fluidPage(
       width = 2
     ),
     mainPanel(
+      titlePanel("A single-cell resolution molecular roadmap from mouse gastrulation to early organogenesis."),
+      
       #put plots here
       tabsetPanel(
         tabPanel("Landing page",
-                 h5("This is the accompanying server for the paper XXXXXX."),
-                 h3("Tabs:"),
-                 h5("Dataset overview: this shows the t-SNE from Figure 1, with customisable colouring."),
-                 h5("Gene interrogation: this may be used to assay gene expression information from the data."),
-                 h5("Cell-type markers: This lists the genes that are more highly expressed in one cell-type more than any other."),
-                 h5("Endoderm Analysis: This shows plots from the endoderm analysis (Fig 2)"),
-                 h3("Options:"),
-                 h5("Subset to plot: Choose the set of cells you would like to visualise."),
-                 h5("Plot colours: Choose the method to colour the overview t-SNEs. Most options are straightforward; we have also included clusters calculated per timepoint or per Theiler stage if one timepoint only is of interest. Please note that these will not make sense if you visualise more than one timepoint or theiler stage."),
-                 h5("Annotate clusters: This will annotate clusters on the plot for easier comparison to violin plots."),
-                 h5("Gene: Select a gene for expression analyses"),
-                 h5("Number of DE genes: Controls the size of the table for the Marker tab"),
-                 h5("Subset + Subsetting severity: These options may enhance the speed of plotting, as cells are excluded in a density-dependent manner."),
-                 h3("Other:"),
-                 h5("To report any issues please contact Jonny at jag216 {at} cam.ac.uk, or John at marioni {at} ebi.ac.uk.")
+                 br(),
+                 HTML(paste(shiny::tags$b("This is the accompanying interactive server for the paper"),
+                            em("A single-cell resolution molecular roadmap from mouse gastrulation to early organogenesis."))),
+                 h4("Tabs:"),
+                 HTML(paste(shiny::tags$b("Dataset overview:"),
+                       "t-SNE plots of the data are shown with customisable colouring, with a visualisation of how cells from different timepoints contribute to different cell populations.")),
+                 br(),
+                 HTML(paste(shiny::tags$b("Gene interrogation:"),
+                       "The patterns of expression of genes across the dataset may be viewed here.")),
+                 br(),
+                 HTML(paste(shiny::tags$b("Cell-type markers:"),
+                       "Genes highly expressed in a single celltype are shown here.")),
+                 br(),
+                 HTML(paste(shiny::tags$b("Endoderm:"),
+                       "Interactive versions of plots from Figure 2 of the manuscript are shown.")),
+                 br(),
+                 HTML(paste(shiny::tags$b("Haematoendothelium:"),
+                       "Interactive versions of the force-directed graph from Figure 3 of the manuscript are shown.")),
+                 h4("Options:"),
+                 HTML(paste(shiny::tags$b("Cell subset:"),
+                            "Select the timepoints you want to plot.")),
+                 br(),
+                 HTML(paste(shiny::tags$b("Plot colour:"),
+                            "Select the variable you would like to colour the overview plots by.")),
+                 br(),
+                 HTML(paste(shiny::tags$b("Annotate clusters:"),
+                            "Text will be drawn on the plot to help locate specific cell types.")),
+                 br(),
+                 HTML(paste(shiny::tags$b("Gene:"),
+                            "Select the gene (MGI) to use for expression plots.")),
+                 br(),
+                 # HTML(paste(shiny::tags$b("Number of DE genes:"),
+                 #            "Choose the size of the table in the",
+                 #            em("Cell-type markers"),
+                 #            "tab.")),
+                 # br(),
+                 HTML(paste(shiny::tags$b("Subset cells & severity:"),
+                            "To speed up plotting, this reduces the number of cells plotted in a density dependent manner.")),
+                 h4("Other notes:"),
+                 HTML(paste("To report any issues please contact Jonny Griffiths at",
+                            em("jag216 {at} cam.ac.uk,"),
+                            "or John Marioni at", 
+                            em("marioni {at} ebi.ac.uk."))),
+                 br(),
+                 HTML("It takes a few seconds to make the first plots when all cells are considered - this should speed up when parameters are changed thereafter.")
         ),
         tabPanel("Dataset overview",
                  plotOutput("data", width = big_plot_width, height = big_plot_height),
@@ -73,7 +103,8 @@ fluidPage(
         tabPanel("Cell-type markers",
                  sidebarLayout(
                    sidebarPanel(
-                     selectInput("celltype", "Cell type", unique(meta$cluster.ann))
+                     selectInput("celltype", "Cell type", unique(meta$cluster.ann)),
+                     numericInput("n.genes", "Number of DE genes", value = 20)
                    ),
                    mainPanel(
                      plotOutput("celltype_presence_plot", height = half_plot_height, width = half_plot_height),
@@ -81,7 +112,7 @@ fluidPage(
                    )
                  )
                  ),
-        tabPanel("Endoderm analysis",
+        tabPanel("Endoderm",
                  h3("These plots are interactive versions of visualisations that were present in the paper."),
                  h4("Principal components for all considered endoderm cells (i.e. embryonic + visceral) are shown."),
                  fluidRow(
