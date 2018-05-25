@@ -48,7 +48,7 @@ fluidPage(
                  br(),
                  HTML(paste(shiny::tags$b("This is the accompanying interactive server for the paper"),
                             em("A single-cell resolution molecular roadmap from mouse gastrulation to early organogenesis."))),
-                 HTML("Please note: when you reach this page, the server needs to load some data for your session. We have noticed this is particularly slow on Google Chrome, so please be patient!")
+                 HTML("Please note: when you reach this page, the server needs to load some data for your session. We have noticed this is particularly slow on Google Chrome, so please be patient!"),
                  h4("Tabs:"),
                  HTML(paste(shiny::tags$b("Dataset overview:"),
                        "t-SNE plots of the data are shown with customisable colouring, with a visualisation of how cells from different timepoints contribute to different cell populations.")),
