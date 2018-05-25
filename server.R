@@ -291,6 +291,11 @@ shinyServer(
     
     output$gene = renderPlot({
       
+      validate(
+        need(input$gene %in% genes[,2],
+              'This gene name is not in our annotation.' )
+      )
+      
       
       dat = get_coord()
       count = as.vector(get_count())
@@ -309,11 +314,21 @@ shinyServer(
         ggtitle(paste0(input$stage, " cells, ", input$gene)) +
         theme(axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), axis.line = element_blank())
 
+      if(max(count) == 0){
+        plot = plot +
+          scale_color_gradient2(name = "Log2\ncounts", mid = "gray75", low = "gray75", high = "gray75", midpoint = max(count)/2)
+      }
+      
       return(plot)
 
     })
     
     output$gene_violin = renderPlot({
+      
+      validate(
+        need(input$gene %in% genes[,2],
+             'This gene name is not in our annotation.' )
+      )
 
       
       pdf = data.frame(count = get_count(), cluster = get_clusters())
@@ -383,6 +398,12 @@ shinyServer(
     })
     
     output$endo_pc1 = renderPlot({
+      
+      validate(
+        need(input$gene %in% genes[,2],
+             'This gene name is not in our annotation.' )
+      )
+      
       pdf = data.frame(X = endo_meta$all_PC1,
                        Y = endo_meta$all_PC2,
                        expr = get_endo_count())
@@ -394,12 +415,23 @@ shinyServer(
         scale_color_gradient2(name = "Log2\ncounts", mid = "cornflowerblue", low = "gray75", high = "black", midpoint = max(pdf$expr)/2) +
         ggtitle(input$gene) +
         labs(x = "PC1", y = "PC2")
+
+      if(max(pdf$expr) == 0){
+        p = p +
+          scale_color_gradient2(name = "Log2\ncounts", mid = "gray75", low = "gray75", high = "gray75", midpoint = max(pdf$expr)/2)
+      }
       
       return(p)
       
     })
     
     output$endo_pc3 = renderPlot({
+      
+      validate(
+        need(input$gene %in% genes[,2],
+             'This gene name is not in our annotation.' )
+      )
+      
       pdf = data.frame(X = endo_meta$all_PC3,
                        Y = endo_meta$all_PC2,
                        expr = get_endo_count())
@@ -413,8 +445,11 @@ shinyServer(
         ggtitle(input$gene) +
         labs(x = "PC1", y = "PC2")
 
-      # plot(x = pdf$X, y = pdf$Y)
-    
+      if(max(pdf$expr) == 0){
+        p = p +
+          scale_color_gradient2(name = "Log2\ncounts", mid = "gray75", low = "gray75", high = "gray75", midpoint = max(pdf$expr)/2)
+      }
+      
       return(p)
     })
     
@@ -438,6 +473,14 @@ shinyServer(
     })
     
     output$endo_late_gene = renderPlot({
+      
+      
+      validate(
+        need(input$gene %in% genes[,2],
+             'This gene name is not in our annotation.' )
+      )
+      
+      
       pdf = data.frame(X = endo_meta$late_DC1,
                        Y = endo_meta$late_DC2,
                        expr = get_endo_count())
@@ -451,6 +494,11 @@ shinyServer(
         scale_color_gradient2(name = "Log2\ncounts", mid = "cornflowerblue", low = "gray75", high = "black", midpoint = max(pdf$expr)/2) +
         ggtitle(input$gene) +
         labs(x = "DC1", y = "DC2")
+      
+      if(max(pdf$expr) == 0){
+        p = p +
+          scale_color_gradient2(name = "Log2\ncounts", mid = "gray75", low = "gray75", high = "gray75", midpoint = max(pdf$expr)/2)
+      }
       
       return(p)
     })
@@ -470,6 +518,14 @@ shinyServer(
     })
     
     output$endo_gut_gene = renderPlot({
+      
+      
+      validate(
+        need(input$gene %in% genes[,2],
+             'This gene name is not in our annotation.' )
+      )
+      
+      
       pdf = data.frame(X = endo_meta$gut_DC1,
                        expr = get_endo_count())
       pdf = pdf[!is.na(endo_meta$gut_DC1),]
@@ -484,6 +540,15 @@ shinyServer(
     })
     
     output$endo_traj_gene = renderPlot({
+      
+      
+      validate(
+        need(input$gene %in% genes[,2],
+             'This gene name is not in our annotation.' )
+      )
+      
+      
+      
       pdf = data.frame(X = endo_meta$ve_hind_dpt,
                        expr = get_endo_count())
       pdf = pdf[!is.na(endo_meta$ve_hind_dpt),]
@@ -535,6 +600,12 @@ shinyServer(
     })
     
     output$haem_gene = renderPlot({
+      
+      validate(
+        need(input$gene %in% genes[,2],
+             'This gene name is not in our annotation.' )
+      )
+      
       pdf = haem_meta
       pdf$expr = get_haem_count()
       pdf = pdf[order(pdf$expr),]
@@ -543,6 +614,11 @@ shinyServer(
         geom_point(size = 1) +
         scale_color_gradient2(name = "Log2\ncounts", mid = "cornflowerblue", low = "gray75", high = "black", midpoint = max(pdf$expr)/2) +
         theme(axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), axis.line = element_blank())
+      
+      if(max(pdf$expr) == 0){
+        p = p +
+          scale_color_gradient2(name = "Log2\ncounts", mid = "gray75", low = "gray75", high = "gray75", midpoint = max(pdf$expr)/2)
+      }
       
       return(p)
     })
