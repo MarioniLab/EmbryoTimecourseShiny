@@ -3,74 +3,29 @@ library(ggplot2)
 library(HDF5Array)
 library(reshape2)
 library(cowplot)
-# CLUSTER TYPES
-all_names = c("Epiblast",
-              "PS/mesendoderm",
-              "Erythroid 1",
-              "NMPs",
-              "Late neural tube/spinal cord",
-              "ExE endoderm",
-              "ExE mesoderm",
-              "ExE ectoderm 1",
-              "Neuroectoderm",
-              "Hemato-endothelial",
-              "Early parax. mesoderm",
-              "ExE ectoderm 2",
-              "Late parax. mesoderm",
-              "AVE/def. endo/notochord",
-              "Erythroid 2",
-              "Late mixed mesoderm",
-              "Visceral endoderm",
-              "Early mixed mesoderm",
-              "Parietal endoderm",
-              "Neural crest/non-neural ectoderm")
-names(all_names) = 1:length(all_names)
-
-legend_order = match(c("Epiblast",
-                       "PS/mesendoderm", 
-                       "AVE/def. endo/notochord",
-                       "Early mixed mesoderm",
-                       "Early parax. mesoderm",
-                       "Late parax. mesoderm",
-                       "Late mixed mesoderm",
-                       "Hemato-endothelial",
-                       "Erythroid 1",
-                       "Erythroid 2",
-                       "ExE mesoderm",
-                       "NMPs",
-                       "Neuroectoderm",
-                       "Neural crest/non-neural ectoderm",
-                       "Late neural tube/spinal cord",
-                       "ExE endoderm",
-                       "Visceral endoderm",
-                       "ExE ectoderm 1",
-                       "ExE ectoderm 2",
-                       "Parietal endoderm"
-), all_names)
+library(ggrepel)
 
 # COLOURS
-all_colours = c("PS/mesendoderm" = "#efd5a0",#grey-brown ###
+top_colours = c("PS/mesendoderm" = "#efd5a0",#grey-brown ###
                 "ExE ectoderm 2" = "grey20",#darkgrey###
                 "Epiblast" = "#663300",#dark brown###
-                "Neural crest/non-neural ectoderm" = "palegreen3",#light green
+                "Neural crest" = "palegreen3",#light green
                 "Late parax. mesoderm" = "royalblue3",#blue
                 "Neuroectoderm" = "greenyellow",#midgreen
                 "ExE mesoderm" = "purple3",#purple
                 "Hemato-endothelial" = "orange",#orange
-                "Late neural tube/spinal cord" = "olivedrab",#darkgreen
+                "Neural tube" = "olivedrab",#darkgreen
                 "ExE ectoderm 1" = "grey60",#light grey
                 "NMPs" = "#FAFF0A",#yellow
-                "Late mixed mesoderm" = "navy",#navy
+                "Mixed mesoderm" = "navy",#navy
                 "Early parax. mesoderm" = "steelblue1",#lightblue
                 "Parietal endoderm" = "grey10",#???
                 "AVE/def. endo/notochord" = "coral2",#dark goldenrod
                 "ExE endoderm" = "plum4",#plum ###
-                "Early mixed mesoderm" = "turquoise",#skyblue
+                "Mesoderm progenitors" = "turquoise",#skyblue
                 "Erythroid 1" = "firebrick3",#darkred
                 "Erythroid 2" = "red4",
                 "Visceral endoderm" = "lightpink1")#pink
-all_colours = all_colours[match(all_names, names(all_colours))]
-names(all_colours) = 1:length(all_colours)
 
 
 celltype_colours = c(
@@ -277,21 +232,27 @@ shinyServer(
         theme(axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), axis.line = element_blank())
       
       if(input$numbers){
-        plot = plot + geom_label(data = get_cluster_centroids(), 
+        plot = plot + geom_label_repel(data = get_cluster_centroids(), 
                                  mapping = aes(x = X, 
                                                y = Y, 
                                                label = num), 
                                  col = "black", 
                                  alpha = 0.8, 
-                                 size = 7)
+                                 size = 5)
       }
       
-      if(input$colourby == "cluster"){
-        plot = plot + scale_color_manual(values = all_colours, labels = all_names, drop = FALSE, name = "")
+      if(input$colourby == "cluster.ann0"){
+        plot = plot + scale_color_manual(values = top_colours, drop = FALSE, name = "") + 
+          guides(colour = guide_legend(override.aes = list(size=9, 
+                                                           alpha = 1),
+                                       ncol = 2))
       }
       
       if(input$colourby == "cluster.ann"){
-        plot = plot + scale_color_manual(values = celltype_colours, drop = FALSE, name = "")
+        plot = plot + scale_color_manual(values = celltype_colours, drop = FALSE, name = "") +
+          guides(colour = guide_legend(override.aes = list(size=9, 
+                                                           alpha = 1),
+                                       ncol = 2))
       }
       
       if(input$colourby == "stage" | input$colourby == "theiler"){
