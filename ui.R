@@ -10,6 +10,7 @@ big_plot_height = "500px"
 narrower_plot_width = "650px"
 
 half_plot_width = "450px"
+narrower_half_plot_width = "350px"
 half_plot_height = "300px"
 
 fluidPage(
@@ -40,6 +41,7 @@ fluidPage(
       width = 2
     ),
     mainPanel(
+      width = 10,
       titlePanel("A single-cell resolution molecular roadmap from mouse gastrulation to early organogenesis."),
       
       #put plots here
@@ -61,10 +63,10 @@ fluidPage(
                        "Genes highly expressed in a single celltype are shown here.")),
                  br(),
                  HTML(paste(shiny::tags$b("Endoderm:"),
-                       "Interactive versions of plots from Figure 2 of the manuscript are shown.")),
+                       "Interactive versions of plots from Figure 2 of the manuscript are shown - these will change depending on your gene selection.")),
                  br(),
                  HTML(paste(shiny::tags$b("Haematoendothelium:"),
-                       "Customisable versions of the force-directed graph from Figure 3 of the manuscript are shown.")),
+                       "Customisable versions of the force-directed graph from Figure 3 of the manuscript are shown - these will change depending on your gene selection.")),
                  h4("Options:"),
                  HTML(paste(shiny::tags$b("Cell subset:"),
                             "Select the timepoints you want to plot.")),
@@ -142,8 +144,19 @@ fluidPage(
                  plotOutput("endo_traj_gene", width = half_plot_width, height = half_plot_height)
                  ),
         tabPanel("Haematoendothelium",
-                 plotOutput("haem_clusters", width = big_plot_width, height = big_plot_height),
-                 plotOutput("haem_gene", width = big_plot_width, height = big_plot_height))
+                 fixedRow(
+                   splitLayout(cellWidths = c("50%", "50%"), 
+                               plotOutput("haem_clusters", width = half_plot_width, height = half_plot_height), 
+                               plotOutput("haem_gene", width = narrower_half_plot_width, height = half_plot_height))
+                 ),
+                 # plotOutput("haem_clusters", width = big_plot_width, height = big_plot_height),
+                 # plotOutput("haem_gene", width = narrower_plot_width, height = big_plot_height),
+                 fixedRow(
+                   splitLayout(cellWidths = c("50%", "50%"), 
+                               plotOutput("haem_clusters_zoomed", width = half_plot_width, height = half_plot_height), 
+                               plotOutput("haem_gene_zoomed", width = narrower_half_plot_width, height = half_plot_height))
+                 )
+                 )
 
       )
     )

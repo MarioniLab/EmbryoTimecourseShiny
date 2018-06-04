@@ -387,7 +387,13 @@ shinyServer(
       p = ggplot(as.data.frame(coords)[order,], aes(x = V1, y = V2, col = (meta$cluster.ann == input$celltype)[order])) +
         geom_point() +
         scale_color_manual(values = c("TRUE" = "navy", "FALSE" = "darkgrey")) +
-        theme(legend.position = "none")
+        theme(legend.position = "none",
+              axis.title = element_blank(),
+              axis.ticks = element_blank(),
+              axis.text = element_blank(),
+              axis.line = element_blank())
+      
+      
       return(p)
     })
     
@@ -580,6 +586,13 @@ shinyServer(
       
     )
     
+    haem_labels = c(
+      names(haem_colours),
+      unique(haem_meta$cluster.ann)
+    )
+    names(haem_labels) = haem_labels
+    haem_labels[which(haem_labels == "Early posterior mesoderm")] = "Early posterior\nmesoderm"
+        
     get_haem_count = reactive({
       count = as.numeric(link[,match(as.character(input$gene), as.character(genes[,2]))])
       return(count[meta$cell %in% haem_meta$cell])
@@ -587,13 +600,18 @@ shinyServer(
     
     output$haem_clusters = renderPlot({
       pdf = haem_meta
+      unq = unique(pdf$haem.clust)
+      pdf$haem.clust = factor(pdf$haem.clust, levels = unq[order(-nchar(unq), unq)])
       pdf = pdf[sample(nrow(pdf), nrow(pdf)),]
       
       p = ggplot(pdf, aes(x = -haem.X, y = haem.Y, col = haem.clust)) +
         geom_point(size = 1) +
-        scale_color_manual(values = c(celltype_colours, haem_colours), name = "Cluster") +
+        scale_color_manual(values = c(celltype_colours, haem_colours), 
+                           name = "Cluster",
+                           labels = haem_labels) +
         guides(colour = guide_legend(override.aes = list(size=9, 
-                                                         alpha = 1))) +
+                                                         alpha = 1),
+                                     ncol = 2)) +
         theme(axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), axis.line = element_blank())
       
       return(p)
@@ -622,5 +640,49 @@ shinyServer(
       
       return(p)
     })
+    
+    output$haem_clusters_zoomed = renderPlot({
+      pdf = haem_meta
+      pdf = pdf[pdf$zoom,]
+      unq = unique(pdf$haem.clust)
+      pdf$haem.clust = factor(pdf$haem.clust, levels = unq[order(-nchar(unq), unq)])
+      pdf = pdf[sample(nrow(pdf), nrow(pdf)),]
+      
+      p = ggplot(pdf, aes(x = -haem.X, y = haem.Y, col = haem.clust)) +
+        geom_point(size = 1) +
+        scale_color_manual(values = c(celltype_colours, haem_colours), name = "Cluster") +
+        guides(colour = guide_legend(override.aes = list(size=9, 
+                                                         alpha = 1),
+                                     ncol = 2)) +
+        theme(axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), axis.line = element_blank())
+      
+      return(p)
+    })
+    
+    output$haem_gene_zoomed = renderPlot({
+      validate(
+        need(input$gene %in% genes[,2],
+             'This gene name is not in our annotation.' )
+      )
+      
+      pdf = haem_meta
+      pdf$expr = get_haem_count()
+      pdf = pdf[pdf$zoom,]
+      pdf = pdf[order(pdf$expr),]
+      
+      p = ggplot(pdf, aes(x = -haem.X, y = haem.Y, col = expr)) +
+        geom_point(size = 1) +
+        scale_color_gradient2(name = "Log2\ncounts", mid = "cornflowerblue", low = "gray75", high = "black", midpoint = max(pdf$expr)/2) +
+        theme(axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), axis.line = element_blank())
+      
+      if(max(pdf$expr) == 0){
+        p = p +
+          scale_color_gradient2(name = "Log2\ncounts", mid = "gray75", low = "gray75", high = "gray75", midpoint = max(pdf$expr)/2)
+      }
+      
+      return(p)
+    })
+    
+
   }
 )
