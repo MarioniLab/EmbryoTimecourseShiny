@@ -30,7 +30,7 @@ fluidPage(
                                                            ),
                     selected = "cluster.ann"),
         checkboxInput("numbers", "Annotate clusters in plot"),
-        selectizeInput("gene", "Gene", choices = genes[,2], selected = "Ttr"),
+        selectizeInput("gene", "Gene", choices = NULL, selected = 26600),
         checkboxInput("subset", "Subset cells"),
         selectInput("subset_degree", label = "Subsetting severity", choices = c("Low" = 200, "High" = 100)),
         fixed = TRUE,

@@ -137,7 +137,7 @@ endo_meta = readRDS("endo_meta.rds")
 haem_meta = readRDS("haem_meta.rds")
 
 shinyServer(
-  function(input, output){
+  function(input, output, session){
     #### FUNCTIONS TO GET DATA
     
     get_meta = reactive({
@@ -201,6 +201,8 @@ shinyServer(
       }
     })
     
+    #### SELCTIZE SPEEDUP
+    updateSelectizeInput(session = session, inputId = 'gene', choices = genes[,2], server = TRUE)
     
     #### OVERALL VIS
     
