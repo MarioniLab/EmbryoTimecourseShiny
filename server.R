@@ -295,7 +295,7 @@ shinyServer(
       
       validate(
         need(input$gene %in% genes[,2],
-              'This gene name is not in our annotation.' )
+              "Please select a gene; if you have already selected one, this gene is not in our annotation." )
       )
       
       
@@ -329,7 +329,7 @@ shinyServer(
       
       validate(
         need(input$gene %in% genes[,2],
-             'This gene name is not in our annotation.' )
+             "Please select a gene; if you have already selected one, this gene is not in our annotation." )
       )
 
       
@@ -409,7 +409,7 @@ shinyServer(
       
       validate(
         need(input$gene %in% genes[,2],
-             'This gene name is not in our annotation.' )
+             "Please select a gene; if you have already selected one, this gene is not in our annotation." )
       )
       
       pdf = data.frame(X = endo_meta$all_PC1,
@@ -437,7 +437,7 @@ shinyServer(
       
       validate(
         need(input$gene %in% genes[,2],
-             'This gene name is not in our annotation.' )
+             "Please select a gene; if you have already selected one, this gene is not in our annotation." )
       )
       
       pdf = data.frame(X = endo_meta$all_PC3,
@@ -485,7 +485,7 @@ shinyServer(
       
       validate(
         need(input$gene %in% genes[,2],
-             'This gene name is not in our annotation.' )
+             "Please select a gene; if you have already selected one, this gene is not in our annotation." )
       )
       
       
@@ -530,7 +530,7 @@ shinyServer(
       
       validate(
         need(input$gene %in% genes[,2],
-             'This gene name is not in our annotation.' )
+             "Please select a gene; if you have already selected one, this gene is not in our annotation." )
       )
       
       
@@ -552,7 +552,7 @@ shinyServer(
       
       validate(
         need(input$gene %in% genes[,2],
-             'This gene name is not in our annotation.' )
+             "Please select a gene; if you have already selected one, this gene is not in our annotation." )
       )
       
       
@@ -623,7 +623,7 @@ shinyServer(
       
       validate(
         need(input$gene %in% genes[,2],
-             'This gene name is not in our annotation.' )
+             "Please select a gene; if you have already selected one, this gene is not in our annotation." )
       )
       
       pdf = haem_meta
@@ -664,7 +664,7 @@ shinyServer(
     output$haem_gene_zoomed = renderPlot({
       validate(
         need(input$gene %in% genes[,2],
-             'This gene name is not in our annotation.' )
+             "Please select a gene; if you have already selected one, this gene is not in our annotation." )
       )
       
       pdf = haem_meta
