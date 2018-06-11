@@ -234,13 +234,16 @@ shinyServer(
         theme(axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), axis.line = element_blank())
       
       if(input$numbers){
-        plot = plot + geom_label_repel(data = get_cluster_centroids(), 
+        centroids = get_cluster_centroids()
+        centroids$num = gsub(" ", "\n", centroids$num)
+        
+        plot = plot + geom_label_repel(data = centroids, 
                                  mapping = aes(x = X, 
                                                y = Y, 
                                                label = num), 
                                  col = "black", 
                                  alpha = 0.8, 
-                                 size = 5)
+                                 size = 4)
       }
       
       if(input$colourby == "cluster.ann0"){
