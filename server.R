@@ -202,7 +202,8 @@ shinyServer(
     })
     
     #### SELCTIZE SPEEDUP
-    updateSelectizeInput(session = session, inputId = 'gene', choices = genes[,2], server = TRUE)
+    updateSelectizeInput(session = session, inputId = 'gene', choices = genes[,2], server = TRUE, selected = "T") #DONT remove T, appears to be a bug that it vanishes
+  
     
     #### OVERALL VIS
     
