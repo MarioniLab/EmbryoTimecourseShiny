@@ -277,7 +277,7 @@ shinyServer(
     })
     
     output$downloadOverview <- downloadHandler(
-      filename = function() { paste0(input$colourby, "_", input$stage, "-cells.pdf") },
+      filename = function() { paste0("overview_", input$stage, "-cells.pdf") },
       content = function(file) {
         pdf(file = NULL)
         ggsave(file, plot = plotOverview(), device = "pdf", width = big_plot_width, height = big_plot_height)
