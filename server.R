@@ -5,6 +5,10 @@ library(reshape2)
 library(cowplot)
 library(ggrepel)
 
+big_plot_width = 9 * 1.5
+big_plot_height = 5 * 1.5
+narrower_plot_width = 6.5 * 1.5
+
 # COLOURS
 top_colours = c("PS/mesendoderm" = "#efd5a0",#grey-brown ###
                 "ExE ectoderm 2" = "grey20",#darkgrey###
@@ -207,7 +211,7 @@ shinyServer(
     
     #### OVERALL VIS
     
-    output$data = output$data_dummy = renderPlot({
+    plotOverview = reactive({
       
       
       unq = as.character(unique(get_meta()[, input$colourby]))
@@ -239,12 +243,12 @@ shinyServer(
         centroids$num = gsub(" ", "\n", centroids$num)
         
         plot = plot + geom_label_repel(data = centroids, 
-                                 mapping = aes(x = X, 
-                                               y = Y, 
-                                               label = num), 
-                                 col = "black", 
-                                 alpha = 0.8, 
-                                 size = 4)
+                                       mapping = aes(x = X, 
+                                                     y = Y, 
+                                                     label = num), 
+                                       col = "black", 
+                                       alpha = 0.8, 
+                                       size = 4)
       }
       
       if(input$colourby == "cluster.ann0"){
@@ -264,9 +268,20 @@ shinyServer(
       if(input$colourby == "stage" | input$colourby == "theiler"){
         plot = plot + scale_color_manual(values = c(brewer_pal(palette = "Spectral")(length(factor_levels)-1), "darkgrey"), name = "")
       }
-
+      
       return(plot)
     })
+    
+    output$data = output$data_dummy = renderPlot({
+      plotOverview()
+    })
+    
+    output$downloadOverview <- downloadHandler(
+      filename = function() { paste0(input$colourby, "_", input$stage, "-cells.pdf") },
+      content = function(file) {
+        ggsave(file, plot = plotOverview(), device = "pdf", width = big_plot_width, height = big_plot_height)
+      }
+    )
     
     output$stage_contribution = renderPlot({
 
@@ -295,18 +310,11 @@ shinyServer(
     
     #### GENE EXPRESSION PLOTS
     
-    output$gene = renderPlot({
-      
-      validate(
-        need(input$gene %in% genes[,2],
-              "Please select a gene; if you have already selected one, this gene is not in our annotation." )
-      )
-      
-      
+    plotGeneTSNE = reactive({      
       dat = get_coord()
       count = as.vector(get_count())
       
-
+      
       allowed = get_subset()
       #order so that highest expressing cells are not hidden behind others
       dat = dat[order(count),]
@@ -319,24 +327,34 @@ shinyServer(
         scale_color_gradient2(name = "Log2\ncounts", mid = "cornflowerblue", low = "gray75", high = "black", midpoint = max(count)/2) +
         ggtitle(paste0(input$stage, " cells, ", input$gene)) +
         theme(axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), axis.line = element_blank())
-
+      
       if(max(count) == 0){
         plot = plot +
           scale_color_gradient2(name = "Log2\ncounts", mid = "gray75", low = "gray75", high = "gray75", midpoint = max(count)/2)
       }
       
       return(plot)
-
-    })
+      })
     
-    output$gene_violin = renderPlot({
+    output$gene = renderPlot({
       
       validate(
         need(input$gene %in% genes[,2],
-             "Please select a gene; if you have already selected one, this gene is not in our annotation." )
+              "Please select a gene; if you have already selected one, this gene is not in our annotation." )
       )
-
       
+      return(plotGeneTSNE())
+
+    })
+    
+    output$downloadGeneTSNE <- downloadHandler(
+      filename = function() { paste0(input$gene, "-gene_", input$stage, "-cells.pdf") },
+      content = function(file) {
+        ggsave(file, plot = plotGeneTSNE(), device = "pdf", width = narrower_plot_width, height = big_plot_height)
+      }
+    )
+    
+    plotGeneViolin = reactive({
       pdf = data.frame(count = get_count(), cluster = get_clusters())
       
       names = c("sample" = "Sample",
@@ -370,9 +388,26 @@ shinyServer(
       }
       
       return(plot)
+    })
+    
+    output$gene_violin = renderPlot({
+      
+      validate(
+        need(input$gene %in% genes[,2],
+             "Please select a gene; if you have already selected one, this gene is not in our annotation." )
+      )
+
+      
+     return(plotGeneViolin())
       
     })
     
+    output$downloadGeneViolin <- downloadHandler(
+      filename = function() { paste0(input$gene, "-gene_", input$stage, "-cells_violin.pdf") },
+      content = function(file) {
+        ggsave(file, plot = plotGeneViolin(), device = "pdf", width = big_plot_width, height = big_plot_height)
+      }
+    )
   
     
     # CELLTYPE MARKERS
