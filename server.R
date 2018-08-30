@@ -279,6 +279,7 @@ shinyServer(
     output$downloadOverview <- downloadHandler(
       filename = function() { paste0(input$colourby, "_", input$stage, "-cells.pdf") },
       content = function(file) {
+        pdf(file = NULL)
         ggsave(file, plot = plotOverview(), device = "pdf", width = big_plot_width, height = big_plot_height)
       }
     )
@@ -350,6 +351,7 @@ shinyServer(
     output$downloadGeneTSNE <- downloadHandler(
       filename = function() { paste0(input$gene, "-gene_", input$stage, "-cells.pdf") },
       content = function(file) {
+        pdf(file = NULL)
         ggsave(file, plot = plotGeneTSNE(), device = "pdf", width = narrower_plot_width, height = big_plot_height)
       }
     )
@@ -405,6 +407,7 @@ shinyServer(
     output$downloadGeneViolin <- downloadHandler(
       filename = function() { paste0(input$gene, "-gene_", input$stage, "-cells_violin.pdf") },
       content = function(file) {
+        pdf(file = NULL)
         ggsave(file, plot = plotGeneViolin(), device = "pdf", width = big_plot_width, height = big_plot_height)
       }
     )
