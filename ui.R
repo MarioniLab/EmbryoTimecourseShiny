@@ -166,11 +166,12 @@ fluidPage(
                  sidebarLayout(
                    sidebarPanel(
                      selectInput("celltype", "Cell type", names(celltype_colours)),
-                     numericInput("n.genes", "Number of DE genes", value = 20)
+                     plotOutput("celltype_gene_plot")
+                     # numericInput("n.genes", "Number of DE genes", value = 20)
                    ),
                    mainPanel(
                      plotOutput("celltype_presence_plot", height = half_plot_height, width = half_plot_height),
-                     tableOutput("celltype_markers"),
+                     dataTableOutput("celltype_markers"),
                      h4(paste0("This is the output of the scran function findMarkers. ",
                                "These are top-ranked genes that are expressed in the selected celltype more highly than in *any* other celltype."))
                    )

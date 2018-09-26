@@ -75,9 +75,9 @@ names(stage_labels) = names(stage_colours)
 stage_labels[10] = "Mixed"
 
 scale_colour_Publication <- function(...){
-  library(scales)
+  # require(scales)
   discrete_scale("colour", "Publication",
-                 manual_pal(values = c(
+                 scales::manual_pal(values = c(
                    "#000000", "#1CE6FF", "#FF34FF", "#FF4A46", "#008941", "#006FA6", "#A30059",
                    "#7A4900", "#0000A6", "#63FFAC", "#B79762", "#004D43", "#8FB0FF", "#997D87",
                    "#5A0007", "#809693", "#1B4400", "#4FC601", "#3B5DFF", "#4A3B53", "#FF2F80",
@@ -94,9 +94,9 @@ scale_colour_Publication <- function(...){
 }
 
 scale_fill_Publication <- function(...){
-  library(scales)
+  # require(scales)
   discrete_scale("fill", "Publication",
-                 manual_pal(values = c(
+                 scales::manual_pal(values = c(
                    "#000000", "#1CE6FF", "#FF34FF", "#FF4A46", "#008941", "#006FA6", "#A30059",
                    "#7A4900", "#0000A6", "#63FFAC", "#B79762", "#004D43", "#8FB0FF", "#997D87",
                    "#5A0007", "#809693", "#1B4400", "#4FC601", "#3B5DFF", "#4A3B53", "#FF2F80",
@@ -203,6 +203,15 @@ shinyServer(
       
     })
     
+    get_count_gene = function(gene = "Hbb-bh1"){
+      
+      #get the gene count into memory
+      count = as.numeric(link[,match(as.character(gene), as.character(genes[,2]))])
+      #subsetting is much quicker now
+      return(count[meta$cell %in% get_meta()$cell])
+      
+    }
+    
     get_subset = reactive({
       coord = get_coord()
       if(input$subset){
@@ -273,7 +282,7 @@ shinyServer(
       }
       
       if(input$colourby == "stage" | input$colourby == "theiler"){
-        plot = plot + scale_color_manual(values = c(brewer_pal(palette = "Spectral")(length(factor_levels)-1), "darkgrey"), 
+        plot = plot + scale_color_manual(values = c(scales::brewer_pal(palette = "Spectral")(length(factor_levels)-1), "darkgrey"), 
                                          name = "")
       }
       
@@ -302,7 +311,7 @@ shinyServer(
 
         melt = melt(fractions)
         
-        palette = c(brewer_pal(palette = "Spectral")(length(unique(meta$stage))-1), "darkgrey")
+        palette = c(scales::brewer_pal(palette = "Spectral")(length(unique(meta$stage))-1), "darkgrey")
         names(palette) = unique(meta$stage)[order(unique(meta$stage))]
         
         plot = ggplot(melt, aes(x = factor(Var1, levels = names(means)[order(means)]), y = value, fill = Var2)) +
@@ -319,9 +328,9 @@ shinyServer(
     
     #### GENE EXPRESSION PLOTS
     
-    plotGeneTSNE = reactive({      
+    makeGenePlot = function(gene){
       dat = get_coord()
-      count = as.vector(get_count())
+      count = as.vector(get_count_gene(gene))
       
       
       allowed = get_subset()
@@ -334,7 +343,7 @@ shinyServer(
                     mapping = aes(x = X, y = Y, col = count[allowed])) +
         geom_point(size = 1) +
         scale_color_gradient2(name = "Log2\ncounts", mid = "cornflowerblue", low = "gray75", high = "black", midpoint = max(count)/2) +
-        ggtitle(paste0(input$stage, " cells, ", input$gene)) +
+        ggtitle(gene) +
         theme(axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), axis.line = element_blank())
       
       if(max(count) == 0){
@@ -343,7 +352,11 @@ shinyServer(
       }
       
       return(plot)
-      })
+    }
+    
+    plotGeneTSNE = reactive({      
+      makeGenePlot(gene = input$gene) + ggtitle(paste0(input$stage, " cells, ", input$gene))
+    })
     
     output$gene = renderPlot({
       
@@ -422,11 +435,17 @@ shinyServer(
   
     
     # CELLTYPE MARKERS
-    output$celltype_markers = renderTable({
+    
+    get_markers = reactive({
       tab = markers_celltype[[input$celltype]]
       tab = tab[order(tab$IUT.p),]
       genes_mark = genes[match(rownames(tab), genes[,1]), 2]
-      return(data.frame(MGI = genes_mark, p.value = tab[,1])[1:input$n.genes,])
+      df = data.frame(MGI = genes_mark, p.value = tab[,1], FDR = p.adjust(tab[,1], method = "fdr"))#[1:input$n.genes,]
+      return(df)
+    })
+    
+    output$celltype_markers = renderDataTable({
+      return(datatable(get_markers()))
     })
     
     output$celltype_presence_plot = renderPlot({
@@ -436,7 +455,7 @@ shinyServer(
       
       p = ggplot(as.data.frame(coords)[order,], aes(x = X, y = Y, col = (meta$celltype == input$celltype)[order])) +
         geom_point() +
-        scale_color_manual(values = c("TRUE" = "navy", "FALSE" = "darkgrey")) +
+        scale_color_manual(values = c("TRUE" = "red", "FALSE" = "darkgrey")) +
         theme(legend.position = "none",
               axis.title = element_blank(),
               axis.ticks = element_blank(),
@@ -445,6 +464,19 @@ shinyServer(
       
       
       return(p)
+    })
+    
+    output$celltype_gene_plot = renderPlot({
+      row = input$celltype_markers_row_last_clicked
+      validate(
+        need(!is.null(row),
+           "Please select a gene in the marker table" )
+      )
+      gene= get_markers()[row, "MGI"]
+      
+      
+      return(makeGenePlot(gene))
+      
     })
     
     # # ENDODERM PLOTS
