@@ -445,7 +445,7 @@ shinyServer(
     })
     
     output$celltype_markers = renderDataTable({
-      return(datatable(get_markers()))
+      return(datatable(get_markers(), selection = "single"))
     })
     
     output$celltype_presence_plot = renderPlot({
