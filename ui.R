@@ -1,5 +1,54 @@
 library(shiny)
 library(ggplot2)
+library(DT)
+
+celltype_colours = c("Epiblast" = "#635547",
+                     "Primitive Streak" = "#DABE99",
+                     "Caudal epiblast" = "#9e6762",
+                     
+                     "PGC" = "#FACB12",
+                     
+                     "Anterior Primitive Streak" = "#c19f70",
+                     "Notochord" = "#0F4A9C",
+                     "Def. endoderm" = "#F397C0",
+                     "Gut" = "#EF5A9D",
+                     
+                     "Nascent mesoderm" = "#C594BF",
+                     "Mixed mesoderm" = "#DFCDE4",
+                     "Intermediate mesoderm" = "#139992",
+                     "Caudal Mesoderm" = "#3F84AA",
+                     "Paraxial mesoderm" = "#8DB5CE",
+                     "Somitic mesoderm" = "#005579",
+                     "Pharyngeal mesoderm" = "#C9EBFB",
+                     "Cardiomyocytes" = "#B51D8D",
+                     "Allantois" = "#532C8A",
+                     "ExE mesoderm" = "#8870ad",
+                     "Mesenchyme" = "#cc7818",
+                     
+                     "Haematoendothelial progenitors" = "#FBBE92",
+                     "Endothelium" = "#ff891c",
+                     "Blood progenitors 1" = "#f9decf",
+                     "Blood progenitors 2" = "#c9a997",
+                     "Erythroid1" = "#C72228",
+                     "Erythroid2" = "#f79083",
+                     "Erythroid3" = "#EF4E22",
+                     
+                     "NMP" = "#8EC792",
+                     
+                     "Rostral neurectoderm" = "#65A83E",
+                     "Caudal neurectoderm" = "#354E23",
+                     "Neural crest" = "#C3C388",
+                     "Forebrain/Midbrain/Hindbrain" = "#647a4f",
+                     "Spinal cord" = "#CDE088",
+                     
+                     "Surface ectoderm" = "#f7f79e",
+                     
+                     "Visceral endoderm" = "#F6BFCB",
+                     "ExE endoderm" = "#7F6874",
+                     "ExE ectoderm" = "#989898",
+                     "Parietal endoderm" = "#1A1A1A"
+                     
+)
 
 genes = readRDS("genes.rds")
 meta = readRDS("meta.rds")
@@ -19,9 +68,11 @@ fluidPage(
       absolutePanel(
         h3("Plot options"),
         #SIDEBAR INPUTS
+        selectInput("coord_type", "Projection type", choices = c("UMAP" = "umap",
+                                                                 "t-SNE" = "tsne")),
         selectInput("stage", "Cell subset", choices = c(sort(c(as.character(unique(meta$stage)), as.character(unique(meta$theiler)), "all"))), selected = "all"),
-        selectInput("colourby", "Plot colour", choices = c("Cell type" = "cluster.ann",
-                                                           "Top level cluster" = "cluster.ann0",
+        selectInput("colourby", "Plot colour", choices = c("Cell type" = "celltype",
+                                                           "Top level cluster" = "cluster",
                                                            "Timepoint" = "stage",
                                                            "Theiler stage" = "theiler",
                                                            "Sample" = "sample",
@@ -114,7 +165,7 @@ fluidPage(
         tabPanel("Cell-type markers",
                  sidebarLayout(
                    sidebarPanel(
-                     selectInput("celltype", "Cell type", unique(meta$cluster.ann)),
+                     selectInput("celltype", "Cell type", names(celltype_colours)),
                      numericInput("n.genes", "Number of DE genes", value = 20)
                    ),
                    mainPanel(
@@ -124,44 +175,44 @@ fluidPage(
                                "These are top-ranked genes that are expressed in the selected celltype more highly than in *any* other celltype."))
                    )
                  )
-                 ),
-        tabPanel("Endoderm",
-                 h3("These plots are interactive versions of visualisations that were present in the paper."),
-                 h4("Principal components for all considered endoderm cells (i.e. embryonic + visceral) are shown."),
-                 fluidRow(
-                   splitLayout(cellWidths = c("50%", "50%"), 
-                               plotOutput("endo_pc1", width = half_plot_width, height = half_plot_height), 
-                               plotOutput("endo_pc3", width = half_plot_width, height = half_plot_height))
-                 ),
-                 h4("Diffusion components for E8.0-E8.5 endoderm cells are shown."),
-                 fluidRow(
-                   splitLayout(cellWidths = c("50%", "50%"), 
-                               plotOutput("endo_late_ref", width = half_plot_width, height = half_plot_height), 
-                               plotOutput("endo_late_gene", width = half_plot_width, height = half_plot_height))
-                 ),
-                 h4("The axis of the embryonic gut is shown."),
-                 fluidRow(
-                   splitLayout(cellWidths = c("50%", "50%"), 
-                               plotOutput("endo_gut_axis", width = half_plot_width, height = half_plot_height), 
-                               plotOutput("endo_gut_gene", width = half_plot_width, height = half_plot_height))
-                 ),
-                 h4("The pseudotime trajectory for Visceral Endoderm to Hindgut cells is shown."),
-                 plotOutput("endo_traj_gene", width = half_plot_width, height = half_plot_height)
-                 ),
-        tabPanel("Haematoendothelium",
-                 fixedRow(
-                   splitLayout(cellWidths = c("50%", "50%"), 
-                               plotOutput("haem_clusters", width = half_plot_width, height = half_plot_height), 
-                               plotOutput("haem_gene", width = narrower_half_plot_width, height = half_plot_height))
-                 ),
-                 # plotOutput("haem_clusters", width = big_plot_width, height = big_plot_height),
-                 # plotOutput("haem_gene", width = narrower_plot_width, height = big_plot_height),
-                 fixedRow(
-                   splitLayout(cellWidths = c("50%", "50%"), 
-                               plotOutput("haem_clusters_zoomed", width = half_plot_width, height = half_plot_height), 
-                               plotOutput("haem_gene_zoomed", width = narrower_half_plot_width, height = half_plot_height))
-                 )
-                 )
+                 )#,
+        # tabPanel("Endoderm",
+        #          h3("These plots are interactive versions of visualisations that were present in the paper."),
+        #          h4("Principal components for all considered endoderm cells (i.e. embryonic + visceral) are shown."),
+        #          fluidRow(
+        #            splitLayout(cellWidths = c("50%", "50%"),
+        #                        plotOutput("endo_pc1", width = half_plot_width, height = half_plot_height),
+        #                        plotOutput("endo_pc3", width = half_plot_width, height = half_plot_height))
+        #          ),
+        #          h4("Diffusion components for E8.0-E8.5 endoderm cells are shown."),
+        #          fluidRow(
+        #            splitLayout(cellWidths = c("50%", "50%"),
+        #                        plotOutput("endo_late_ref", width = half_plot_width, height = half_plot_height),
+        #                        plotOutput("endo_late_gene", width = half_plot_width, height = half_plot_height))
+        #          ),
+        #          h4("The axis of the embryonic gut is shown."),
+        #          fluidRow(
+        #            splitLayout(cellWidths = c("50%", "50%"),
+        #                        plotOutput("endo_gut_axis", width = half_plot_width, height = half_plot_height),
+        #                        plotOutput("endo_gut_gene", width = half_plot_width, height = half_plot_height))
+        #          ),
+        #          h4("The pseudotime trajectory for Visceral Endoderm to Hindgut cells is shown."),
+        #          plotOutput("endo_traj_gene", width = half_plot_width, height = half_plot_height)
+        #          ),
+        # tabPanel("Haematoendothelium",
+        #          fixedRow(
+        #            splitLayout(cellWidths = c("50%", "50%"),
+        #                        plotOutput("haem_clusters", width = half_plot_width, height = half_plot_height),
+        #                        plotOutput("haem_gene", width = narrower_half_plot_width, height = half_plot_height))
+        #          ),
+        #          # plotOutput("haem_clusters", width = big_plot_width, height = big_plot_height),
+        #          # plotOutput("haem_gene", width = narrower_plot_width, height = big_plot_height),
+        #          fixedRow(
+        #            splitLayout(cellWidths = c("50%", "50%"),
+        #                        plotOutput("haem_clusters_zoomed", width = half_plot_width, height = half_plot_height),
+        #                        plotOutput("haem_gene_zoomed", width = narrower_half_plot_width, height = half_plot_height))
+        #          )
+        #          )
 
       )
     )

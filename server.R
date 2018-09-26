@@ -4,71 +4,75 @@ library(HDF5Array)
 library(reshape2)
 library(cowplot)
 library(ggrepel)
+library(DT)
 
 big_plot_width = 9 * 1.5
 big_plot_height = 5 * 1.5
 narrower_plot_width = 6.5 * 1.5
 
 # COLOURS
-top_colours = c("PS/mesendoderm" = "#efd5a0",#grey-brown ###
-                "ExE ectoderm 2" = "grey20",#darkgrey###
-                "Epiblast" = "#663300",#dark brown###
-                "Neural crest" = "palegreen3",#light green
-                "Late parax. mesoderm" = "royalblue3",#blue
-                "Neuroectoderm" = "greenyellow",#midgreen
-                "ExE mesoderm" = "purple3",#purple
-                "Hemato-endothelial" = "orange",#orange
-                "Neural tube" = "olivedrab",#darkgreen
-                "ExE ectoderm 1" = "grey60",#light grey
-                "NMPs" = "#FAFF0A",#yellow
-                "Mixed mesoderm" = "navy",#navy
-                "Early parax. mesoderm" = "steelblue1",#lightblue
-                "Parietal endoderm" = "grey10",#???
-                "AVE/def. endo/notochord" = "coral2",#dark goldenrod
-                "ExE endoderm" = "plum4",#plum ###
-                "Mesoderm progenitors" = "turquoise",#skyblue
-                "Erythroid 1" = "firebrick3",#darkred
-                "Erythroid 2" = "red4",
-                "Visceral endoderm" = "lightpink1")#pink
+celltype_colours = c("Epiblast" = "#635547",
+                     "Primitive Streak" = "#DABE99",
+                     "Caudal epiblast" = "#9e6762",
+                     
+                     "PGC" = "#FACB12",
+                     
+                     "Anterior Primitive Streak" = "#c19f70",
+                     "Notochord" = "#0F4A9C",
+                     "Def. endoderm" = "#F397C0",
+                     "Gut" = "#EF5A9D",
+                     
+                     "Nascent mesoderm" = "#C594BF",
+                     "Mixed mesoderm" = "#DFCDE4",
+                     "Intermediate mesoderm" = "#139992",
+                     "Caudal Mesoderm" = "#3F84AA",
+                     "Paraxial mesoderm" = "#8DB5CE",
+                     "Somitic mesoderm" = "#005579",
+                     "Pharyngeal mesoderm" = "#C9EBFB",
+                     "Cardiomyocytes" = "#B51D8D",
+                     "Allantois" = "#532C8A",
+                     "ExE mesoderm" = "#8870ad",
+                     "Mesenchyme" = "#cc7818",
+                     
+                     "Haematoendothelial progenitors" = "#FBBE92",
+                     "Endothelium" = "#ff891c",
+                     "Blood progenitors 1" = "#f9decf",
+                     "Blood progenitors 2" = "#c9a997",
+                     "Erythroid1" = "#C72228",
+                     "Erythroid2" = "#f79083",
+                     "Erythroid3" = "#EF4E22",
+                     
+                     "NMP" = "#8EC792",
+                     
+                     "Rostral neurectoderm" = "#65A83E",
+                     "Caudal neurectoderm" = "#354E23",
+                     "Neural crest" = "#C3C388",
+                     "Forebrain/Midbrain/Hindbrain" = "#647a4f",
+                     "Spinal cord" = "#CDE088",
+                     
+                     "Surface ectoderm" = "#f7f79e",
+                     
+                     "Visceral endoderm" = "#F6BFCB",
+                     "ExE endoderm" = "#7F6874",
+                     "ExE ectoderm" = "#989898",
+                     "Parietal endoderm" = "#1A1A1A"
+                     
+)
 
+stage_colours = c("E6.5" = "#D53E4F",
+                  "E6.75" = "#F46D43",
+                  "E7.0" = "#FDAE61",
+                  "E7.25" = "#FEE08B",
+                  "E7.5" = "#FFFFBF",
+                  "E7.75" = "#E6F598",
+                  "E8.0" = "#ABDDA4",
+                  "E8.25" = "#66C2A5",
+                  "E8.5" = "#3288BD",
+                  "mixed_gastrulation" = "#A9A9A9")
 
-celltype_colours = c(
-  "Epiblast"	= "#683612",
-  "Primitive Streak"	= "#DABE99", #was PS/mesendoderm
-  "PGC"	= "#FACB12",
-  "Early mixed mesoderm"	= "#C594BF",
-  "Early posterior mesoderm"	= "#DFCDE4",#was Early ExE mesoderm
-  "ExE mesoderm"	= "#7253A2",
-  "Allantois"	= "#532C8A",
-  "Endothelium"	= "#B3793B",
-  "Haemato-endothelial progenitors"	= "#FBBE92",#was Hemato-
-  "Erythroid 1"	= "#C72228",
-  "Erythroid 2"	= "#EF4E22",
-  "Cardiac mesenchyme"	= "#F7901D",
-  "Cardiomyocytes"	= "#B51D8D",
-  "Early paraxial mesoderm"	= "#3F84AA",
-  "Pharyngeal mesoderm"	= "#C9EBFB",#was "Late mixed mesoderm
-  "Intermediate mesoderm"	= "#139992",
-  "Late paraxial mesoderm"	= "#8DB5CE", #was Late parax. mesoderm
-  "Somites"	= "#005579",
-  "Early neurectoderm"	= "#A0CC47",
-  "Forebrain"	= "#65A83E",
-  "Midbrain/Hindbrain"	= "#354E23",
-  "Cranial neural crest"	= "#C3C388",#was Pre-migratory Neural Crest?
-  "Trunk neural crest"	= "#77783C",#was Neural crest
-  "Placodes"	= "#BBDCA8",
-  "NMP"	= "#8EC792",
-  "Spinal cord"	= "#CDE088",
-  "Surface ectoderm"	= "#FFF574",
-  "Notochord"	= "#0F4A9C",
-  "Def. endoderm"	= "#F397C0",
-  "Foregut"	= "#EF5A9D",
-  "Midgut/Hindgut"	= "#CE4E82",
-  "Visceral endoderm"	= "#F6BFCB",
-  "Parietal endoderm"	= "#1A1A1A",
-  "ExE endoderm"	= "#7F6874",
-  "ExE ectoderm 1"	= "#989898",
-  "ExE ectoderm 2"	= "#333333")
+stage_labels = names(stage_colours)
+names(stage_labels) = names(stage_colours)
+stage_labels[10] = "Mixed"
 
 scale_colour_Publication <- function(...){
   library(scales)
@@ -136,9 +140,9 @@ subsetPointsByGrid <- function(X, Y, resolution=200, seed = 42) {
 
 link = HDF5Array(file = "counts.hdf5", name = "logcounts")
 
-load("data_mini.RData")
-endo_meta = readRDS("endo_meta.rds")
-haem_meta = readRDS("haem_meta.rds")
+load("data.RData")
+# endo_meta = readRDS("endo_meta.rds")
+# haem_meta = readRDS("haem_meta.rds")
 
 shinyServer(
   function(input, output, session){
@@ -159,8 +163,11 @@ shinyServer(
     
     get_coord = reactive({
   
-      
-      coord = tsnes[[input$stage]]
+      if(input$coord_type == "tsne"){
+        coord = tsnes[[input$stage]]
+      } else {
+        coord = umaps[[input$stage]]
+      }
                                     
     
       coord = as.data.frame(coord)
@@ -170,7 +177,7 @@ shinyServer(
     
     get_clusters = reactive({
       meta = get_meta()
-      method = ifelse(grepl("cluster", input$colourby), input$colourby, "cluster.ann")
+      method =  input$colourby
       return(meta[, method])
     })
     
@@ -251,14 +258,14 @@ shinyServer(
                                        size = 4)
       }
       
-      if(input$colourby == "cluster.ann0"){
-        plot = plot + scale_color_manual(values = top_colours, drop = FALSE, name = "") + 
-          guides(colour = guide_legend(override.aes = list(size=9, 
-                                                           alpha = 1),
-                                       ncol = 2))
-      }
+      # if(input$colourby == "cluster.ann0"){
+      #   plot = plot + scale_color_manual(values = top_colours, drop = FALSE, name = "") + 
+      #     guides(colour = guide_legend(override.aes = list(size=9, 
+      #                                                      alpha = 1),
+      #                                  ncol = 2))
+      # }
       
-      if(input$colourby == "cluster.ann"){
+      if(input$colourby == "celltype"){
         plot = plot + scale_color_manual(values = celltype_colours, drop = FALSE, name = "") +
           guides(colour = guide_legend(override.aes = list(size=9, 
                                                            alpha = 1),
@@ -266,7 +273,8 @@ shinyServer(
       }
       
       if(input$colourby == "stage" | input$colourby == "theiler"){
-        plot = plot + scale_color_manual(values = c(brewer_pal(palette = "Spectral")(length(factor_levels)-1), "darkgrey"), name = "")
+        plot = plot + scale_color_manual(values = c(brewer_pal(palette = "Spectral")(length(factor_levels)-1), "darkgrey"), 
+                                         name = "")
       }
       
       return(plot)
@@ -415,20 +423,18 @@ shinyServer(
     
     # CELLTYPE MARKERS
     output$celltype_markers = renderTable({
-
-      
       tab = markers_celltype[[input$celltype]]
       tab = tab[order(tab$IUT.p),]
       genes_mark = genes[match(rownames(tab), genes[,1]), 2]
-      return(data.frame(genes = genes_mark, p.unadj = tab[,1])[1:input$n.genes,])
+      return(data.frame(MGI = genes_mark, p.value = tab[,1])[1:input$n.genes,])
     })
     
     output$celltype_presence_plot = renderPlot({
-      coords = tsnes$all
-      meta = meta
-      order = order(meta$cluster.ann == input$celltype)
+      coords = get_coord()
+      meta = get_meta()
+      order = order(meta$celltype == input$celltype)
       
-      p = ggplot(as.data.frame(coords)[order,], aes(x = V1, y = V2, col = (meta$cluster.ann == input$celltype)[order])) +
+      p = ggplot(as.data.frame(coords)[order,], aes(x = X, y = Y, col = (meta$celltype == input$celltype)[order])) +
         geom_point() +
         scale_color_manual(values = c("TRUE" = "navy", "FALSE" = "darkgrey")) +
         theme(legend.position = "none",
@@ -441,291 +447,291 @@ shinyServer(
       return(p)
     })
     
-    # ENDODERM PLOTS
-    get_endo_count = reactive({
-      count = as.numeric(link[,match(as.character(input$gene), as.character(genes[,2]))])
-      return(count[meta$cell %in% endo_meta$cell])
-    })
-    
-    output$endo_pc1 = renderPlot({
-      
-      validate(
-        need(input$gene %in% genes[,2],
-             "Please select a gene; if you have already selected one, this gene is not in our annotation." )
-      )
-      
-      pdf = data.frame(X = endo_meta$all_PC1,
-                       Y = endo_meta$all_PC2,
-                       expr = get_endo_count())
-      
-      pdf = pdf[order(pdf$expr),]
-      
-      p = ggplot(pdf, aes(x = X, y = Y, col = expr)) +
-        geom_point(size = 2) +
-        scale_color_gradient2(name = "Log2\ncounts", mid = "cornflowerblue", low = "gray75", high = "black", midpoint = max(pdf$expr)/2) +
-        ggtitle(input$gene) +
-        labs(x = "PC1", y = "PC2")
-
-      if(max(pdf$expr) == 0){
-        p = p +
-          scale_color_gradient2(name = "Log2\ncounts", mid = "gray75", low = "gray75", high = "gray75", midpoint = max(pdf$expr)/2)
-      }
-      
-      return(p)
-      
-    })
-    
-    output$endo_pc3 = renderPlot({
-      
-      validate(
-        need(input$gene %in% genes[,2],
-             "Please select a gene; if you have already selected one, this gene is not in our annotation." )
-      )
-      
-      pdf = data.frame(X = endo_meta$all_PC3,
-                       Y = endo_meta$all_PC2,
-                       expr = get_endo_count())
-      
-      pdf = pdf[order(pdf$expr),]
-      
-      
-      p = ggplot(pdf, aes(x = X, y = Y, col = expr)) +
-        geom_point(size = 2) +
-        scale_color_gradient2(name = "Log2\ncounts", mid = "cornflowerblue", low = "gray75", high = "black", midpoint = max(pdf$expr)/2) +
-        ggtitle(input$gene) +
-        labs(x = "PC1", y = "PC2")
-
-      if(max(pdf$expr) == 0){
-        p = p +
-          scale_color_gradient2(name = "Log2\ncounts", mid = "gray75", low = "gray75", high = "gray75", midpoint = max(pdf$expr)/2)
-      }
-      
-      return(p)
-    })
-    
-    gut_clust_cols = c("Immature gut" = "black", "Pharyngeal endoderm" = "gray", "Foregut" = "#D7191C", "Midgut" = "#FDAE61", "Hind/midgut" = "#ABDDA4", "Hindgut" = "#2B83BA")
-
-    
-    output$endo_late_ref = renderPlot({
-      pdf = endo_meta
-      pdf = pdf[!is.na(endo_meta$late_DC1),]
-      
-      p = ggplot(pdf, aes(x = late_DC1, y = late_DC2, col = gut_cluster)) +
-        geom_point(size = 2) +
-        scale_colour_manual(values = gut_clust_cols, 
-                            name = "Cluster") +
-        ggtitle("TS12 endoderm cells") +
-        labs(x = "DC1", y = "DC2") +
-        guides(colour = guide_legend(override.aes = list(size=10, 
-                                                         alpha = 1)))
-      
-      return(p)
-    })
-    
-    output$endo_late_gene = renderPlot({
-      
-      
-      validate(
-        need(input$gene %in% genes[,2],
-             "Please select a gene; if you have already selected one, this gene is not in our annotation." )
-      )
-      
-      
-      pdf = data.frame(X = endo_meta$late_DC1,
-                       Y = endo_meta$late_DC2,
-                       expr = get_endo_count())
-      pdf = pdf[!is.na(endo_meta$late_DC1),]
-      
-      pdf = pdf[order(pdf$expr),]
-      
-      
-      p = ggplot(pdf, aes(x = X, y = Y, col = expr)) +
-        geom_point(size = 2) +
-        scale_color_gradient2(name = "Log2\ncounts", mid = "cornflowerblue", low = "gray75", high = "black", midpoint = max(pdf$expr)/2) +
-        ggtitle(input$gene) +
-        labs(x = "DC1", y = "DC2")
-      
-      if(max(pdf$expr) == 0){
-        p = p +
-          scale_color_gradient2(name = "Log2\ncounts", mid = "gray75", low = "gray75", high = "gray75", midpoint = max(pdf$expr)/2)
-      }
-      
-      return(p)
-    })
-    
-    output$endo_gut_axis = renderPlot({
-      pdf = endo_meta
-      pdf = pdf[!is.na(endo_meta$gut_DC1),]
-      
-      p = ggplot(pdf, aes(x = gut_DC1, fill = gut_cluster)) +
-        geom_density(alpha = 0.5) +
-        scale_fill_manual(values = gut_clust_cols, 
-                            name = "Cluster") +
-        ggtitle("Embryonic gut axis") +
-        labs(x = "DC1", y = "Density")
-      
-      return(p)
-    })
-    
-    output$endo_gut_gene = renderPlot({
-      
-      
-      validate(
-        need(input$gene %in% genes[,2],
-             "Please select a gene; if you have already selected one, this gene is not in our annotation." )
-      )
-      
-      
-      pdf = data.frame(X = endo_meta$gut_DC1,
-                       expr = get_endo_count())
-      pdf = pdf[!is.na(endo_meta$gut_DC1),]
-      
-      p = ggplot(pdf, aes(x = X, y = expr)) +
-        geom_point(size = 1, col = "darkgrey") +
-        geom_smooth(se = FALSE, method = "loess", col = "black") +
-        ggtitle(input$gene) +
-        labs(x = "DC1", y = "log2 count")
-      
-      return(p)
-    })
-    
-    output$endo_traj_gene = renderPlot({
-      
-      
-      validate(
-        need(input$gene %in% genes[,2],
-             "Please select a gene; if you have already selected one, this gene is not in our annotation." )
-      )
-      
-      
-      
-      pdf = data.frame(X = endo_meta$ve_hind_dpt,
-                       expr = get_endo_count())
-      pdf = pdf[!is.na(endo_meta$ve_hind_dpt),]
-      
-      p = ggplot(pdf, aes(x = X, y = expr)) +
-        geom_point(size = 1, col = "darkgrey") +
-        geom_smooth(se = FALSE, method = "loess", col = "black") +
-        ggtitle(input$gene) +
-        labs(x = "VE-Hindgut DPT", y = "log2 count")
-      
-      return(p)
-    })
-    
-    # ENDOTHELIUM PLOTS
-    
-    haem_colours <- c(
-      'D' = '#00264d',
-      'G'= '#cc6600',
-      'C'= '#3377ff',
-      'B'= "#cce6ff",
-      'A'="#ff8000",
-      'F'= "#ffff00",
-      'E' = "#ffd11a",
-      'I'= "#b3b300",
-      'L'="#ff4da6",
-      'K'="#ffbf80",
-      'J'="#996633",
-      'H'="#009900"
-      
-    )
-    
-    haem_labels = c(
-      names(haem_colours),
-      unique(haem_meta$cluster.ann)
-    )
-    names(haem_labels) = haem_labels
-    haem_labels[which(haem_labels == "Early posterior mesoderm")] = "Early posterior\nmesoderm"
-        
-    get_haem_count = reactive({
-      count = as.numeric(link[,match(as.character(input$gene), as.character(genes[,2]))])
-      return(count[meta$cell %in% haem_meta$cell])
-    })
-    
-    output$haem_clusters = renderPlot({
-      pdf = haem_meta
-      unq = unique(pdf$haem.clust)
-      pdf$haem.clust = factor(pdf$haem.clust, levels = unq[order(-nchar(unq), unq)])
-      pdf = pdf[sample(nrow(pdf), nrow(pdf)),]
-      
-      p = ggplot(pdf, aes(x = -haem.X, y = haem.Y, col = haem.clust)) +
-        geom_point(size = 1) +
-        scale_color_manual(values = c(celltype_colours, haem_colours), 
-                           name = "Cluster",
-                           labels = haem_labels) +
-        guides(colour = guide_legend(override.aes = list(size=9, 
-                                                         alpha = 1),
-                                     ncol = 2)) +
-        theme(axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), axis.line = element_blank())
-      
-      return(p)
-    })
-    
-    output$haem_gene = renderPlot({
-      
-      validate(
-        need(input$gene %in% genes[,2],
-             "Please select a gene; if you have already selected one, this gene is not in our annotation." )
-      )
-      
-      pdf = haem_meta
-      pdf$expr = get_haem_count()
-      pdf = pdf[order(pdf$expr),]
-      
-      p = ggplot(pdf, aes(x = -haem.X, y = haem.Y, col = expr)) +
-        geom_point(size = 1) +
-        scale_color_gradient2(name = "Log2\ncounts", mid = "cornflowerblue", low = "gray75", high = "black", midpoint = max(pdf$expr)/2) +
-        theme(axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), axis.line = element_blank())
-      
-      if(max(pdf$expr) == 0){
-        p = p +
-          scale_color_gradient2(name = "Log2\ncounts", mid = "gray75", low = "gray75", high = "gray75", midpoint = max(pdf$expr)/2)
-      }
-      
-      return(p)
-    })
-    
-    output$haem_clusters_zoomed = renderPlot({
-      pdf = haem_meta
-      pdf = pdf[pdf$zoom,]
-      unq = unique(pdf$haem.clust)
-      pdf$haem.clust = factor(pdf$haem.clust, levels = unq[order(-nchar(unq), unq)])
-      pdf = pdf[sample(nrow(pdf), nrow(pdf)),]
-      
-      p = ggplot(pdf, aes(x = -haem.X, y = haem.Y, col = haem.clust)) +
-        geom_point(size = 1) +
-        scale_color_manual(values = c(celltype_colours, haem_colours), name = "Cluster") +
-        guides(colour = guide_legend(override.aes = list(size=9, 
-                                                         alpha = 1),
-                                     ncol = 2)) +
-        theme(axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), axis.line = element_blank())
-      
-      return(p)
-    })
-    
-    output$haem_gene_zoomed = renderPlot({
-      validate(
-        need(input$gene %in% genes[,2],
-             "Please select a gene; if you have already selected one, this gene is not in our annotation." )
-      )
-      
-      pdf = haem_meta
-      pdf$expr = get_haem_count()
-      pdf = pdf[pdf$zoom,]
-      pdf = pdf[order(pdf$expr),]
-      
-      p = ggplot(pdf, aes(x = -haem.X, y = haem.Y, col = expr)) +
-        geom_point(size = 1) +
-        scale_color_gradient2(name = "Log2\ncounts", mid = "cornflowerblue", low = "gray75", high = "black", midpoint = max(pdf$expr)/2) +
-        theme(axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), axis.line = element_blank())
-      
-      if(max(pdf$expr) == 0){
-        p = p +
-          scale_color_gradient2(name = "Log2\ncounts", mid = "gray75", low = "gray75", high = "gray75", midpoint = max(pdf$expr)/2)
-      }
-      
-      return(p)
-    })
+    # # ENDODERM PLOTS
+    # get_endo_count = reactive({
+    #   count = as.numeric(link[,match(as.character(input$gene), as.character(genes[,2]))])
+    #   return(count[meta$cell %in% endo_meta$cell])
+    # })
+    # 
+    # output$endo_pc1 = renderPlot({
+    #   
+    #   validate(
+    #     need(input$gene %in% genes[,2],
+    #          "Please select a gene; if you have already selected one, this gene is not in our annotation." )
+    #   )
+    #   
+    #   pdf = data.frame(X = endo_meta$all_PC1,
+    #                    Y = endo_meta$all_PC2,
+    #                    expr = get_endo_count())
+    #   
+    #   pdf = pdf[order(pdf$expr),]
+    #   
+    #   p = ggplot(pdf, aes(x = X, y = Y, col = expr)) +
+    #     geom_point(size = 2) +
+    #     scale_color_gradient2(name = "Log2\ncounts", mid = "cornflowerblue", low = "gray75", high = "black", midpoint = max(pdf$expr)/2) +
+    #     ggtitle(input$gene) +
+    #     labs(x = "PC1", y = "PC2")
+    # 
+    #   if(max(pdf$expr) == 0){
+    #     p = p +
+    #       scale_color_gradient2(name = "Log2\ncounts", mid = "gray75", low = "gray75", high = "gray75", midpoint = max(pdf$expr)/2)
+    #   }
+    #   
+    #   return(p)
+    #   
+    # })
+    # 
+    # output$endo_pc3 = renderPlot({
+    #   
+    #   validate(
+    #     need(input$gene %in% genes[,2],
+    #          "Please select a gene; if you have already selected one, this gene is not in our annotation." )
+    #   )
+    #   
+    #   pdf = data.frame(X = endo_meta$all_PC3,
+    #                    Y = endo_meta$all_PC2,
+    #                    expr = get_endo_count())
+    #   
+    #   pdf = pdf[order(pdf$expr),]
+    #   
+    #   
+    #   p = ggplot(pdf, aes(x = X, y = Y, col = expr)) +
+    #     geom_point(size = 2) +
+    #     scale_color_gradient2(name = "Log2\ncounts", mid = "cornflowerblue", low = "gray75", high = "black", midpoint = max(pdf$expr)/2) +
+    #     ggtitle(input$gene) +
+    #     labs(x = "PC1", y = "PC2")
+    # 
+    #   if(max(pdf$expr) == 0){
+    #     p = p +
+    #       scale_color_gradient2(name = "Log2\ncounts", mid = "gray75", low = "gray75", high = "gray75", midpoint = max(pdf$expr)/2)
+    #   }
+    #   
+    #   return(p)
+    # })
+    # 
+    # gut_clust_cols = c("Immature gut" = "black", "Pharyngeal endoderm" = "gray", "Foregut" = "#D7191C", "Midgut" = "#FDAE61", "Hind/midgut" = "#ABDDA4", "Hindgut" = "#2B83BA")
+    # 
+    # 
+    # output$endo_late_ref = renderPlot({
+    #   pdf = endo_meta
+    #   pdf = pdf[!is.na(endo_meta$late_DC1),]
+    #   
+    #   p = ggplot(pdf, aes(x = late_DC1, y = late_DC2, col = gut_cluster)) +
+    #     geom_point(size = 2) +
+    #     scale_colour_manual(values = gut_clust_cols, 
+    #                         name = "Cluster") +
+    #     ggtitle("TS12 endoderm cells") +
+    #     labs(x = "DC1", y = "DC2") +
+    #     guides(colour = guide_legend(override.aes = list(size=10, 
+    #                                                      alpha = 1)))
+    #   
+    #   return(p)
+    # })
+    # 
+    # output$endo_late_gene = renderPlot({
+    #   
+    #   
+    #   validate(
+    #     need(input$gene %in% genes[,2],
+    #          "Please select a gene; if you have already selected one, this gene is not in our annotation." )
+    #   )
+    #   
+    #   
+    #   pdf = data.frame(X = endo_meta$late_DC1,
+    #                    Y = endo_meta$late_DC2,
+    #                    expr = get_endo_count())
+    #   pdf = pdf[!is.na(endo_meta$late_DC1),]
+    #   
+    #   pdf = pdf[order(pdf$expr),]
+    #   
+    #   
+    #   p = ggplot(pdf, aes(x = X, y = Y, col = expr)) +
+    #     geom_point(size = 2) +
+    #     scale_color_gradient2(name = "Log2\ncounts", mid = "cornflowerblue", low = "gray75", high = "black", midpoint = max(pdf$expr)/2) +
+    #     ggtitle(input$gene) +
+    #     labs(x = "DC1", y = "DC2")
+    #   
+    #   if(max(pdf$expr) == 0){
+    #     p = p +
+    #       scale_color_gradient2(name = "Log2\ncounts", mid = "gray75", low = "gray75", high = "gray75", midpoint = max(pdf$expr)/2)
+    #   }
+    #   
+    #   return(p)
+    # })
+    # 
+    # output$endo_gut_axis = renderPlot({
+    #   pdf = endo_meta
+    #   pdf = pdf[!is.na(endo_meta$gut_DC1),]
+    #   
+    #   p = ggplot(pdf, aes(x = gut_DC1, fill = gut_cluster)) +
+    #     geom_density(alpha = 0.5) +
+    #     scale_fill_manual(values = gut_clust_cols, 
+    #                         name = "Cluster") +
+    #     ggtitle("Embryonic gut axis") +
+    #     labs(x = "DC1", y = "Density")
+    #   
+    #   return(p)
+    # })
+    # 
+    # output$endo_gut_gene = renderPlot({
+    #   
+    #   
+    #   validate(
+    #     need(input$gene %in% genes[,2],
+    #          "Please select a gene; if you have already selected one, this gene is not in our annotation." )
+    #   )
+    #   
+    #   
+    #   pdf = data.frame(X = endo_meta$gut_DC1,
+    #                    expr = get_endo_count())
+    #   pdf = pdf[!is.na(endo_meta$gut_DC1),]
+    #   
+    #   p = ggplot(pdf, aes(x = X, y = expr)) +
+    #     geom_point(size = 1, col = "darkgrey") +
+    #     geom_smooth(se = FALSE, method = "loess", col = "black") +
+    #     ggtitle(input$gene) +
+    #     labs(x = "DC1", y = "log2 count")
+    #   
+    #   return(p)
+    # })
+    # 
+    # output$endo_traj_gene = renderPlot({
+    #   
+    #   
+    #   validate(
+    #     need(input$gene %in% genes[,2],
+    #          "Please select a gene; if you have already selected one, this gene is not in our annotation." )
+    #   )
+    #   
+    #   
+    #   
+    #   pdf = data.frame(X = endo_meta$ve_hind_dpt,
+    #                    expr = get_endo_count())
+    #   pdf = pdf[!is.na(endo_meta$ve_hind_dpt),]
+    #   
+    #   p = ggplot(pdf, aes(x = X, y = expr)) +
+    #     geom_point(size = 1, col = "darkgrey") +
+    #     geom_smooth(se = FALSE, method = "loess", col = "black") +
+    #     ggtitle(input$gene) +
+    #     labs(x = "VE-Hindgut DPT", y = "log2 count")
+    #   
+    #   return(p)
+    # })
+    # 
+    # # ENDOTHELIUM PLOTS
+    # 
+    # haem_colours <- c(
+    #   'D' = '#00264d',
+    #   'G'= '#cc6600',
+    #   'C'= '#3377ff',
+    #   'B'= "#cce6ff",
+    #   'A'="#ff8000",
+    #   'F'= "#ffff00",
+    #   'E' = "#ffd11a",
+    #   'I'= "#b3b300",
+    #   'L'="#ff4da6",
+    #   'K'="#ffbf80",
+    #   'J'="#996633",
+    #   'H'="#009900"
+    #   
+    # )
+    # 
+    # haem_labels = c(
+    #   names(haem_colours),
+    #   unique(haem_meta$cluster.ann)
+    # )
+    # names(haem_labels) = haem_labels
+    # haem_labels[which(haem_labels == "Early posterior mesoderm")] = "Early posterior\nmesoderm"
+    #     
+    # get_haem_count = reactive({
+    #   count = as.numeric(link[,match(as.character(input$gene), as.character(genes[,2]))])
+    #   return(count[meta$cell %in% haem_meta$cell])
+    # })
+    # 
+    # output$haem_clusters = renderPlot({
+    #   pdf = haem_meta
+    #   unq = unique(pdf$haem.clust)
+    #   pdf$haem.clust = factor(pdf$haem.clust, levels = unq[order(-nchar(unq), unq)])
+    #   pdf = pdf[sample(nrow(pdf), nrow(pdf)),]
+    #   
+    #   p = ggplot(pdf, aes(x = -haem.X, y = haem.Y, col = haem.clust)) +
+    #     geom_point(size = 1) +
+    #     scale_color_manual(values = c(celltype_colours, haem_colours), 
+    #                        name = "Cluster",
+    #                        labels = haem_labels) +
+    #     guides(colour = guide_legend(override.aes = list(size=9, 
+    #                                                      alpha = 1),
+    #                                  ncol = 2)) +
+    #     theme(axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), axis.line = element_blank())
+    #   
+    #   return(p)
+    # })
+    # 
+    # output$haem_gene = renderPlot({
+    #   
+    #   validate(
+    #     need(input$gene %in% genes[,2],
+    #          "Please select a gene; if you have already selected one, this gene is not in our annotation." )
+    #   )
+    #   
+    #   pdf = haem_meta
+    #   pdf$expr = get_haem_count()
+    #   pdf = pdf[order(pdf$expr),]
+    #   
+    #   p = ggplot(pdf, aes(x = -haem.X, y = haem.Y, col = expr)) +
+    #     geom_point(size = 1) +
+    #     scale_color_gradient2(name = "Log2\ncounts", mid = "cornflowerblue", low = "gray75", high = "black", midpoint = max(pdf$expr)/2) +
+    #     theme(axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), axis.line = element_blank())
+    #   
+    #   if(max(pdf$expr) == 0){
+    #     p = p +
+    #       scale_color_gradient2(name = "Log2\ncounts", mid = "gray75", low = "gray75", high = "gray75", midpoint = max(pdf$expr)/2)
+    #   }
+    #   
+    #   return(p)
+    # })
+    # 
+    # output$haem_clusters_zoomed = renderPlot({
+    #   pdf = haem_meta
+    #   pdf = pdf[pdf$zoom,]
+    #   unq = unique(pdf$haem.clust)
+    #   pdf$haem.clust = factor(pdf$haem.clust, levels = unq[order(-nchar(unq), unq)])
+    #   pdf = pdf[sample(nrow(pdf), nrow(pdf)),]
+    #   
+    #   p = ggplot(pdf, aes(x = -haem.X, y = haem.Y, col = haem.clust)) +
+    #     geom_point(size = 1) +
+    #     scale_color_manual(values = c(celltype_colours, haem_colours), name = "Cluster") +
+    #     guides(colour = guide_legend(override.aes = list(size=9, 
+    #                                                      alpha = 1),
+    #                                  ncol = 2)) +
+    #     theme(axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), axis.line = element_blank())
+    #   
+    #   return(p)
+    # })
+    # 
+    # output$haem_gene_zoomed = renderPlot({
+    #   validate(
+    #     need(input$gene %in% genes[,2],
+    #          "Please select a gene; if you have already selected one, this gene is not in our annotation." )
+    #   )
+    #   
+    #   pdf = haem_meta
+    #   pdf$expr = get_haem_count()
+    #   pdf = pdf[pdf$zoom,]
+    #   pdf = pdf[order(pdf$expr),]
+    #   
+    #   p = ggplot(pdf, aes(x = -haem.X, y = haem.Y, col = expr)) +
+    #     geom_point(size = 1) +
+    #     scale_color_gradient2(name = "Log2\ncounts", mid = "cornflowerblue", low = "gray75", high = "black", midpoint = max(pdf$expr)/2) +
+    #     theme(axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), axis.line = element_blank())
+    #   
+    #   if(max(pdf$expr) == 0){
+    #     p = p +
+    #       scale_color_gradient2(name = "Log2\ncounts", mid = "gray75", low = "gray75", high = "gray75", midpoint = max(pdf$expr)/2)
+    #   }
+    #   
+    #   return(p)
+    # })
     
 
   }
