@@ -397,7 +397,8 @@ shinyServer(
         labs(x = "Cluster number", y = "Log2 count") + 
         ggtitle(paste(input$gene, "-", input$stage, "cells")) +
         theme(axis.title = element_text(face = "bold", size = 12),
-              axis.text = element_text(size = 12, face = "bold"),
+              axis.text.y = element_text(size = 12, face = "bold"),
+              axis.text.x = element_text(size = 12, face = "bold", angle = 90, hjust = 1, vjust = 0.5),
               legend.position = "none",
               axis.title.x = element_blank()) +
         annotate("text", 
