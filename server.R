@@ -6,111 +6,8 @@ library(cowplot)
 library(ggrepel)
 library(DT)
 
-big_plot_width = 9 * 1.5
-big_plot_height = 5 * 1.5
-narrower_plot_width = 6.5 * 1.5
-
-# COLOURS
-celltype_colours = c("Epiblast" = "#635547",
-                     "Primitive Streak" = "#DABE99",
-                     "Caudal epiblast" = "#9e6762",
-                     
-                     "PGC" = "#FACB12",
-                     
-                     "Anterior Primitive Streak" = "#c19f70",
-                     "Notochord" = "#0F4A9C",
-                     "Def. endoderm" = "#F397C0",
-                     "Gut" = "#EF5A9D",
-                     
-                     "Nascent mesoderm" = "#C594BF",
-                     "Mixed mesoderm" = "#DFCDE4",
-                     "Intermediate mesoderm" = "#139992",
-                     "Caudal Mesoderm" = "#3F84AA",
-                     "Paraxial mesoderm" = "#8DB5CE",
-                     "Somitic mesoderm" = "#005579",
-                     "Pharyngeal mesoderm" = "#C9EBFB",
-                     "Cardiomyocytes" = "#B51D8D",
-                     "Allantois" = "#532C8A",
-                     "ExE mesoderm" = "#8870ad",
-                     "Mesenchyme" = "#cc7818",
-                     
-                     "Haematoendothelial progenitors" = "#FBBE92",
-                     "Endothelium" = "#ff891c",
-                     "Blood progenitors 1" = "#f9decf",
-                     "Blood progenitors 2" = "#c9a997",
-                     "Erythroid1" = "#C72228",
-                     "Erythroid2" = "#f79083",
-                     "Erythroid3" = "#EF4E22",
-                     
-                     "NMP" = "#8EC792",
-                     
-                     "Rostral neurectoderm" = "#65A83E",
-                     "Caudal neurectoderm" = "#354E23",
-                     "Neural crest" = "#C3C388",
-                     "Forebrain/Midbrain/Hindbrain" = "#647a4f",
-                     "Spinal cord" = "#CDE088",
-                     
-                     "Surface ectoderm" = "#f7f79e",
-                     
-                     "Visceral endoderm" = "#F6BFCB",
-                     "ExE endoderm" = "#7F6874",
-                     "ExE ectoderm" = "#989898",
-                     "Parietal endoderm" = "#1A1A1A"
-                     
-)
-
-stage_colours = c("E6.5" = "#D53E4F",
-                  "E6.75" = "#F46D43",
-                  "E7.0" = "#FDAE61",
-                  "E7.25" = "#FEE08B",
-                  "E7.5" = "#FFFFBF",
-                  "E7.75" = "#E6F598",
-                  "E8.0" = "#ABDDA4",
-                  "E8.25" = "#66C2A5",
-                  "E8.5" = "#3288BD",
-                  "mixed_gastrulation" = "#A9A9A9")
-
-stage_labels = names(stage_colours)
-names(stage_labels) = names(stage_colours)
-stage_labels[10] = "Mixed"
-
-scale_colour_Publication <- function(...){
-  # require(scales)
-  discrete_scale("colour", "Publication",
-                 scales::manual_pal(values = c(
-                   "#000000", "#1CE6FF", "#FF34FF", "#FF4A46", "#008941", "#006FA6", "#A30059",
-                   "#7A4900", "#0000A6", "#63FFAC", "#B79762", "#004D43", "#8FB0FF", "#997D87",
-                   "#5A0007", "#809693", "#1B4400", "#4FC601", "#3B5DFF", "#4A3B53", "#FF2F80",
-                   "#61615A", "#BA0900", "#6B7900", "#00C2A0", "#FFAA92", "#FF90C9", "#B903AA", "#D16100",
-                   "#000035", "#7B4F4B", "#A1C299", "#300018", "#0AA6D8", "#013349", "#00846F",
-                   "#372101", "#FFB500", "#A079BF", "#CC0744", "#C0B9B2", "#C2FF99", "#001E09",
-                   "#00489C", "#6F0062", "#0CBD66", "#EEC3FF", "#456D75", "#B77B68", "#7A87A1", "#788D66",
-                   "#885578", "#FAD09F", "#FF8A9A", "#D157A0", "#BEC459", "#456648", "#0086ED", "#886F4C",
-                   "#34362D", "#B4A8BD", "#00A6AA", "#452C2C", "#636375", "#A3C8C9", "#FF913F", "#938A81",
-                   "#575329", "#00FECF", "#B05B6F", "#8CD0FF", "#3B9700", "#04F757", "#C8A1A1", "#1E6E00",
-                   "#7900D7", "#A77500", "#6367A9", "#A05837", "#6B002C", "#772600", "#D790FF", "#9B9700",
-                   "#549E79", "#FFF69F", "#201625", "#72418F", "#BC23FF", "#99ADC0", "#3A2465", "#922329",
-                   "#5B4534", "#FDE8DC", "#404E55", "#0089A3", "#CB7E98", "#A4E804", "#324E72", "#6A3A4C")), ...)
-}
-
-scale_fill_Publication <- function(...){
-  # require(scales)
-  discrete_scale("fill", "Publication",
-                 scales::manual_pal(values = c(
-                   "#000000", "#1CE6FF", "#FF34FF", "#FF4A46", "#008941", "#006FA6", "#A30059",
-                   "#7A4900", "#0000A6", "#63FFAC", "#B79762", "#004D43", "#8FB0FF", "#997D87",
-                   "#5A0007", "#809693", "#1B4400", "#4FC601", "#3B5DFF", "#4A3B53", "#FF2F80",
-                   "#61615A", "#BA0900", "#6B7900", "#00C2A0", "#FFAA92", "#FF90C9", "#B903AA", "#D16100",
-                   "#000035", "#7B4F4B", "#A1C299", "#300018", "#0AA6D8", "#013349", "#00846F",
-                   "#372101", "#FFB500", "#A079BF", "#CC0744", "#C0B9B2", "#C2FF99", "#001E09",
-                   "#00489C", "#6F0062", "#0CBD66", "#EEC3FF", "#456D75", "#B77B68", "#7A87A1", "#788D66",
-                   "#885578", "#FAD09F", "#FF8A9A", "#D157A0", "#BEC459", "#456648", "#0086ED", "#886F4C",
-                   "#34362D", "#B4A8BD", "#00A6AA", "#452C2C", "#636375", "#A3C8C9", "#FF913F", "#938A81",
-                   "#575329", "#00FECF", "#B05B6F", "#8CD0FF", "#3B9700", "#04F757", "#C8A1A1", "#1E6E00",
-                   "#7900D7", "#A77500", "#6367A9", "#A05837", "#6B002C", "#772600", "#D790FF", "#9B9700",
-                   "#549E79", "#FFF69F", "#201625", "#72418F", "#BC23FF", "#99ADC0", "#3A2465", "#922329",
-                   "#5B4534", "#FDE8DC", "#404E55", "#0089A3", "#CB7E98", "#A4E804", "#324E72", "#6A3A4C")), ...)
-}
+#load palettes etc.
+source("helper.R")
 
 # taken from iSEE
 subsetPointsByGrid <- function(X, Y, resolution=200, seed = 42) {
@@ -141,6 +38,24 @@ subsetPointsByGrid <- function(X, Y, resolution=200, seed = 42) {
 link = HDF5Array(file = "counts.hdf5", name = "logcounts")
 
 load("data.RData")
+#ensure factor levels are correct for plotting
+meta$celltype = factor(meta$celltype,
+                       levels = names(celltype_colours),
+                       ordered = TRUE)
+
+meta$stage = factor(meta$stage,
+                    levels = names(stage_colours),
+                    ordered = TRUE)
+
+meta$theiler = factor(meta$theiler,
+                      levels = names(theiler_colours),
+                      ordered = TRUE)
+
+meta$cluster = factor(meta$cluster)
+meta$cluster.stage = factor(meta$cluster.stage)
+meta$cluster.theiler = factor(meta$cluster.theiler)
+
+
 # endo_meta = readRDS("endo_meta.rds")
 # haem_meta = readRDS("haem_meta.rds")
 
@@ -177,8 +92,9 @@ shinyServer(
     
     get_clusters = reactive({
       meta = get_meta()
-      method =  input$colourby
-      return(meta[, method])
+      method = input$colourby
+      out = meta[, method]
+      return(out)
     })
     
     get_cluster_centroids = reactive({
@@ -194,23 +110,18 @@ shinyServer(
       
     })
     
-    get_count = reactive({
-      
-      #get the gene count into memory
-      count = as.numeric(link[,match(as.character(input$gene), as.character(genes[,2]))])
-      #subsetting is much quicker now
-      return(count[meta$cell %in% get_meta()$cell])
-      
-    })
-    
     get_count_gene = function(gene = "Hbb-bh1"){
-      
       #get the gene count into memory
       count = as.numeric(link[,match(as.character(gene), as.character(genes[,2]))])
       #subsetting is much quicker now
       return(count[meta$cell %in% get_meta()$cell])
-      
     }
+    
+    get_count = reactive({
+      return(get_count_gene(input$gene))
+    })
+    
+
     
     get_subset = reactive({
       coord = get_coord()
@@ -230,13 +141,6 @@ shinyServer(
     plotOverview = reactive({
       
       
-      unq = as.character(unique(get_meta()[, input$colourby]))
-      if(grepl("E[6-8]", unq[1]) | grepl("cluster.ann", input$colourby)){
-        factor_levels = unq[order(unq)]
-      } else {
-        factor_levels = unq[order(nchar(unq), unq)]
-        
-      }
       allowed = get_subset()
       #scramble, and subset if asked
       new_order = sample(length(allowed), length(allowed))
@@ -244,15 +148,15 @@ shinyServer(
       plot = ggplot(data = get_coord()[new_order,], 
                     mapping = aes(x = X, 
                                   y = Y, 
-                                  col = factor(get_meta()[new_order,input$colourby], 
-                                               levels = factor_levels))) +
+                                  col = get_clusters()[new_order])) +
         geom_point(size = 1, 
                    alpha = 0.9) +
-        scale_colour_Publication(name = input$colourby, drop = FALSE) +
-        ggtitle(input$stage) +
-        guides(colour = guide_legend(override.aes = list(size=9, 
+        # scale_colour_Publication(name = input$colourby, drop = FALSE) +
+        ggtitle(switch(input$stage, "all" = "Whole dataset", input$stage)) +
+        guides(colour = guide_legend(override.aes = list(size=7, 
                                                          alpha = 1))) +
-        theme(axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), axis.line = element_blank())
+        theme(axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), axis.line = element_blank()) +
+        coord_fixed(ratio = 0.8)
       
       if(input$numbers){
         centroids = get_cluster_centroids()
@@ -267,24 +171,12 @@ shinyServer(
                                        size = 4)
       }
       
-      # if(input$colourby == "cluster.ann0"){
-      #   plot = plot + scale_color_manual(values = top_colours, drop = FALSE, name = "") + 
-      #     guides(colour = guide_legend(override.aes = list(size=9, 
-      #                                                      alpha = 1),
-      #                                  ncol = 2))
-      # }
-      
-      if(input$colourby == "celltype"){
-        plot = plot + scale_color_manual(values = celltype_colours, drop = FALSE, name = "") +
-          guides(colour = guide_legend(override.aes = list(size=9, 
-                                                           alpha = 1),
-                                       ncol = 2))
-      }
-      
-      if(input$colourby == "stage" | input$colourby == "theiler"){
-        plot = plot + scale_color_manual(values = c(scales::brewer_pal(palette = "Spectral")(length(factor_levels)-1), "darkgrey"), 
-                                         name = "")
-      }
+      palette = switch(input$colourby,
+                       "celltype" = celltype_palette,
+                       "stage" = stage_palette_col,
+                       "theiler" = theiler_palette,
+                       scale_colour_Publication(name = ""))
+      plot = plot + palette
       
       return(plot)
     })
@@ -302,23 +194,21 @@ shinyServer(
     )
     
     output$stage_contribution = renderPlot({
-
-        
         tab = table(get_clusters(), get_meta()$stage)
         fractions = sweep(tab, 1, rowSums(tab), "/")
+        #to determine the ordering of bars
         frac_nomixed = fractions[,colnames(fractions)!="mixed_gastrulation", drop = FALSE]
         means = apply(frac_nomixed, 1, function(x) sum(x * 1:length(x)))
 
         melt = melt(fractions)
         
-        palette = c(scales::brewer_pal(palette = "Spectral")(length(unique(meta$stage))-1), "darkgrey")
-        names(palette) = unique(meta$stage)[order(unique(meta$stage))]
         
         plot = ggplot(melt, aes(x = factor(Var1, levels = names(means)[order(means)]), y = value, fill = Var2)) +
           geom_bar(stat = "identity") +
-          labs(x = "Cluster", y = "Fraction of cells") +
-          scale_fill_manual(values = palette, name= "") +
-          theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust =1))
+          labs(y = "Fraction of cells") +
+          stage_palette_fill +
+          theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust =1),
+                axis.title.x = element_blank())
         
         return(plot)
         
@@ -342,9 +232,9 @@ shinyServer(
       plot = ggplot(data = dat[allowed,],
                     mapping = aes(x = X, y = Y, col = count[allowed])) +
         geom_point(size = 1) +
-        scale_color_gradient2(name = "Log2\ncounts", mid = "cornflowerblue", low = "gray75", high = "black", midpoint = max(count)/2) +
-        ggtitle(gene) +
-        theme(axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), axis.line = element_blank())
+        scale_color_gradient2(name = "Log2\nnormalised\ncounts", mid = "cornflowerblue", low = "gray75", high = "black", midpoint = max(count)/2) +
+        theme(axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), axis.line = element_blank()) +
+        coord_fixed(ratio = 0.8)
       
       if(max(count) == 0){
         plot = plot +
@@ -355,7 +245,7 @@ shinyServer(
     }
     
     plotGeneTSNE = reactive({      
-      makeGenePlot(gene = input$gene) + ggtitle(paste0(input$stage, " cells, ", input$gene))
+      makeGenePlot(gene = input$gene) + ggtitle(paste0(switch(input$stage, "all" = "Whole dataset", input$stage), ", ", input$gene))
     })
     
     output$gene = renderPlot({
@@ -378,24 +268,15 @@ shinyServer(
     )
     
     plotGeneViolin = reactive({
-      pdf = data.frame(count = get_count(), cluster = get_clusters())
-      
-      names = c("sample" = "Sample",
-                "cluster.stage" = "Stage (Ex.x) cluster",
-                "cluster.theiler" = "Theiler stage clusters",
-                "stage" = "Developmental stage",
-                "cluster" = "All-data clusters",
-                "celltype" = "Predicted cell type")
       
       clust.sizes = table(get_clusters())
       
-      plot = ggplot(pdf, aes(x = factor(cluster, levels = unique(cluster[order(cluster)])), 
-                             y = count, 
-                             fill = factor(cluster, levels = unique(cluster[order(cluster)])))) +
+      plot = ggplot(mapping =  aes(x = get_clusters(), 
+                             y = get_count(), 
+                             fill = get_clusters())) +
         geom_violin(scale = "width") +
-        scale_fill_manual(values = celltype_colours, name = paste(input$gene, input$colourby, sep = ", ")) +
-        labs(x = "Cluster number", y = "Log2 count") + 
-        ggtitle(paste(input$gene, "-", input$stage, "cells")) +
+        labs(y = "Log2 normalised count") + 
+        ggtitle(paste0(switch(input$stage, "all" = "Whole dataset", input$stage), ", ", input$gene)) +
         theme(axis.title = element_text(face = "bold", size = 12),
               axis.text.y = element_text(size = 12, face = "bold"),
               axis.text.x = element_text(size = 12, face = "bold", angle = 90, hjust = 1, vjust = 0.5),
@@ -403,13 +284,14 @@ shinyServer(
               axis.title.x = element_blank()) +
         annotate("text", 
                  x = factor(names(clust.sizes)), 
-                 y = rep(c(max(get_count())*1.05, max(get_count()) * 1.1), 
-                         round(length(clust.sizes)/2))[1:length(clust.sizes)], 
+                 y = rep_len(c(max(get_count())*1.1, max(get_count()) * 1.2), 
+                             length.out = length(clust.sizes)), 
                  label = as.vector(clust.sizes))
       
-      if(input$colourby == "cluster.ann"){
-        plot= plot + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
-      }
+      plot = plot + switch(input$colourby,
+                           "celltype" = celltype_palette_fill,
+                           scale_colour_Publication(name = ""))
+
       
       return(plot)
     })
@@ -441,7 +323,7 @@ shinyServer(
       tab = markers_celltype[[input$celltype]]
       tab = tab[order(tab$IUT.p),]
       genes_mark = genes[match(rownames(tab), genes[,1]), 2]
-      df = data.frame(MGI = genes_mark, p.value = tab[,1], FDR = p.adjust(tab[,1], method = "fdr"))#[1:input$n.genes,]
+      df = data.frame(MGI = genes_mark, p.value = tab[,1], FDR = p.adjust(tab[,1], method = "fdr"))
       return(df)
     })
     
@@ -471,7 +353,7 @@ shinyServer(
       row = input$celltype_markers_row_last_clicked
       validate(
         need(!is.null(row),
-           "Please select a gene in the marker table" )
+           "Please click on a gene in the marker table" )
       )
       gene= get_markers()[row, "MGI"]
       
