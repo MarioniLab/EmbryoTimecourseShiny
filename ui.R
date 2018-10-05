@@ -58,9 +58,9 @@ big_plot_height = "500px"
 
 narrower_plot_width = "650px"
 
-half_plot_width = "450px"
+half_plot_width = "400px"
 narrower_half_plot_width = "350px"
-half_plot_height = "300px"
+half_plot_height = "260px"
 
 fluidPage(
   sidebarLayout(
@@ -138,11 +138,6 @@ fluidPage(
                  HTML(paste(shiny::tags$b("Gene:"),
                             "Select the gene (MGI) to use for expression plots.")),
                  br(),
-                 # HTML(paste(shiny::tags$b("Number of DE genes:"),
-                 #            "Choose the size of the table in the",
-                 #            em("Cell-type markers"),
-                 #            "tab.")),
-                 # br(),
                  HTML(paste(shiny::tags$b("Subset cells & severity:"),
                             "To speed up plotting, this reduces the number of cells plotted in a density dependent manner.")),
                  h4("Other notes:"),
@@ -176,30 +171,31 @@ fluidPage(
                                "These are genes that are expressed in the selected celltype more highly than in any other celltype, calculated across the whole dataset."))
                    )
                  )
-                 )#,
-        # tabPanel("Endoderm",
-        #          h3("These plots are interactive versions of visualisations that were present in the paper."),
-        #          h4("Principal components for all considered endoderm cells (i.e. embryonic + visceral) are shown."),
-        #          fluidRow(
-        #            splitLayout(cellWidths = c("50%", "50%"),
-        #                        plotOutput("endo_pc1", width = half_plot_width, height = half_plot_height),
-        #                        plotOutput("endo_pc3", width = half_plot_width, height = half_plot_height))
-        #          ),
-        #          h4("Diffusion components for E8.0-E8.5 endoderm cells are shown."),
-        #          fluidRow(
-        #            splitLayout(cellWidths = c("50%", "50%"),
-        #                        plotOutput("endo_late_ref", width = half_plot_width, height = half_plot_height),
-        #                        plotOutput("endo_late_gene", width = half_plot_width, height = half_plot_height))
-        #          ),
-        #          h4("The axis of the embryonic gut is shown."),
-        #          fluidRow(
-        #            splitLayout(cellWidths = c("50%", "50%"),
-        #                        plotOutput("endo_gut_axis", width = half_plot_width, height = half_plot_height),
-        #                        plotOutput("endo_gut_gene", width = half_plot_width, height = half_plot_height))
-        #          ),
-        #          h4("The pseudotime trajectory for Visceral Endoderm to Hindgut cells is shown."),
-        #          plotOutput("endo_traj_gene", width = half_plot_width, height = half_plot_height)
-        #          ),
+                 ),
+        tabPanel("Endoderm",
+                 h3("These plots are interactive versions of visualisations that were present in the paper."),
+                 h3("Select a gene of interest using the sidebar."),
+                 h4("Summary plots of all gut cells"),
+                 fluidRow(
+                   splitLayout(cellWidths = c("33%", "33%", "33%"),
+                               plotOutput("endo_gephi_celltype", width = half_plot_width, height = half_plot_height),
+                               plotOutput("endo_gephi_gene", width = half_plot_width, height = half_plot_height),
+                               plotOutput("endo_gephi_stage", width = half_plot_width, height = half_plot_height)
+                   )
+                 ),
+                 h4("Gut cells at E8.25 and E8.5"),
+                 fluidRow(
+                   splitLayout(cellWidths = c("33%", "33%", "33%"),
+                               plotOutput("gut_clusters", width = half_plot_width, height = half_plot_height),
+                               plotOutput("gut_gene", width = half_plot_width, height = half_plot_height),
+                               plotOutput("gut_boxplot", width = half_plot_width, height = half_plot_height))
+                 ),
+                 h4("E8.5 gut cells arranged along pseudospace"),
+                 plotOutput("gut_density", width = big_plot_width, height = big_plot_height),
+                 h4("Trajectories towards formation of the hindgut"),
+                 splitLayout(cellWidths = c("50%", "50%"),
+                               plotOutput("hg1_traj", width = half_plot_width, height = big_plot_height),
+                               plotOutput("hg2_traj", width = half_plot_width, height = big_plot_height))
         # tabPanel("Haematoendothelium",
         #          fixedRow(
         #            splitLayout(cellWidths = c("50%", "50%"),
@@ -213,7 +209,7 @@ fluidPage(
         #                        plotOutput("haem_clusters_zoomed", width = half_plot_width, height = half_plot_height),
         #                        plotOutput("haem_gene_zoomed", width = narrower_half_plot_width, height = half_plot_height))
         #          )
-        #          )
+                 )
 
       )
     )

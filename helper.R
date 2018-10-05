@@ -84,6 +84,18 @@ names(theiler_colours) = c("TS9", "TS10", "TS11", "TS12", "TS9-10")
 theiler_palette = scale_color_manual(values = theiler_colours,
                                      name = "Theiler stage")
 
+
+gut_colours = c("Foregut 2" = "#1B9E77", 
+                "Pharyngeal endoderm" = "#D95D02", 
+                "Foregut 1" = "#7570B3", 
+                "Midgut" = "#E7298A", 
+                "Hindgut 2" = "#66A61E", 
+                "Midgut/Hindgut" = "#E6AB02", 
+                "Hindgut 1" = "#A6761D")
+gut_palette = scale_color_manual(values = gut_colours, name = "Gut clusters")
+gut_palette_fill = scale_fill_manual(values = gut_colours, name = "Gut clusters")
+
+
 scale_colour_Publication <- function(...){
   # require(scales)
   discrete_scale("colour", "Publication",

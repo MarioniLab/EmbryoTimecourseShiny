@@ -56,7 +56,7 @@ meta$cluster.stage = factor(meta$cluster.stage)
 meta$cluster.theiler = factor(meta$cluster.theiler)
 
 
-# endo_meta = readRDS("endo_meta.rds")
+endo_meta = readRDS("endo_meta.rds")
 # haem_meta = readRDS("haem_meta.rds")
 
 shinyServer(
@@ -385,177 +385,196 @@ shinyServer(
       
     })
     
-    # # ENDODERM PLOTS
-    # get_endo_count = reactive({
-    #   count = as.numeric(link[,match(as.character(input$gene), as.character(genes[,2]))])
-    #   return(count[meta$cell %in% endo_meta$cell])
-    # })
-    # 
-    # output$endo_pc1 = renderPlot({
-    #   
-    #   validate(
-    #     need(input$gene %in% genes[,2],
-    #          "Please select a gene; if you have already selected one, this gene is not in our annotation." )
-    #   )
-    #   
-    #   pdf = data.frame(X = endo_meta$all_PC1,
-    #                    Y = endo_meta$all_PC2,
-    #                    expr = get_endo_count())
-    #   
-    #   pdf = pdf[order(pdf$expr),]
-    #   
-    #   p = ggplot(pdf, aes(x = X, y = Y, col = expr)) +
-    #     geom_point(size = 2) +
-    #     scale_color_gradient2(name = "Log2\ncounts", mid = "cornflowerblue", low = "gray75", high = "black", midpoint = max(pdf$expr)/2) +
-    #     ggtitle(input$gene) +
-    #     labs(x = "PC1", y = "PC2")
-    # 
-    #   if(max(pdf$expr) == 0){
-    #     p = p +
-    #       scale_color_gradient2(name = "Log2\ncounts", mid = "gray75", low = "gray75", high = "gray75", midpoint = max(pdf$expr)/2)
-    #   }
-    #   
-    #   return(p)
-    #   
-    # })
-    # 
-    # output$endo_pc3 = renderPlot({
-    #   
-    #   validate(
-    #     need(input$gene %in% genes[,2],
-    #          "Please select a gene; if you have already selected one, this gene is not in our annotation." )
-    #   )
-    #   
-    #   pdf = data.frame(X = endo_meta$all_PC3,
-    #                    Y = endo_meta$all_PC2,
-    #                    expr = get_endo_count())
-    #   
-    #   pdf = pdf[order(pdf$expr),]
-    #   
-    #   
-    #   p = ggplot(pdf, aes(x = X, y = Y, col = expr)) +
-    #     geom_point(size = 2) +
-    #     scale_color_gradient2(name = "Log2\ncounts", mid = "cornflowerblue", low = "gray75", high = "black", midpoint = max(pdf$expr)/2) +
-    #     ggtitle(input$gene) +
-    #     labs(x = "PC1", y = "PC2")
-    # 
-    #   if(max(pdf$expr) == 0){
-    #     p = p +
-    #       scale_color_gradient2(name = "Log2\ncounts", mid = "gray75", low = "gray75", high = "gray75", midpoint = max(pdf$expr)/2)
-    #   }
-    #   
-    #   return(p)
-    # })
-    # 
-    # gut_clust_cols = c("Immature gut" = "black", "Pharyngeal endoderm" = "gray", "Foregut" = "#D7191C", "Midgut" = "#FDAE61", "Hind/midgut" = "#ABDDA4", "Hindgut" = "#2B83BA")
-    # 
-    # 
-    # output$endo_late_ref = renderPlot({
-    #   pdf = endo_meta
-    #   pdf = pdf[!is.na(endo_meta$late_DC1),]
-    #   
-    #   p = ggplot(pdf, aes(x = late_DC1, y = late_DC2, col = gut_cluster)) +
-    #     geom_point(size = 2) +
-    #     scale_colour_manual(values = gut_clust_cols, 
-    #                         name = "Cluster") +
-    #     ggtitle("TS12 endoderm cells") +
-    #     labs(x = "DC1", y = "DC2") +
-    #     guides(colour = guide_legend(override.aes = list(size=10, 
-    #                                                      alpha = 1)))
-    #   
-    #   return(p)
-    # })
-    # 
-    # output$endo_late_gene = renderPlot({
-    #   
-    #   
-    #   validate(
-    #     need(input$gene %in% genes[,2],
-    #          "Please select a gene; if you have already selected one, this gene is not in our annotation." )
-    #   )
-    #   
-    #   
-    #   pdf = data.frame(X = endo_meta$late_DC1,
-    #                    Y = endo_meta$late_DC2,
-    #                    expr = get_endo_count())
-    #   pdf = pdf[!is.na(endo_meta$late_DC1),]
-    #   
-    #   pdf = pdf[order(pdf$expr),]
-    #   
-    #   
-    #   p = ggplot(pdf, aes(x = X, y = Y, col = expr)) +
-    #     geom_point(size = 2) +
-    #     scale_color_gradient2(name = "Log2\ncounts", mid = "cornflowerblue", low = "gray75", high = "black", midpoint = max(pdf$expr)/2) +
-    #     ggtitle(input$gene) +
-    #     labs(x = "DC1", y = "DC2")
-    #   
-    #   if(max(pdf$expr) == 0){
-    #     p = p +
-    #       scale_color_gradient2(name = "Log2\ncounts", mid = "gray75", low = "gray75", high = "gray75", midpoint = max(pdf$expr)/2)
-    #   }
-    #   
-    #   return(p)
-    # })
-    # 
-    # output$endo_gut_axis = renderPlot({
-    #   pdf = endo_meta
-    #   pdf = pdf[!is.na(endo_meta$gut_DC1),]
-    #   
-    #   p = ggplot(pdf, aes(x = gut_DC1, fill = gut_cluster)) +
-    #     geom_density(alpha = 0.5) +
-    #     scale_fill_manual(values = gut_clust_cols, 
-    #                         name = "Cluster") +
-    #     ggtitle("Embryonic gut axis") +
-    #     labs(x = "DC1", y = "Density")
-    #   
-    #   return(p)
-    # })
-    # 
-    # output$endo_gut_gene = renderPlot({
-    #   
-    #   
-    #   validate(
-    #     need(input$gene %in% genes[,2],
-    #          "Please select a gene; if you have already selected one, this gene is not in our annotation." )
-    #   )
-    #   
-    #   
-    #   pdf = data.frame(X = endo_meta$gut_DC1,
-    #                    expr = get_endo_count())
-    #   pdf = pdf[!is.na(endo_meta$gut_DC1),]
-    #   
-    #   p = ggplot(pdf, aes(x = X, y = expr)) +
-    #     geom_point(size = 1, col = "darkgrey") +
-    #     geom_smooth(se = FALSE, method = "loess", col = "black") +
-    #     ggtitle(input$gene) +
-    #     labs(x = "DC1", y = "log2 count")
-    #   
-    #   return(p)
-    # })
-    # 
-    # output$endo_traj_gene = renderPlot({
-    #   
-    #   
-    #   validate(
-    #     need(input$gene %in% genes[,2],
-    #          "Please select a gene; if you have already selected one, this gene is not in our annotation." )
-    #   )
-    #   
-    #   
-    #   
-    #   pdf = data.frame(X = endo_meta$ve_hind_dpt,
-    #                    expr = get_endo_count())
-    #   pdf = pdf[!is.na(endo_meta$ve_hind_dpt),]
-    #   
-    #   p = ggplot(pdf, aes(x = X, y = expr)) +
-    #     geom_point(size = 1, col = "darkgrey") +
-    #     geom_smooth(se = FALSE, method = "loess", col = "black") +
-    #     ggtitle(input$gene) +
-    #     labs(x = "VE-Hindgut DPT", y = "log2 count")
-    #   
-    #   return(p)
-    # })
-    # 
+    # ENDODERM PLOTS
+    get_count_gene_endo = function(gene = "Hbb-bh1"){
+      #get the gene count into memory
+      count = as.numeric(link[,match(as.character(gene), as.character(genes[,2]))])
+      #subsetting is much quicker now
+      return(count[meta$cell %in% endo_meta$cell])
+    }
+    
+    get_count_endo = reactive({
+      return(get_count_gene_endo(input$gene))
+    })
+    
+    
+    
+
+    output$endo_gephi_celltype = renderPlot({
+      ro = sample(nrow(endo_meta), nrow(endo_meta))
+
+      p = ggplot(endo_meta[ro,], aes(x = gephiX, y = gephiY, col = celltype)) +
+        geom_point(size = 2) +
+        celltype_palette +
+        labs(x = "gephiX", y = "gephiY") +
+        theme(axis.text = element_blank(),
+              axis.ticks = element_blank(),
+              axis.title = element_blank()) +
+        coord_fixed(ratio = 0.8) +
+        guides(colour = guide_legend(override.aes = list(size=7)))      
+      return(p)
+
+    })
+    
+    output$endo_gephi_stage = renderPlot({
+      ro = sample(nrow(endo_meta), nrow(endo_meta))
+
+      p = ggplot(endo_meta[ro,], aes(x = gephiX, y = gephiY, col = stage)) +
+        geom_point(size = 2) +
+        stage_palette_col +
+        labs(x = "gephiX", y = "gephiY") +
+        theme(axis.text = element_blank(),
+              axis.ticks = element_blank(),
+              axis.title = element_blank()) +
+        coord_fixed(ratio = 0.8) +
+        guides(colour = guide_legend(override.aes = list(size=7)))   
+      
+      return(p)
+      
+    })
+    
+    output$endo_gephi_gene = renderPlot({
+      
+      validate(
+        need(input$gene %in% genes[,2],
+             "Please select a gene; if you have already selected one, this gene is not in our annotation." )
+      )
+      
+      expr = get_count_endo()
+
+      p = makeGenePlot(gene_name = input$gene, gene_counts = expr, x_coord = endo_meta$gephiX, y_coord = endo_meta$gephiY)
+      
+      return(p)
+      
+    })
+    
+    output$gut_clusters = renderPlot({
+      p = ggplot(endo_meta[!is.na(endo_meta$cluster_gut),], aes(x = gutX, y= gutY, col = cluster_gut)) +
+        geom_point() +
+        gut_palette +
+        theme(axis.text = element_blank(),
+              axis.ticks = element_blank(),
+              axis.title = element_blank()) +
+        coord_fixed(ratio = 0.8) +
+        guides(colour = guide_legend(override.aes = list(size=7)))   
+      
+      return(p)
+    })
+    
+    output$gut_gene = renderPlot({
+      
+      validate(
+        need(input$gene %in% genes[,2],
+             "Please select a gene; if you have already selected one, this gene is not in our annotation." )
+      )
+      
+      expr = get_count_endo()[!is.na(endo_meta$cluster_gut)]
+      sub = endo_meta[!is.na(endo_meta$cluster_gut),]
+      
+      p = makeGenePlot(gene_name = input$gene, gene_counts = expr, x_coord = sub$gutX, y_coord = sub$gutY)
+      
+      return(p)
+      
+    })
+    
+    output$gut_boxplot = renderPlot({
+      
+      validate(
+        need(input$gene %in% genes[,2],
+             "Please select a gene; if you have already selected one, this gene is not in our annotation." )
+      )
+      
+      expr = get_count_endo()[!is.na(endo_meta$cluster_gut)]
+      sub = endo_meta[!is.na(endo_meta$cluster_gut),]
+      
+      p = ggplot(data = sub, mapping = aes(x = cluster_gut, y = expr, fill = cluster_gut)) +
+        geom_boxplot() +
+        gut_palette_fill +
+        theme(axis.text.x = element_text(angle = 30, hjust = 1),
+              axis.title.x = element_blank()) +
+        labs(y = "log2 normalised count") +
+        theme(legend.position = "none")
+      
+      return(p)
+    })
+    
+    output$gut_density = renderPlot({
+      
+      validate(
+        need(input$gene %in% genes[,2],
+             "Please select a gene; if you have already selected one, this gene is not in our annotation." )
+      )
+      
+      sub = endo_meta[!is.na(endo_meta$gutDPT),]
+      
+      p1 = ggplot(sub, aes(x = gutDPT, fill = cluster_gut)) +
+        geom_density(alpha = 0.7) +
+        gut_palette_fill +
+        labs(x = "DPT", y = "Density")
+      
+      expr = get_count_endo()[!is.na(endo_meta$gutDPT)]
+
+      p2 = ggplot(mapping = aes(x = sub$gutDPT, y= expr)) +
+        geom_point() +
+        labs(x = "DPT", y = "log2 normalised count") +
+        geom_smooth(method = "loess", col = "coral", se = FALSE)
+      
+      return(plot_grid(p1, p2, ncol = 1, align = "v", axis = "tlbr"))
+    })
+    
+    output$hg1_traj = renderPlot({
+      
+      validate(
+        need(input$gene %in% genes[,2],
+             "Please select a gene; if you have already selected one, this gene is not in our annotation." )
+      )
+      sub = endo_meta[!is.na(endo_meta$trajectory),]
+      sub = sub[sub$trajectory == "VE",]
+      
+      p1 = ggplot(sub, mapping = aes(x = stage, y= traj_dpt, col = stage)) +
+        geom_jitter(width = 0.3, height = 0) +
+        stage_palette_col +
+        coord_flip() +
+        labs(y = "DPT") +
+        theme(axis.title.y = element_blank())
+      
+      expr = get_count_endo()[endo_meta$cell %in% sub$cell]
+
+      p2 = ggplot(mapping = aes(x = sub$traj_dpt, y= expr)) +
+        geom_point() +
+        labs(x = "DPT", y = "log2 normalised count") +
+        geom_smooth(method = "loess", col = "coral", se = FALSE)
+      
+      return(plot_grid(p1, p2, ncol = 1, align = "v", axis = "tlbr"))
+    })
+    
+    output$hg2_traj = renderPlot({
+      
+      validate(
+        need(input$gene %in% genes[,2],
+             "Please select a gene; if you have already selected one, this gene is not in our annotation." )
+      )
+      sub = endo_meta[!is.na(endo_meta$trajectory),]
+      sub = sub[sub$trajectory == "DE",]
+      
+      p1 = ggplot(sub, mapping = aes(x = stage, y= traj_dpt, col = stage)) +
+        geom_jitter(width = 0.3, height = 0) +
+        stage_palette_col +
+        coord_flip() +
+        labs(y = "DPT") +
+        theme(axis.title.y = element_blank())
+      
+      expr = get_count_endo()[endo_meta$cell %in% sub$cell]
+      
+      p2 = ggplot(mapping = aes(x = sub$traj_dpt, y= expr)) +
+        geom_point() +
+        labs(x = "DPT", y = "log2 normalised count") +
+        geom_smooth(method = "loess", col = "coral", se = FALSE)
+      
+      return(plot_grid(p1, p2, ncol = 1, align = "v", axis = "tlbr"))
+    })
+    
+    
     # # ENDOTHELIUM PLOTS
     # 
     # haem_colours <- c(
