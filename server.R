@@ -110,9 +110,14 @@ shinyServer(
       
     })
     
+    get_full_count_gene = function(gene = "Ttr"){
+      count = as.numeric(link[,match(as.character(gene), as.character(genes[,2]))])
+      return(count)
+    })
+    
     get_count_gene = function(gene = "Hbb-bh1"){
       #get the gene count into memory
-      count = as.numeric(link[,match(as.character(gene), as.character(genes[,2]))])
+      get_full_count_gene(gene)
       #subsetting is much quicker now
       return(count[meta$cell %in% get_meta()$cell])
     }
@@ -156,7 +161,8 @@ shinyServer(
         guides(colour = guide_legend(override.aes = list(size=7, 
                                                          alpha = 1))) +
         theme(axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), axis.line = element_blank()) +
-        coord_fixed(ratio = 0.8)
+        coord_fixed(ratio = 0.8) +
+        labs(caption = "A summary of the selected cells. Change colouring of points using the sidebar.")
       
       if(input$numbers){
         centroids = get_cluster_centroids()
@@ -218,34 +224,45 @@ shinyServer(
     
     #### GENE EXPRESSION PLOTS
     
-    makeGenePlot = function(gene){
-      dat = get_coord()
-      count = as.vector(get_count_gene(gene))
+    makeGenePlot = function(gene_name, gene_counts, x_coord, y_coord){
       
+      order = order(gene_counts)
       
-      allowed = get_subset()
-      #order so that highest expressing cells are not hidden behind others
-      dat = dat[order(count),]
-      allowed = allowed[order(count)]
-      count = count[order(count)]
-      
-      plot = ggplot(data = dat[allowed,],
-                    mapping = aes(x = X, y = Y, col = count[allowed])) +
+      plot = ggplot(mapping = aes(x = x_coord[order], y = y_coord[order], col = gene_counts[order])) +
         geom_point(size = 1) +
-        scale_color_gradient2(name = "Log2\nnormalised\ncounts", mid = "cornflowerblue", low = "gray75", high = "black", midpoint = max(count)/2) +
+        scale_color_gradient2(name = "Log2\nnormalised\ncounts", mid = "cornflowerblue", low = "gray75", high = "black", midpoint = max(gene_counts)/2) +
         theme(axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), axis.line = element_blank()) +
         coord_fixed(ratio = 0.8)
       
-      if(max(count) == 0){
+      if(max(gene_counts) == 0){
         plot = plot +
-          scale_color_gradient2(name = "Log2\ncounts", mid = "gray75", low = "gray75", high = "gray75", midpoint = max(count)/2)
+          scale_color_gradient2(name = "Log2\ncounts", mid = "gray75", low = "gray75", high = "gray75", midpoint = max(gene_counts)/2)
       }
       
       return(plot)
+      
     }
+      
     
-    plotGeneTSNE = reactive({      
-      makeGenePlot(gene = input$gene) + ggtitle(paste0(switch(input$stage, "all" = "Whole dataset", input$stage), ", ", input$gene))
+    plotMainGeneVis = reactive({ 
+      
+      dat = get_coord()
+      count = get_count()
+      
+      allowed = get_subset()
+      
+      dat = dat[allowed,]
+      count = count[allowed]
+      
+      return(
+        makeGenePlot(gene_name = input$gene,
+                   gene_count = count,
+                   x_coord = dat[,1],
+                   y_coord = dat[,2]) + 
+        ggtitle(paste0(switch(input$stage, "all" = "Whole dataset", input$stage), 
+                       ", ", 
+                       input$gene))
+        )
     })
     
     output$gene = renderPlot({
@@ -255,7 +272,7 @@ shinyServer(
               "Please select a gene; if you have already selected one, this gene is not in our annotation." )
       )
       
-      return(plotGeneTSNE())
+      return(plotMainGeneVis())
 
     })
     
@@ -358,7 +375,11 @@ shinyServer(
       gene= get_markers()[row, "MGI"]
       
       
-      return(makeGenePlot(gene))
+      
+      return(makeGenePlot(gene_name = gene,
+                          gene_counts = get_count_gene(gene),
+                          x_coord= get_coord()[,1],
+                          y_coord = get_coord()[,2]))
       
     })
     
