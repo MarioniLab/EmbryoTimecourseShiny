@@ -173,7 +173,7 @@ fluidPage(
                      plotOutput("celltype_presence_plot", height = half_plot_height, width = half_plot_height),
                      dataTableOutput("celltype_markers"),
                      h4(paste0("This is the output of the scran function findMarkers. ",
-                               "These are top-ranked genes that are expressed in the selected celltype more highly than in *any* other celltype."))
+                               "These are genes that are expressed in the selected celltype more highly than in any other celltype, calculated across the whole dataset."))
                    )
                  )
                  )#,

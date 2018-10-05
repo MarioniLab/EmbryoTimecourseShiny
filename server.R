@@ -110,14 +110,11 @@ shinyServer(
       
     })
     
-    get_full_count_gene = function(gene = "Ttr"){
-      count = as.numeric(link[,match(as.character(gene), as.character(genes[,2]))])
-      return(count)
-    })
+    
     
     get_count_gene = function(gene = "Hbb-bh1"){
       #get the gene count into memory
-      get_full_count_gene(gene)
+      count = as.numeric(link[,match(as.character(gene), as.character(genes[,2]))])
       #subsetting is much quicker now
       return(count[meta$cell %in% get_meta()$cell])
     }
@@ -162,7 +159,7 @@ shinyServer(
                                                          alpha = 1))) +
         theme(axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), axis.line = element_blank()) +
         coord_fixed(ratio = 0.8) +
-        labs(caption = "A summary of the selected cells. Change colouring of points using the sidebar.")
+        labs(caption = "A summary of the selected cells is shown. Various options can be selected using the sidebar.")
       
       if(input$numbers){
         centroids = get_cluster_centroids()
@@ -214,7 +211,8 @@ shinyServer(
           labs(y = "Fraction of cells") +
           stage_palette_fill +
           theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust =1),
-                axis.title.x = element_blank())
+                axis.title.x = element_blank()) +
+          labs(caption = "The contribution of cells from different timepoints to each cluster is shown. Bars are ordered from youngest mean age to oldest.")
         
         return(plot)
         
@@ -261,7 +259,8 @@ shinyServer(
                    y_coord = dat[,2]) + 
         ggtitle(paste0(switch(input$stage, "all" = "Whole dataset", input$stage), 
                        ", ", 
-                       input$gene))
+                       input$gene)) +
+          labs(caption = "Gene expression information is overlaid on the main visualisation.\nPoints are plotted in order such that the highest-expressing cells are the most visible (\"on top\").")
         )
     })
     
@@ -280,7 +279,7 @@ shinyServer(
       filename = function() { paste0(input$gene, "-gene_", input$stage, "-cells.pdf") },
       content = function(file) {
         pdf(file = NULL)
-        ggsave(file, plot = plotGeneTSNE(), device = "pdf", width = narrower_plot_width, height = big_plot_height)
+        ggsave(file, plot = plotMainGeneVis(), device = "pdf", width = narrower_plot_width, height = big_plot_height)
       }
     )
     
@@ -303,7 +302,8 @@ shinyServer(
                  x = factor(names(clust.sizes)), 
                  y = rep_len(c(max(get_count())*1.1, max(get_count()) * 1.2), 
                              length.out = length(clust.sizes)), 
-                 label = as.vector(clust.sizes))
+                 label = as.vector(clust.sizes)) +
+        labs(caption = "Gene expression for each of the celltypes of clusters is shown. Violins are width-normalised. Numbers above each violin show the number of cells in the group")
       
       plot = plot + switch(input$colourby,
                            "celltype" = celltype_palette_fill,
@@ -360,7 +360,8 @@ shinyServer(
               axis.title = element_blank(),
               axis.ticks = element_blank(),
               axis.text = element_blank(),
-              axis.line = element_blank())
+              axis.line = element_blank()) +
+        labs(caption = "Regions of the overview visualisation where the\nselected cells are present (red points) are shown.")
       
       
       return(p)
@@ -379,7 +380,8 @@ shinyServer(
       return(makeGenePlot(gene_name = gene,
                           gene_counts = get_count_gene(gene),
                           x_coord= get_coord()[,1],
-                          y_coord = get_coord()[,2]))
+                          y_coord = get_coord()[,2])+
+               labs(caption = "Gene expression is overlaid on the overview plot."))
       
     })
     
