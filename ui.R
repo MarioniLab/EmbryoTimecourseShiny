@@ -188,7 +188,7 @@ fluidPage(
                    splitLayout(cellWidths = c("33%", "33%", "33%"),
                                plotOutput("gut_clusters", width = half_plot_width, height = half_plot_height),
                                plotOutput("gut_gene", width = half_plot_width, height = half_plot_height),
-                               plotOutput("gut_boxplot", width = half_plot_width, height = half_plot_height))
+                               plotOutput("gut_boxplot", width = narrower_half_plot_width, height = half_plot_height))
                  ),
                  h4("E8.5 gut cells arranged along pseudospace"),
                  plotOutput("gut_density", width = big_plot_width, height = big_plot_height),

@@ -234,7 +234,8 @@ shinyServer(
               axis.text = element_blank(), 
               axis.ticks = element_blank()
               ) +
-        coord_fixed(ratio = 0.8)
+        coord_fixed(ratio = 0.8) +
+        ggtitle(gene_name)
       
       if(max(gene_counts) == 0){
         plot = plot +
@@ -520,7 +521,7 @@ shinyServer(
 
       p2 = ggplot(mapping = aes(x = sub$gutDPT, y= expr)) +
         geom_point() +
-        labs(x = "DPT", y = "log2 normalised count") +
+        labs(x = "DPT", y = paste0("log2 normalised count - ", input$gene)) +
         geom_smooth(method = "loess", col = "coral", se = FALSE)
       
       return(plot_grid(p1, p2, ncol = 1, align = "v", axis = "tlbr"))
@@ -546,7 +547,7 @@ shinyServer(
 
       p2 = ggplot(mapping = aes(x = sub$traj_dpt, y= expr)) +
         geom_point() +
-        labs(x = "DPT", y = "log2 normalised count") +
+        labs(x = "DPT", y = paste0("log2 normalised count - ", input$gene)) +
         geom_smooth(method = "loess", col = "coral", se = FALSE)
       
       return(plot_grid(p1, p2, ncol = 1, align = "v", axis = "tlbr"))
@@ -572,7 +573,7 @@ shinyServer(
       
       p2 = ggplot(mapping = aes(x = sub$traj_dpt, y= expr)) +
         geom_point() +
-        labs(x = "DPT", y = "log2 normalised count") +
+        labs(x = "DPT", y = paste0("log2 normalised count - ", input$gene)) +
         geom_smooth(method = "loess", col = "coral", se = FALSE)
       
       return(plot_grid(p1, p2, ncol = 1, align = "v", axis = "tlbr"))
