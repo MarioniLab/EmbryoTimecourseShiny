@@ -198,6 +198,9 @@ fluidPage(
                                plotOutput("hg2_traj", width = half_plot_width, height = big_plot_height))
         ),
         tabPanel("Haematoendothelium",
+                 h3("These plots are interactive versions of visualisations that were present in the paper."),
+                 h3("Select a gene of interest using the sidebar."),
+                 h4("Summary plots of all Haemato-endothelial cells"),
                  fluidRow(
                    splitLayout(cellWidths = c("50%", "50%"),
                                plotOutput("blood_gephi_celltype", width = half_plot_width, height = half_plot_height),
@@ -208,20 +211,12 @@ fluidPage(
                                plotOutput("blood_gephi_subcluster", width = half_plot_width, height = half_plot_height),
                                plotOutput("blood_gephi_gene", width = half_plot_width, height = half_plot_height))
                  ),
+                 h4("Summary plots of the zoomed section shown in the manuscript"),
                  fluidRow(
                    splitLayout(cellWidths = c("50%", "50%"),
                                plotOutput("blood_zoom_subcluster", width = half_plot_width, height = half_plot_height),
                                plotOutput("blood_zoom_gene", width = half_plot_width, height = half_plot_height))
                  )
-                 
-                 
-        #          # plotOutput("haem_clusters", width = big_plot_width, height = big_plot_height),
-        #          # plotOutput("haem_gene", width = narrower_plot_width, height = big_plot_height),
-        #          fixedRow(
-        #            splitLayout(cellWidths = c("50%", "50%"),
-        #                        plotOutput("haem_clusters_zoomed", width = half_plot_width, height = half_plot_height),
-        #                        plotOutput("haem_gene_zoomed", width = narrower_half_plot_width, height = half_plot_height))
-        #          )
                  )
 
       )
