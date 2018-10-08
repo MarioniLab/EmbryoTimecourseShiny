@@ -541,7 +541,8 @@ shinyServer(
         stage_palette +
         coord_flip() +
         labs(y = "DPT") +
-        theme(axis.title.y = element_blank())
+        theme(axis.title.y = element_blank()) +
+        ggtitle("Visceral endo. to Hindgut 1")
       
       expr = get_count_endo()[endo_meta$cell %in% sub$cell]
 
@@ -567,7 +568,8 @@ shinyServer(
         stage_palette +
         coord_flip() +
         labs(y = "DPT") +
-        theme(axis.title.y = element_blank())
+        theme(axis.title.y = element_blank()) +
+        ggtitle("Definitive endo. to Hindgut 2")
       
       expr = get_count_endo()[endo_meta$cell %in% sub$cell]
       
