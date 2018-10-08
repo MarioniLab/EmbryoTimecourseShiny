@@ -58,7 +58,7 @@ big_plot_height = "500px"
 
 narrower_plot_width = "650px"
 
-half_plot_width = "400px"
+half_plot_width = "450px"
 narrower_half_plot_width = "350px"
 half_plot_height = "260px"
 
@@ -166,10 +166,10 @@ fluidPage(
                    ),
                    mainPanel(
                      plotOutput("celltype_presence_plot", height = half_plot_height, width = half_plot_height),
-                     dataTableOutput("celltype_markers"),
-                     h4(paste0("This is the output of the scran function findMarkers. ",
-                               "These are genes that are expressed in the selected celltype more highly than in any other celltype, calculated across the whole dataset."))
-                   )
+                     h4(paste0("Below is the output of the scran function findMarkers. ",
+                               "These are genes that are expressed in the selected celltype more highly than in any other celltype, calculated across the whole dataset.")),
+                     dataTableOutput("celltype_markers")
+                     )
                  )
                  ),
         tabPanel("Endoderm",
@@ -196,12 +196,25 @@ fluidPage(
                  splitLayout(cellWidths = c("50%", "50%"),
                                plotOutput("hg1_traj", width = half_plot_width, height = big_plot_height),
                                plotOutput("hg2_traj", width = half_plot_width, height = big_plot_height))
-        # tabPanel("Haematoendothelium",
-        #          fixedRow(
-        #            splitLayout(cellWidths = c("50%", "50%"),
-        #                        plotOutput("haem_clusters", width = half_plot_width, height = half_plot_height),
-        #                        plotOutput("haem_gene", width = narrower_half_plot_width, height = half_plot_height))
-        #          ),
+        ),
+        tabPanel("Haematoendothelium",
+                 fluidRow(
+                   splitLayout(cellWidths = c("50%", "50%"),
+                               plotOutput("blood_gephi_celltype", width = half_plot_width, height = half_plot_height),
+                               plotOutput("blood_gephi_stage", width = half_plot_width, height = half_plot_height))
+                 ),
+                 fluidRow(
+                   splitLayout(cellWidths = c("50%", "50%"),
+                               plotOutput("blood_gephi_subcluster", width = half_plot_width, height = half_plot_height),
+                               plotOutput("blood_gephi_gene", width = half_plot_width, height = half_plot_height))
+                 ),
+                 fluidRow(
+                   splitLayout(cellWidths = c("50%", "50%"),
+                               plotOutput("blood_zoom_subcluster", width = half_plot_width, height = half_plot_height),
+                               plotOutput("blood_zoom_gene", width = half_plot_width, height = half_plot_height))
+                 )
+                 
+                 
         #          # plotOutput("haem_clusters", width = big_plot_width, height = big_plot_height),
         #          # plotOutput("haem_gene", width = narrower_plot_width, height = big_plot_height),
         #          fixedRow(

@@ -54,10 +54,11 @@ meta$theiler = factor(meta$theiler,
 meta$cluster = factor(meta$cluster)
 meta$cluster.stage = factor(meta$cluster.stage)
 meta$cluster.theiler = factor(meta$cluster.theiler)
+meta$sample = factor(meta$sample)
 
 
 endo_meta = readRDS("endo_meta.rds")
-# haem_meta = readRDS("haem_meta.rds")
+blood_meta = readRDS("blood_meta.rds")
 
 shinyServer(
   function(input, output, session){
@@ -176,7 +177,7 @@ shinyServer(
       
       palette = switch(input$colourby,
                        "celltype" = celltype_palette,
-                       "stage" = stage_palette_col,
+                       "stage" = stage_palette,
                        "theiler" = theiler_palette,
                        scale_colour_Publication(name = ""))
       plot = plot + palette
@@ -229,7 +230,10 @@ shinyServer(
       plot = ggplot(mapping = aes(x = x_coord[order], y = y_coord[order], col = gene_counts[order])) +
         geom_point(size = 1) +
         scale_color_gradient2(name = "Log2\nnormalised\ncounts", mid = "cornflowerblue", low = "gray75", high = "black", midpoint = max(gene_counts)/2) +
-        theme(axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), axis.line = element_blank()) +
+        theme(axis.title = element_blank(), 
+              axis.text = element_blank(), 
+              axis.ticks = element_blank()
+              ) +
         coord_fixed(ratio = 0.8)
       
       if(max(gene_counts) == 0){
@@ -421,7 +425,7 @@ shinyServer(
 
       p = ggplot(endo_meta[ro,], aes(x = gephiX, y = gephiY, col = stage)) +
         geom_point(size = 2) +
-        stage_palette_col +
+        stage_palette +
         labs(x = "gephiX", y = "gephiY") +
         theme(axis.text = element_blank(),
               axis.ticks = element_blank(),
@@ -533,7 +537,7 @@ shinyServer(
       
       p1 = ggplot(sub, mapping = aes(x = stage, y= traj_dpt, col = stage)) +
         geom_jitter(width = 0.3, height = 0) +
-        stage_palette_col +
+        stage_palette +
         coord_flip() +
         labs(y = "DPT") +
         theme(axis.title.y = element_blank())
@@ -559,7 +563,7 @@ shinyServer(
       
       p1 = ggplot(sub, mapping = aes(x = stage, y= traj_dpt, col = stage)) +
         geom_jitter(width = 0.3, height = 0) +
-        stage_palette_col +
+        stage_palette +
         coord_flip() +
         labs(y = "DPT") +
         theme(axis.title.y = element_blank())
@@ -575,121 +579,127 @@ shinyServer(
     })
     
     
-    # # ENDOTHELIUM PLOTS
-    # 
-    # haem_colours <- c(
-    #   'D' = '#00264d',
-    #   'G'= '#cc6600',
-    #   'C'= '#3377ff',
-    #   'B'= "#cce6ff",
-    #   'A'="#ff8000",
-    #   'F'= "#ffff00",
-    #   'E' = "#ffd11a",
-    #   'I'= "#b3b300",
-    #   'L'="#ff4da6",
-    #   'K'="#ffbf80",
-    #   'J'="#996633",
-    #   'H'="#009900"
-    #   
-    # )
-    # 
-    # haem_labels = c(
-    #   names(haem_colours),
-    #   unique(haem_meta$cluster.ann)
-    # )
-    # names(haem_labels) = haem_labels
-    # haem_labels[which(haem_labels == "Early posterior mesoderm")] = "Early posterior\nmesoderm"
-    #     
-    # get_haem_count = reactive({
-    #   count = as.numeric(link[,match(as.character(input$gene), as.character(genes[,2]))])
-    #   return(count[meta$cell %in% haem_meta$cell])
-    # })
-    # 
-    # output$haem_clusters = renderPlot({
-    #   pdf = haem_meta
-    #   unq = unique(pdf$haem.clust)
-    #   pdf$haem.clust = factor(pdf$haem.clust, levels = unq[order(-nchar(unq), unq)])
-    #   pdf = pdf[sample(nrow(pdf), nrow(pdf)),]
-    #   
-    #   p = ggplot(pdf, aes(x = -haem.X, y = haem.Y, col = haem.clust)) +
-    #     geom_point(size = 1) +
-    #     scale_color_manual(values = c(celltype_colours, haem_colours), 
-    #                        name = "Cluster",
-    #                        labels = haem_labels) +
-    #     guides(colour = guide_legend(override.aes = list(size=9, 
-    #                                                      alpha = 1),
-    #                                  ncol = 2)) +
-    #     theme(axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), axis.line = element_blank())
-    #   
-    #   return(p)
-    # })
-    # 
-    # output$haem_gene = renderPlot({
-    #   
-    #   validate(
-    #     need(input$gene %in% genes[,2],
-    #          "Please select a gene; if you have already selected one, this gene is not in our annotation." )
-    #   )
-    #   
-    #   pdf = haem_meta
-    #   pdf$expr = get_haem_count()
-    #   pdf = pdf[order(pdf$expr),]
-    #   
-    #   p = ggplot(pdf, aes(x = -haem.X, y = haem.Y, col = expr)) +
-    #     geom_point(size = 1) +
-    #     scale_color_gradient2(name = "Log2\ncounts", mid = "cornflowerblue", low = "gray75", high = "black", midpoint = max(pdf$expr)/2) +
-    #     theme(axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), axis.line = element_blank())
-    #   
-    #   if(max(pdf$expr) == 0){
-    #     p = p +
-    #       scale_color_gradient2(name = "Log2\ncounts", mid = "gray75", low = "gray75", high = "gray75", midpoint = max(pdf$expr)/2)
-    #   }
-    #   
-    #   return(p)
-    # })
-    # 
-    # output$haem_clusters_zoomed = renderPlot({
-    #   pdf = haem_meta
-    #   pdf = pdf[pdf$zoom,]
-    #   unq = unique(pdf$haem.clust)
-    #   pdf$haem.clust = factor(pdf$haem.clust, levels = unq[order(-nchar(unq), unq)])
-    #   pdf = pdf[sample(nrow(pdf), nrow(pdf)),]
-    #   
-    #   p = ggplot(pdf, aes(x = -haem.X, y = haem.Y, col = haem.clust)) +
-    #     geom_point(size = 1) +
-    #     scale_color_manual(values = c(celltype_colours, haem_colours), name = "Cluster") +
-    #     guides(colour = guide_legend(override.aes = list(size=9, 
-    #                                                      alpha = 1),
-    #                                  ncol = 2)) +
-    #     theme(axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), axis.line = element_blank())
-    #   
-    #   return(p)
-    # })
-    # 
-    # output$haem_gene_zoomed = renderPlot({
-    #   validate(
-    #     need(input$gene %in% genes[,2],
-    #          "Please select a gene; if you have already selected one, this gene is not in our annotation." )
-    #   )
-    #   
-    #   pdf = haem_meta
-    #   pdf$expr = get_haem_count()
-    #   pdf = pdf[pdf$zoom,]
-    #   pdf = pdf[order(pdf$expr),]
-    #   
-    #   p = ggplot(pdf, aes(x = -haem.X, y = haem.Y, col = expr)) +
-    #     geom_point(size = 1) +
-    #     scale_color_gradient2(name = "Log2\ncounts", mid = "cornflowerblue", low = "gray75", high = "black", midpoint = max(pdf$expr)/2) +
-    #     theme(axis.title = element_blank(), axis.text = element_blank(), axis.ticks = element_blank(), axis.line = element_blank())
-    #   
-    #   if(max(pdf$expr) == 0){
-    #     p = p +
-    #       scale_color_gradient2(name = "Log2\ncounts", mid = "gray75", low = "gray75", high = "gray75", midpoint = max(pdf$expr)/2)
-    #   }
-    #   
-    #   return(p)
-    # })
+    # ENDOTHELIUM PLOTS
+
     
+    get_count_gene_blood = function(gene = "Hbb-bh1"){
+      #get the gene count into memory
+      count = as.numeric(link[,match(as.character(gene), as.character(genes[,2]))])
+      #subsetting is much quicker now
+      return(count[meta$cell %in% blood_meta$cell])
+    }
+    
+    get_count_blood = reactive({
+      return(get_count_gene_blood(input$gene))
+    })
+    
+    
+    
+    output$blood_gephi_celltype = renderPlot({
+      ro = sample(nrow(blood_meta), nrow(blood_meta))
+      
+      p = ggplot(blood_meta[ro,], aes(x = scaledX, y = scaledY, col = celltype)) +
+        geom_point(size = 1) +
+        celltype_palette +
+        labs(x = "gephiX", y = "gephiY") +
+        theme(axis.text = element_blank(),
+              axis.ticks = element_blank(),
+              axis.title = element_blank()) +
+        coord_fixed(ratio = 0.8) +
+        guides(colour = guide_legend(override.aes = list(size=7)))      
+      return(p)
+      
+    })
+    
+    output$blood_gephi_subcluster = renderPlot({
+      ro = sample(nrow(blood_meta), nrow(blood_meta))
+      
+      p = ggplot(blood_meta[ro,], aes(x = scaledX, y = scaledY, col = subcluster)) +
+        geom_point(size = 1) +
+        blood_palette +
+        labs(x = "gephiX", y = "gephiY") +
+        theme(axis.text = element_blank(),
+              axis.ticks = element_blank(),
+              axis.title = element_blank()) +
+        coord_fixed(ratio = 0.8) +
+        guides(colour = guide_legend(override.aes = list(size=7)))      
+      return(p)
+      
+    })
+    
+    output$blood_gephi_stage = renderPlot({
+      ro = sample(nrow(blood_meta), nrow(blood_meta))
+      
+      p = ggplot(blood_meta[ro,], aes(x = scaledX, y = scaledY, col = stage)) +
+        geom_point(size = 1) +
+        stage_palette +
+        labs(x = "gephiX", y = "gephiY") +
+        theme(axis.text = element_blank(),
+              axis.ticks = element_blank(),
+              axis.title = element_blank()) +
+        coord_fixed(ratio = 0.8) +
+        guides(colour = guide_legend(override.aes = list(size=7)))      
+      return(p)
+      
+    })
+    
+    output$blood_gephi_gene = renderPlot({
+      
+      validate(
+        need(input$gene %in% genes[,2],
+             "Please select a gene; if you have already selected one, this gene is not in our annotation." )
+      )
+      
+      expr = get_count_blood()
+      
+      p = makeGenePlot(gene_name = input$gene, gene_counts = expr, x_coord = blood_meta$scaledX, y_coord = blood_meta$scaledY)
+      
+      return(p)
+      
+    })
+    
+    output$blood_zoom_subcluster = renderPlot({
+      
+      met = blood_meta[(blood_meta$gephiX > -4000) & 
+                         (blood_meta$gephiY > -2500) &
+                         (blood_meta$gephiX < 1500) &
+                         (blood_meta$gephiY < 1500),]
+      ro = sample(nrow(met), nrow(met))
+      
+      p = ggplot(met[ro,], aes(x = scaledX, y = scaledY, col = subcluster)) +
+        geom_point(size = 1) +
+        blood_palette +
+        labs(x = "gephiX", y = "gephiY") +
+        theme(axis.text = element_blank(),
+              axis.ticks = element_blank(),
+              axis.title = element_blank()) +
+        coord_fixed(ratio = 0.8) +
+        guides(colour = guide_legend(override.aes = list(size=7), ncol = 2))      
+      return(p)
+      
+    })
+    
+    output$blood_zoom_gene = renderPlot({
+      
+      validate(
+        need(input$gene %in% genes[,2],
+             "Please select a gene; if you have already selected one, this gene is not in our annotation." )
+      )
+      
+      met = blood_meta[(blood_meta$gephiX > -4000) & 
+                         (blood_meta$gephiY > -2500) &
+                         (blood_meta$gephiX < 1500) &
+                         (blood_meta$gephiY < 1500),]
+      
+      expr = get_count_blood()
+      expr = expr[blood_meta$cell %in% met$cell]
+      
+      p = makeGenePlot(gene_name = input$gene, gene_counts = expr, x_coord = met$scaledX, y_coord = met$scaledY)
+      return(p)
+      
+    })
+    
+
 
   }
 )

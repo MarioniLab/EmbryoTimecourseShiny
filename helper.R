@@ -72,7 +72,7 @@ stage_colours = c("E6.5" = "#D53E4F",
 stage_labels = names(stage_colours)
 names(stage_labels) = stage_labels
 stage_labels[length(stage_labels)] = "Mixed"
-stage_palette_col = scale_color_manual(values = stage_colours,
+stage_palette = scale_color_manual(values = stage_colours,
                                        labels = stage_labels,
                                        name = "Timepoint")
 stage_palette_fill = scale_fill_manual(values = stage_colours,
@@ -94,6 +94,43 @@ gut_colours = c("Foregut 2" = "#1B9E77",
                 "Hindgut 1" = "#A6761D")
 gut_palette = scale_color_manual(values = gut_colours, name = "Gut clusters")
 gut_palette_fill = scale_fill_manual(values = gut_colours, name = "Gut clusters")
+
+
+blood_colours = c(
+  "Mes1"= "#c4a6b2",
+  "Mes2"= "#ca728c",
+  
+  "BP1" = "#6460c5",
+  "BP2" = "#96b8e4",
+  "Haem3"= "#02f9ff",
+  "BP3" = "#07499f",
+  "BP4" = "#036ef9",
+
+  "Haem1"= "#bb22a7",
+  "Haem2" = "#f695e9",
+  "Haem4" = "#4c4a81",
+  
+  "EC1"= "#006737",
+  
+  "EC2" = "#5eba46",
+  "EC3" = "#818068",
+  "EC4"="#d6de22",
+  "EC5"="#5f7238",
+  "EC6"="#2ab572",
+  "EC7"="#000000",
+  "EC8"="#a0cb3b",
+  
+  "Ery1"="#f67a58",
+  "Ery2" ="#a26724",
+  "Ery3"="#cdaf7f",
+  "Ery4"= "#625218",
+  
+  "My" = "#c62127" ,
+  "Mk"= "#f6931d"
+)
+
+blood_palette = scale_colour_manual(values = blood_colours, name = "Haem-endo. clusters")
+blood_palette_fill = scale_fill_manual(values = blood_colours, name = "Haem-endo. clusters")
 
 
 scale_colour_Publication <- function(...){
