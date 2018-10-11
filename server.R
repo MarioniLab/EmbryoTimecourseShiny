@@ -661,6 +661,27 @@ shinyServer(
       
     })
     
+    output$blood_boxplot = renderPlot({
+      
+      validate(
+        need(input$gene %in% genes[,2],
+             "Please select a gene; if you have already selected one, this gene is not in our annotation." )
+      )
+      
+      expr = get_count_blood()[!is.na(blood_meta$subcluster)]
+      sub = blood_meta[!is.na(blood_meta$subcluster),]
+      
+      p = ggplot(data = sub, mapping = aes(x = subcluster, y = expr, fill = subcluster)) +
+        geom_boxplot() +
+        blood_palette_fill +
+        theme(axis.text.x = element_text(angle = 30, hjust = 1),
+              axis.title.x = element_blank()) +
+        labs(y = "log2 normalised count") +
+        theme(legend.position = "none")
+      
+      return(p)
+    })
+    
     output$blood_zoom_subcluster = renderPlot({
       
       met = blood_meta[(blood_meta$gephiX > -4000) & 
@@ -676,7 +697,7 @@ shinyServer(
         theme(axis.text = element_blank(),
               axis.ticks = element_blank(),
               axis.title = element_blank()) +
-        coord_fixed(ratio = 0.8) +
+        coord_fixed(ratio = 1.2) +
         guides(colour = guide_legend(override.aes = list(size=7), ncol = 2))      
       return(p)
       
@@ -697,7 +718,8 @@ shinyServer(
       expr = get_count_blood()
       expr = expr[blood_meta$cell %in% met$cell]
       
-      p = makeGenePlot(gene_name = input$gene, gene_counts = expr, x_coord = met$scaledX, y_coord = met$scaledY)
+      p = makeGenePlot(gene_name = input$gene, gene_counts = expr, x_coord = met$scaledX, y_coord = met$scaledY) +
+        coord_fixed(ratio = 1.2)
       return(p)
       
     })

@@ -211,6 +211,9 @@ fluidPage(
                                plotOutput("blood_gephi_subcluster", width = half_plot_width, height = half_plot_height),
                                plotOutput("blood_gephi_gene", width = half_plot_width, height = half_plot_height))
                  ),
+                 fluidRow(
+                   plotOutput("blood_boxplot", width = big_plot_width, height = half_plot_height)
+                 ),
                  h4("Summary plots of the zoomed section shown in the manuscript"),
                  fluidRow(
                    splitLayout(cellWidths = c("50%", "50%"),
