@@ -5,6 +5,8 @@ library(reshape2)
 library(cowplot)
 library(ggrepel)
 library(DT)
+library(plotly)
+
 
 #load palettes etc.
 source("helper.R")
@@ -722,6 +724,21 @@ shinyServer(
         coord_fixed(ratio = 1.2)
       return(p)
       
+    })
+    
+    ## 3D UMAP
+    
+    umap_3d = readRDS("3d_umap.rds")
+    
+    output$umap_3d = renderPlotly({
+
+      plot_df = umap_3d
+      p = plot_ly() %>%
+        add_markers(data = plot_df, x = ~x, y = ~y, z = ~z, 
+                    marker = list(color = ~col, sizemode = "diameter", size = 3, opacity = 1)) %>%
+        layout(title = "")
+            
+      return(p)
     })
     
 

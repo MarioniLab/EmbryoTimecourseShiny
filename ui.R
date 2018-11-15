@@ -1,6 +1,7 @@
 library(shiny)
 library(ggplot2)
 library(DT)
+library(plotly)
 
 celltype_colours = c("Epiblast" = "#635547",
                      "Primitive Streak" = "#DABE99",
@@ -220,6 +221,9 @@ fluidPage(
                                plotOutput("blood_zoom_subcluster", width = half_plot_width, height = half_plot_height),
                                plotOutput("blood_zoom_gene", width = half_plot_width, height = half_plot_height))
                  )
+                 ),
+        tabPanel("3D UMAP",
+                 plotlyOutput("umap_3d", width = big_plot_width, height = big_plot_height)
                  )
 
       )
