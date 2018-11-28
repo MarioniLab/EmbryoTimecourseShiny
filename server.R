@@ -741,6 +741,17 @@ shinyServer(
       return(p)
     })
     
+    output$umap_3d_stage = renderPlotly({
+      
+      plot_df = umap_3d
+      p = plot_ly() %>%
+        add_markers(data = plot_df, x = ~x, y = ~y, z = ~z, 
+                    marker = list(color = ~stage, sizemode = "diameter", size = 3, opacity = 1)) %>%
+        layout(title = "")
+      
+      return(p)
+    })
+    
 
 
   }

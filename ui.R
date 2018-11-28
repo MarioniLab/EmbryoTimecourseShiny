@@ -223,7 +223,8 @@ fluidPage(
                  )
                  ),
         tabPanel("3D UMAP",
-                 plotlyOutput("umap_3d", width = big_plot_width, height = big_plot_height)
+                 plotlyOutput("umap_3d", width = big_plot_width, height = big_plot_height),
+                 plotlyOutput("umap_3d_stage", width = big_plot_width, height = big_plot_height)
                  )
 
       )
