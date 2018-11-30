@@ -1,0 +1,40 @@
+element;intro
+#Welcome;Welcome to the web app for the paper <em>A single-cell resolution molecular roadmap from mouse gastrulation to early organogenesis</em>.<br/><br/> This site will allow you to interactively explore the data that we have generated. Now, click on the 'Next' button or use the right arrow of your keyboard to proceed into your tour.
+#help;If you accidentally exit the tour, you can restart it with this button.
+#allpanels;In this tutorial, we will cover the different settings you can change, and the different kinds of plots that will be generated here. Occasionally, you will need to perform an action. These points will be indicated using this: <strong>ACTION</strong>. Please note that subsequent sections of the tour may not work if you do not perform the action!
+#main;This first tab shows summary information for the plots and the tool. There is also a link back to the paper, and to the Github repository, which contains a script to download our processed data.
+#allpanels; We will now move over the different plots that can be viewed using this tool.
+#tabs;Groups of different plots are accessible via these tabs.<br/><br/><strong>ACTION:</strong>Please change to the Dataset overview tab, then click <em>next</em>. Plots will take a little while to appear when you plot the full dataset: there are a lot of points to draw!
+#sidebar; This is the sidebar, which will be constant throughout all of the different visualisations. Key settings for changing the plots are present here. We will now run through the important ones.
+#coord_type + .selectize-control;You can choose between UMAP and t-SNE visualisations using this dropdown.
+#stage + .selectize-control;You can select just one of our collection timepoints or Theiler stages to view using this setting.<br/><br/><strong>ACTION:</strong> select <em>TS10</em> from the dropdown: this will speed up plotting through the rest of this tutorial.
+#colourby + .selectize-control;Different options for colouring the visualisations are selectable here.
+#gene + .selectize-control;Gene expression data for all the genes in the dataset can be changed using this box (<em>you can type in this box to find genes</em>).
+#numbers;This option can make it easier to distinguish different celltypes in the visualisations.
+#subset;You can subset the cells in a density-dependent manner using this option, which should speed up the generation of new plots.
+#data;This plot shows the cells of the dataset coloured by a variable - by default, we are showing you the different celltypes that we labelled.
+#downloadOverview;You can download high-quality (i.e. pdf) versions of this plot using this button.
+#stage_contribution;This plot shows you the distributions of cells from each timepoint for each of the different categories by which the plot is coloured. Categories are ordered from youngest mean age to oldest.
+#tabs;<strong>ACTION:</strong> Please change to the Gene interrogation tab, then click <em>next</em>. Again, plots may take a little while to appear if the full dataset is selected.
+#data_dummy; You will remember this plot from the last tab! It will still update when you change the settings, just like it did before.
+#gene_plot;Additionally, this tab contains gene expression plots: here you can see gene expression levels overlaid on the t-SNE or UMAP.
+#downloadGeneTSNE;You can also download this figure with this button.
+#gene_violin;Gene expression is also summarised here in this violin plot.
+#downloadGeneViolin;It also can be downloaded using this button.
+#tabs;<strong>ACTION:</strong> Please change to the Cell-type markers tab, then click <em>next</em>.
+#main; This tab allows you to identify marker genes for the different cell-type populations in the atlas.
+#celltype + .selectize-control;You can select a cell-type here...
+#celltype_presence_plot;...and the location of the cells in the atlas will appear here...
+#celltype_markers;...with the genes that are expressed more in the selected celltype than in any other shown here.<br/><br/><strong>ACTION:</strong> click on one of the genes.
+#celltype_gene_plot;If you clicked on one of the genes, its expression pattern will be shown here.
+#tabs;<strong>ACTION:</strong> Please change to the Endoderm tab, then click <em>next</em>.
+#allpanels;This tab shows interative versions of the panels from Figure 2 of the manuscript. See the subtitles for information on what each plot contains.
+#gene + .selectize-control;This tab updates depending on which gene you have selected.
+#tabs;<strong>ACTION:</strong> Please change to the Haematoendothelium tab, then click <em>next</em>.
+#main;This tab shows interative versions of the panels from Figure 3 of the manuscript. See the subtitles for information on what each plot contains. It also will update depending on gene selection.
+#tabs;Now for something a bit fun...<br/></br><strong>ACTION:</strong> Please change to the 3D UMAP tab, then click <em>next</em>. Note that this tab can be a bit performance intensive.
+#main;Here are some 3D plots that you can zoom around in! Click and drag with your mouse to move the plot around. Scroll to zoom in or out.
+#Thanks;Thank you for taking the tour of the website!
+
+
+

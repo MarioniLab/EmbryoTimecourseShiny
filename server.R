@@ -11,6 +11,10 @@ library(plotly)
 #load palettes etc.
 source("helper.R")
 
+tour <- read.delim("tour.txt",
+                   sep=";", stringsAsFactors=FALSE,row.names=NULL)
+
+
 # taken from iSEE
 subsetPointsByGrid <- function(X, Y, resolution=200, seed = 42) {
   set.seed(seed)
@@ -148,12 +152,15 @@ shinyServer(
       
       allowed = get_subset()
       #scramble, and subset if asked
-      new_order = sample(length(allowed), length(allowed))
+      coords = get_coord()[allowed,]
+      color = get_clusters()[allowed]
       
-      plot = ggplot(data = get_coord()[new_order,], 
+      new_order = sample(length(color), length(color))
+      
+      plot = ggplot(data = coords[new_order,], 
                     mapping = aes(x = X, 
                                   y = Y, 
-                                  col = get_clusters()[new_order])) +
+                                  col = color[new_order])) +
         geom_point(size = 1, 
                    alpha = 0.9) +
         # scale_colour_Publication(name = input$colourby, drop = FALSE) +
@@ -271,7 +278,7 @@ shinyServer(
         )
     })
     
-    output$gene = renderPlot({
+    output$gene_plot = renderPlot({
       
       validate(
         need(input$gene %in% genes[,2],
@@ -752,6 +759,11 @@ shinyServer(
       return(p)
     })
     
+    introjs(session, options=list(steps=tour))
+    observeEvent(input$help,
+                 introjs(session, options=list(steps=tour)
+                 )
+    )
 
 
   }
