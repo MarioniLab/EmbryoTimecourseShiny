@@ -117,7 +117,7 @@ fluidPage(introjsUI(),
               id = "main",
               width = 10,
               titlePanel(
-                "A single-cell resolution molecular roadmap from mouse gastrulation to early organogenesis."
+                "A single-cell molecular map of mouse gastrulation and early organogenesis."
               ),
               
               #put plots here
@@ -130,7 +130,7 @@ fluidPage(introjsUI(),
                   HTML(paste(
                     shiny::tags$b("This is the accompanying interactive server for the paper"),
                     em(
-                      "A single-cell resolution molecular roadmap from mouse gastrulation to early organogenesis."
+                      "A single-cell molecular map of mouse gastrulation and early organogenesis."
                     )
                   )),
                   br(),
@@ -141,7 +141,7 @@ fluidPage(introjsUI(),
                   HTML(
                     paste(
                       shiny::tags$b("Dataset overview:"),
-                      "t-SNE plots of the data are shown with customisable colouring, with a visualisation of how cells from different timepoints contribute to different cell populations."
+                      "Reduced dimension plots of the data are shown with customisable colouring, with a visualisation of how cells from different timepoints contribute to different cell populations."
                     )
                   ),
                   br(),
@@ -174,6 +174,11 @@ fluidPage(introjsUI(),
                   ),
                   h4("Options:"),
                   HTML(paste(
+                    shiny::tags$b("Projection type:"),
+                    "Select the type of visualisation you want."
+                  )),
+                  br(),
+                  HTML(paste(
                     shiny::tags$b("Cell subset:"),
                     "Select the timepoints you want to plot."
                   )),
@@ -189,6 +194,13 @@ fluidPage(introjsUI(),
                     )
                   ),
                   br(),
+                  
+                  HTML(
+                    paste(
+                      shiny::tags$b("Gene:"),
+                      "Select the gene (MGI) to use for expression plots."
+                    )
+                  ),
                   HTML(
                     paste(
                       shiny::tags$b("Annotate clusters:"),
@@ -196,12 +208,6 @@ fluidPage(introjsUI(),
                     )
                   ),
                   br(),
-                  HTML(
-                    paste(
-                      shiny::tags$b("Gene:"),
-                      "Select the gene (MGI) to use for expression plots."
-                    )
-                  ),
                   br(),
                   HTML(
                     paste(
