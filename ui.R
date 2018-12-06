@@ -194,20 +194,19 @@ fluidPage(introjsUI(),
                     )
                   ),
                   br(),
-                  
                   HTML(
                     paste(
                       shiny::tags$b("Gene:"),
                       "Select the gene (MGI) to use for expression plots."
                     )
                   ),
+                  br(),
                   HTML(
                     paste(
                       shiny::tags$b("Annotate clusters:"),
                       "Text will be drawn on the plot to help locate specific cell types."
                     )
                   ),
-                  br(),
                   br(),
                   HTML(
                     paste(
