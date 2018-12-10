@@ -227,6 +227,10 @@ fluidPage(introjsUI(),
                   HTML(
                     "It takes a few seconds to make the first plots when all cells are considered - this should speed up when parameters are changed thereafter."
                   ),
+                  br(),
+                  HTML(
+                    "You can download the processed data using the script at our <a href=\"https://github.com/MarioniLab/EmbryoTimecourse2018\">Github repo</a>."
+                  ),
                   br(), br(),
                   actionButton("help", "Press me to restart the tour.")
                 ),
