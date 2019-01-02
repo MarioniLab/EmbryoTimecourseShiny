@@ -1,5 +1,5 @@
 element;intro
-#Welcome;Welcome to the web app for the paper <em>A single-cell resolution molecular roadmap from mouse gastrulation to early organogenesis</em>.<br/><br/> This site will allow you to interactively explore the data that we have generated. Now, click on the 'Next' button or use the right arrow of your keyboard to proceed into your tour.
+#Welcome;Welcome to the web app for the paper <em>A single-cell resolution molecular map of mouse gastrulation and early organogenesis</em>.<br/><br/> This site will allow you to interactively explore the data that we have generated. Now, click on the 'Next' button or use the right arrow of your keyboard to proceed into your tour.
 #help;If you accidentally exit the tour, you can restart it with this button.
 #allpanels;In this tutorial, we will cover the different settings you can change, and the different kinds of plots that will be generated here. Occasionally, you will need to perform an action. These points will be indicated using this: <strong>ACTION</strong>. Please note that subsequent sections of the tour may not work if you do not perform the action!
 #main;This first tab shows summary information for the plots and the tool. There is also a link back to the paper, and to the Github repository, which contains a script to download our processed data.
