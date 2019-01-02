@@ -68,6 +68,10 @@ blood_meta = readRDS("blood_meta.rds")
 
 shinyServer(
   function(input, output, session){
+    
+    introjs(session, options=list(steps=tour))
+    
+    
     #### FUNCTIONS TO GET DATA
     
     get_meta = reactive({
@@ -745,6 +749,11 @@ shinyServer(
                     marker = list(color = ~col, sizemode = "diameter", size = 3, opacity = 1)) %>%
         layout(title = "")
             
+      #some error from too many pngs is happening
+      #https://stackoverflow.com/questions/38383248/plotly-graphs-shows-error-too-many-open-devices-in-shiny/38900061
+      #suggests this fix
+      dev.off()
+      
       return(p)
     })
     
@@ -756,10 +765,14 @@ shinyServer(
                     marker = list(color = ~stage, sizemode = "diameter", size = 3, opacity = 1)) %>%
         layout(title = "")
       
+      #some error from too many pngs is happening
+      #https://stackoverflow.com/questions/38383248/plotly-graphs-shows-error-too-many-open-devices-in-shiny/38900061
+      #suggests this fix
+      dev.off()
+      
       return(p)
     })
     
-    introjs(session, options=list(steps=tour))
     observeEvent(input$help,
                  introjs(session, options=list(steps=tour)
                  )
