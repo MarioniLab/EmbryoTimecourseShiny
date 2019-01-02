@@ -516,7 +516,20 @@ shinyServer(
       return(p)
     })
     
-    output$gut_density = renderPlot({
+    output$gut_density_1 = renderPlot({
+      
+      
+      sub = endo_meta[!is.na(endo_meta$gutDPT),]
+      
+      p = ggplot(sub, aes(x = gutDPT, fill = cluster_gut)) +
+        geom_density(alpha = 0.7) +
+        gut_palette_fill +
+        labs(x = "DPT", y = "Density")
+      
+      return(p)
+    })
+    
+    output$gut_density_2 = renderPlot({
       
       validate(
         need(input$gene %in% genes[,2],
@@ -525,22 +538,33 @@ shinyServer(
       
       sub = endo_meta[!is.na(endo_meta$gutDPT),]
       
-      p1 = ggplot(sub, aes(x = gutDPT, fill = cluster_gut)) +
-        geom_density(alpha = 0.7) +
-        gut_palette_fill +
-        labs(x = "DPT", y = "Density")
-      
       expr = get_count_endo()[!is.na(endo_meta$gutDPT)]
-
-      p2 = ggplot(mapping = aes(x = sub$gutDPT, y= expr)) +
+      
+      p = ggplot(mapping = aes(x = sub$gutDPT, y= expr)) +
         geom_point() +
         labs(x = "DPT", y = paste0("log2 normalised count - ", input$gene)) +
         geom_smooth(method = "loess", col = "coral", se = FALSE)
       
-      return(plot_grid(p1, p2, ncol = 1, align = "v", axis = "tlbr"))
+      return(p)
     })
     
-    output$hg1_traj = renderPlot({
+    output$hg1_traj_1 = renderPlot({
+      
+      sub = endo_meta[!is.na(endo_meta$trajectory),]
+      sub = sub[sub$trajectory == "VE",]
+      
+      p = ggplot(sub, mapping = aes(x = stage, y= traj_dpt, col = stage)) +
+        geom_jitter(width = 0.3, height = 0) +
+        stage_palette +
+        coord_flip() +
+        labs(y = "DPT") +
+        theme(axis.title.y = element_blank()) +
+        ggtitle("Visceral endo. to Hindgut 1")
+      
+      return(p)
+    })
+    
+    output$hg1_traj_2 = renderPlot({
       
       validate(
         need(input$gene %in% genes[,2],
@@ -549,25 +573,34 @@ shinyServer(
       sub = endo_meta[!is.na(endo_meta$trajectory),]
       sub = sub[sub$trajectory == "VE",]
       
-      p1 = ggplot(sub, mapping = aes(x = stage, y= traj_dpt, col = stage)) +
+      
+      expr = get_count_endo()[endo_meta$cell %in% sub$cell]
+      
+      p = ggplot(mapping = aes(x = sub$traj_dpt, y= expr)) +
+        geom_point() +
+        labs(x = "DPT", y = paste0("log2 normalised count - ", input$gene)) +
+        geom_smooth(method = "loess", col = "coral", se = FALSE)
+      
+      return(p)
+    })
+    
+    output$hg2_traj_1 = renderPlot({
+      
+      sub = endo_meta[!is.na(endo_meta$trajectory),]
+      sub = sub[sub$trajectory == "DE",]
+      
+      p = ggplot(sub, mapping = aes(x = stage, y= traj_dpt, col = stage)) +
         geom_jitter(width = 0.3, height = 0) +
         stage_palette +
         coord_flip() +
         labs(y = "DPT") +
         theme(axis.title.y = element_blank()) +
-        ggtitle("Visceral endo. to Hindgut 1")
+        ggtitle("Definitive endo. to Hindgut 2")
       
-      expr = get_count_endo()[endo_meta$cell %in% sub$cell]
-
-      p2 = ggplot(mapping = aes(x = sub$traj_dpt, y= expr)) +
-        geom_point() +
-        labs(x = "DPT", y = paste0("log2 normalised count - ", input$gene)) +
-        geom_smooth(method = "loess", col = "coral", se = FALSE)
-      
-      return(plot_grid(p1, p2, ncol = 1, align = "v", axis = "tlbr"))
+     return(p)
     })
     
-    output$hg2_traj = renderPlot({
+    output$hg2_traj_2 = renderPlot({
       
       validate(
         need(input$gene %in% genes[,2],
@@ -576,22 +609,14 @@ shinyServer(
       sub = endo_meta[!is.na(endo_meta$trajectory),]
       sub = sub[sub$trajectory == "DE",]
       
-      p1 = ggplot(sub, mapping = aes(x = stage, y= traj_dpt, col = stage)) +
-        geom_jitter(width = 0.3, height = 0) +
-        stage_palette +
-        coord_flip() +
-        labs(y = "DPT") +
-        theme(axis.title.y = element_blank()) +
-        ggtitle("Definitive endo. to Hindgut 2")
-      
       expr = get_count_endo()[endo_meta$cell %in% sub$cell]
       
-      p2 = ggplot(mapping = aes(x = sub$traj_dpt, y= expr)) +
+      p = ggplot(mapping = aes(x = sub$traj_dpt, y= expr)) +
         geom_point() +
         labs(x = "DPT", y = paste0("log2 normalised count - ", input$gene)) +
         geom_smooth(method = "loess", col = "coral", se = FALSE)
       
-      return(plot_grid(p1, p2, ncol = 1, align = "v", axis = "tlbr"))
+      return(p)
     })
     
     

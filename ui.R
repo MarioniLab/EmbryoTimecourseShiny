@@ -299,12 +299,21 @@ fluidPage(introjsUI(),
                     )
                   ),
                   h4("E8.5 gut cells arranged along pseudospace"),
-                  plotOutput("gut_density", width = big_plot_width, height = big_plot_height),
+                  splitLayout(
+                    cellWidths = c("50%", "50%"),
+                    plotOutput("gut_density_1", width = half_plot_width, height = half_plot_height),
+                    plotOutput("gut_density_2", width = half_plot_width, height = half_plot_height)
+                  ),
                   h4("Trajectories towards formation of the hindgut"),
                   splitLayout(
                     cellWidths = c("50%", "50%"),
-                    plotOutput("hg1_traj", width = half_plot_width, height = big_plot_height),
-                    plotOutput("hg2_traj", width = half_plot_width, height = big_plot_height)
+                    plotOutput("hg1_traj_1", width = half_plot_width, height = half_plot_height),
+                    plotOutput("hg2_traj_1", width = half_plot_width, height = half_plot_height)
+                  ),
+                  splitLayout(
+                    cellWidths = c("50%", "50%"),
+                    plotOutput("hg1_traj_2", width = half_plot_width, height = half_plot_height),
+                    plotOutput("hg2_traj_2", width = half_plot_width, height = half_plot_height)
                   )
                 ),
                 tabPanel(
