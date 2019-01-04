@@ -207,6 +207,7 @@ shinyServer(
       content = function(file) {
         pdf(file = NULL)
         ggsave(file, plot = plotOverview(), device = "pdf", width = big_plot_width, height = big_plot_height)
+        dev.off()
       }
     )
     
@@ -298,6 +299,7 @@ shinyServer(
       content = function(file) {
         pdf(file = NULL)
         ggsave(file, plot = plotMainGeneVis(), device = "pdf", width = narrower_plot_width, height = big_plot_height)
+        dev.off()
       }
     )
     
@@ -348,6 +350,7 @@ shinyServer(
       content = function(file) {
         pdf(file = NULL)
         ggsave(file, plot = plotGeneViolin(), device = "pdf", width = big_plot_width, height = big_plot_height)
+        dev.off()
       }
     )
   
