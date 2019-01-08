@@ -347,13 +347,13 @@ fluidPage(introjsUI(),
                     plotOutput("blood_zoom_subcluster", width = half_plot_width, height = half_plot_height),
                     plotOutput("blood_zoom_gene", width = half_plot_width, height = half_plot_height)
                   ))
-                )#,
-                # tabPanel(
-                #   "3D UMAP",
-                #   tabName = "3d",
-                #   plotlyOutput("umap_3d", width = big_plot_width, height = big_plot_height)#,
-                #   # plotlyOutput("umap_3d_stage", width = big_plot_width, height = big_plot_height)
-                # )
+                ),
+                tabPanel(
+                  "3D UMAP",
+                  tabName = "3d",
+                  plotlyOutput("umap_3d", width = big_plot_width, height = big_plot_height)#,
+                  # plotlyOutput("umap_3d_stage", width = big_plot_width, height = big_plot_height)
+                )
                 
               )
             )
