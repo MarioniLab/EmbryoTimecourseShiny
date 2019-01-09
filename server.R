@@ -770,7 +770,7 @@ shinyServer(
     umap_3d = readRDS("3d_umap.rds")
     
     output$umap_3d = renderPlotly({
-
+      pdf(NULL)
       plot_df = umap_3d
       p = plot_ly() %>%
         add_markers(data = plot_df, x = ~x, y = ~y, z = ~z, 
@@ -785,21 +785,22 @@ shinyServer(
       return(p)
     })
     
-    output$umap_3d_stage = renderPlotly({
-      
-      plot_df = umap_3d
-      p = plot_ly() %>%
-        add_markers(data = plot_df, x = ~x, y = ~y, z = ~z, 
-                    marker = list(color = ~stage, sizemode = "diameter", size = 3, opacity = 1)) %>%
-        layout(title = "")
-      
-      #some error from too many pngs is happening
-      #https://stackoverflow.com/questions/38383248/plotly-graphs-shows-error-too-many-open-devices-in-shiny/38900061
-      #suggests this fix
-      dev.off()
-      
-      return(p)
-    })
+    # output$umap_3d_stage = renderPlotly({
+    #   pdf(NULL)
+    #   
+    #   plot_df = umap_3d
+    #   p = plot_ly() %>%
+    #     add_markers(data = plot_df, x = ~x, y = ~y, z = ~z, 
+    #                 marker = list(color = ~stage, sizemode = "diameter", size = 3, opacity = 1)) %>%
+    #     layout(title = "")
+    #   
+    #   #some error from too many pngs is happening
+    #   #https://stackoverflow.com/questions/38383248/plotly-graphs-shows-error-too-many-open-devices-in-shiny/38900061
+    #   #suggests this fix
+    #   dev.off()
+    #   
+    #   return(p)
+    # })
     
     observeEvent(input$help,
                  introjs(session, options=list(steps=tour)
