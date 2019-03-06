@@ -65,6 +65,7 @@ meta$sample = factor(meta$sample)
 
 endo_meta = readRDS("endo_meta.rds")
 blood_meta = readRDS("blood_meta.rds")
+markers = readRDS("markers.rds")
 
 shinyServer(
   function(input, output, session){
@@ -358,10 +359,10 @@ shinyServer(
     # CELLTYPE MARKERS
     
     get_markers = reactive({
-      tab = markers_celltype[[input$celltype]]
-      tab = tab[order(tab$IUT.p),]
+      tab = markers[[input$stage]][[input$celltype]]
+      tab = tab[order(tab$p.value),]
       genes_mark = genes[match(rownames(tab), genes[,1]), 2]
-      df = data.frame(MGI = genes_mark, p.value = tab[,1], FDR = p.adjust(tab[,1], method = "fdr"))
+      df = data.frame(MGI = genes_mark, p.value = tab[,1], FDR = tab[,2])
       return(df)
     })
     

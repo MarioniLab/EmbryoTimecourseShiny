@@ -82,9 +82,23 @@ fluidPage(introjsUI(),
                 selectInput(
                   "stage",
                   "Cell subset",
-                  choices = c(sort(c(
-                    as.character(unique(meta$stage)), as.character(unique(meta$theiler)), "all"
-                  ))),
+                  choices = c(
+                    "All timepoints" = "all",
+                    "E6.5" = "E6.5" ,
+                    "E6.75" ="E6.75",
+                    "E7.0" = "E7.0" ,
+                    "E7.25" ="E7.25",
+                    "E7.5" = "E7.5" ,
+                    "E7.75" ="E7.75",
+                    "E8.0" = "E8.0" ,
+                    "E8.25" ="E8.25",
+                    "E8.5" = "E8.5" ,
+                    "Mixed gastrulation" = "mixed_gastrulation",
+                    "TS9" = "TS9",
+                    "TS10" = "TS10",
+                    "TS11" = "TS11",
+                    "TS12" = "TS12"
+                  ),
                   selected = "all"
                 ),
                 selectInput(
@@ -265,8 +279,9 @@ fluidPage(introjsUI(),
                       ),
                       h4(
                         paste0(
-                          "Below is the output of the scran function findMarkers. ",
-                          "These are genes that are expressed in the selected celltype more highly than in any other celltype, calculated across the whole dataset."
+                          "Below is the output of the scran function findMarkers.",
+                          "These are genes that are expressed in the selected celltype more highly than in any other celltype.",
+                          "This is dynamic across timepoints, depending on your selection in the sidebar."
                         )
                       ),
                       dataTableOutput("celltype_markers")
