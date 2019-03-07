@@ -147,7 +147,7 @@ shinyServer(
     get_subset = reactive({
       coord = get_coord()
       if(input$subset){
-        return(subsetPointsByGrid(coord[,1], coord[,2], input$subset_degree))
+        return(subsetPointsByGrid(coord[,1], coord[,2], 100))#input$subset_degree))
       } else {
         return(rep(TRUE, nrow(coord)))
       }
@@ -155,7 +155,7 @@ shinyServer(
     
     get_subset_force = reactive({
       coord = get_coord()
-      return(subsetPointsByGrid(coord[,1], coord[,2], 50))
+      return(subsetPointsByGrid(coord[,1], coord[,2], 75))
     })
     
     #### SELCTIZE SPEEDUP

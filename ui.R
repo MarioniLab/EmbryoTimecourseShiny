@@ -118,11 +118,11 @@ fluidPage(introjsUI(),
                 selectizeInput("gene", "Gene", choices = NULL, selected = 26600),
                 checkboxInput("numbers", "Annotate clusters in plot"),
                 checkboxInput("subset", "Subset cells (faster plots when many points present)"),
-                selectInput(
-                  "subset_degree",
-                  label = "Subsetting severity",
-                  choices = c("Low" = 100, "High" = 50)
-                ),
+                # selectInput(
+                #   "subset_degree",
+                #   label = "Subsetting severity",
+                #   choices = c("Low" = 100, "High" = 40)
+                # ),
                 downloadButton("downloadOverview", label = "Overview vis"),
                 downloadButton("downloadGeneTSNE", label = "Gene expr. vis"),
                 downloadButton("downloadGeneViolin", label = "Gene expr. violins")
