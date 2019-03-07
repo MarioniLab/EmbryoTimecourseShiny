@@ -279,9 +279,8 @@ fluidPage(introjsUI(),
                       ),
                       h4(
                         paste0(
-                          "Below is the output of the scran function findMarkers.",
-                          "These are genes that are expressed in the selected celltype more highly than in any other celltype.",
-                          "These are different across timepoints, and output depends on your selection in the sidebar."
+                          "These are genes that are expressed in the selected celltype more highly than in any other celltype (from scran's findMarkers). ",
+                          "These results are specific to the timepoint you have selected in the sidebar."
                         )
                       ),
                       dataTableOutput("celltype_markers")
@@ -306,10 +305,9 @@ fluidPage(introjsUI(),
                       ),
                       h4(
                         paste0(
-                          "Below is the output of the scran function findMarkers. ",
-                          "These are genes that are differentially expressed between the two cell types that you have selected. ",
-                          "These are different across timepoints, and output depends on your selection in the sidebar. ",
-                          "logFC is log2(celltype 1 expression / celltype 2 expression)"
+                          "These are genes that are differentially expressed between the two cell types that you have selected (via scran's findMarkers). ",
+                          "These results are specific to the timepoint you have selected in the sidebar. ",
+                          "A positive logFC means higher expression in celltype 1."
                         )
                       ),
                       dataTableOutput("celltype_markers_discrim")

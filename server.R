@@ -420,7 +420,7 @@ shinyServer(
       
       df = data.frame(row.names = rownames(tab),
                       MGI = genes[match(rownames(tab), genes[,1]),2],
-                      log2FC = format(tab[, paste0("logFC.", input$celltype2)], nsmall = 2))
+                      log2FC = tab[, paste0("logFC.", input$celltype2)], nsmall = 2)
 
       return(df)
     })
