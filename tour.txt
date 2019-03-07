@@ -25,8 +25,10 @@ element;intro
 #main; This tab allows you to identify marker genes for the different cell-type populations in the atlas.
 #celltype + .selectize-control;You can select a cell-type here...
 #celltype_presence_plot;...and the location of the cells in the atlas will appear here...
-#celltype_markers;...with the genes that are expressed more in the selected celltype than in any other shown here.<br/><br/><strong>ACTION:</strong> click on one of the genes.
+#celltype_markers;...with the genes that are expressed more in the selected celltype than in any other shown here. All plots in this tab respond to the stage that you have selected. <br/><br/><strong>ACTION:</strong> click on one of the genes.
 #celltype_gene_plot;If you clicked on one of the genes, its expression pattern will be shown here.
+#tabs;<strong>ACTION:</strong> Please change to the Cell-type discrimination tab, then click <em>next</em>.
+#main; This tab allows you to identify genes that reliably discriminate pairs of cell-types in the atlas. It works very similarly to what you have just seen in the Cell-type markers tab.
 #tabs;<strong>ACTION:</strong> Please change to the Endoderm tab, then click <em>next</em>.
 #allpanels;This tab shows interative versions of the panels from Figure 2 of the manuscript. See the subtitles for information on what each plot contains.
 #gene + .selectize-control;This tab updates depending on which gene you have selected.

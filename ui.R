@@ -267,7 +267,7 @@ fluidPage(introjsUI(),
                   id = "markers",
                   sidebarLayout(
                     sidebarPanel(
-                      selectInput("celltype", "Cell type", names(celltype_colours)),
+                      uiOutput("marker_celltype"),
                       plotOutput("celltype_gene_plot")
                       # numericInput("n.genes", "Number of DE genes", value = 20)
                     ),
@@ -281,10 +281,38 @@ fluidPage(introjsUI(),
                         paste0(
                           "Below is the output of the scran function findMarkers.",
                           "These are genes that are expressed in the selected celltype more highly than in any other celltype.",
-                          "This is dynamic across timepoints, depending on your selection in the sidebar."
+                          "These are different across timepoints, and output depends on your selection in the sidebar."
                         )
                       ),
                       dataTableOutput("celltype_markers")
+                    )
+                  )
+                ),
+                tabPanel(
+                  "Cell-type discrimination",
+                  id = "discrim",
+                  sidebarLayout(
+                    sidebarPanel(
+                      uiOutput("de_celltype_1"),
+                      uiOutput("de_celltype_2"),
+                      plotOutput("celltype_gene_plot_discrim")
+                      # numericInput("n.genes", "Number of DE genes", value = 20)
+                    ),
+                    mainPanel(
+                      plotOutput(
+                        "celltype_presence_plot_discrim",
+                        height = half_plot_height,
+                        width = half_plot_height
+                      ),
+                      h4(
+                        paste0(
+                          "Below is the output of the scran function findMarkers. ",
+                          "These are genes that are differentially expressed between the two cell types that you have selected. ",
+                          "These are different across timepoints, and output depends on your selection in the sidebar. ",
+                          "logFC is log2(celltype 1 expression / celltype 2 expression)"
+                        )
+                      ),
+                      dataTableOutput("celltype_markers_discrim")
                     )
                   )
                 ),

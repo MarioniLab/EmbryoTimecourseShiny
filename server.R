@@ -66,6 +66,8 @@ meta$sample = factor(meta$sample)
 endo_meta = readRDS("endo_meta.rds")
 blood_meta = readRDS("blood_meta.rds")
 markers = readRDS("markers.rds")
+markers_de = readRDS("markers_de.rds")
+
 
 shinyServer(
   function(input, output, session){
@@ -86,6 +88,11 @@ shinyServer(
              "m" = out[out$stage == input$stage,])
       
       return(out)
+    })
+    
+    get_present_celltypes = reactive({
+      return(unique(get_meta()$celltype)[order(match(unique(get_meta()$celltype),
+                                               names(celltype_colours)))])
     })
     
     get_coord = reactive({
@@ -149,6 +156,20 @@ shinyServer(
     #### SELCTIZE SPEEDUP
     updateSelectizeInput(session = session, inputId = 'gene', choices = genes[,2], server = TRUE, selected = "T") #DONT remove T, appears to be a bug that it vanishes
   
+    
+    #### REACTIVE UI ELEMENTS
+    output$marker_celltype = renderUI({
+      selectInput("celltype", "Cell type", get_present_celltypes())
+    })
+    
+    output$de_celltype_1 = renderUI({
+      selectInput("celltype1", "Cell type 1", get_present_celltypes())
+    })
+    
+    output$de_celltype_2 = renderUI({
+      selectInput("celltype2", "Cell type 2", get_present_celltypes(), selected = "Visceral endoderm")
+    })
+    
     
     #### OVERALL VIS
     
@@ -356,9 +377,15 @@ shinyServer(
     )
   
     
-    # CELLTYPE MARKERS
+    #### CELLTYPE MARKERS
     
     get_markers = reactive({
+      
+      validate(
+        need(!is.null(input$stage) & !is.null(input$celltype),
+             "Loading..." )
+      )
+      
       tab = markers[[input$stage]][[input$celltype]]
       tab = tab[order(tab$p.value),]
       genes_mark = genes[match(rownames(tab), genes[,1]), 2]
@@ -369,6 +396,30 @@ shinyServer(
     output$celltype_markers = renderDataTable({
       return(datatable(get_markers(), selection = "single"))
     })
+    
+    get_markers_discrim = reactive({
+      
+      validate(
+        need(input$celltype1 != input$celltype2,
+             "The selected celltypes must not be the same" )
+      )
+      
+      tab = markers_de[[input$stage]][[input$celltype1]]
+      tab = tab[order(abs(tab[, paste0("logFC.", input$celltype2)]), decreasing = TRUE),]
+      tab = tab[!is.na(tab[, paste0("logFC.", input$celltype2)]),]
+      
+      df = data.frame(row.names = rownames(tab),
+                      MGI = genes[match(rownames(tab), genes[,1]),2],
+                      log2FC = format(tab[, paste0("logFC.", input$celltype2)], nsmall = 2))
+
+      return(df)
+    })
+    
+    output$celltype_markers_discrim = renderDataTable({
+      return(datatable(get_markers_discrim(), selection = "single"))
+    })
+    
+    
     
     output$celltype_presence_plot = renderPlot({
       coords = get_coord()
@@ -384,6 +435,41 @@ shinyServer(
               axis.text = element_blank(),
               axis.line = element_blank()) +
         labs(caption = "Regions of the overview visualisation where the\nselected cells are present (red points) are shown.")
+      
+      
+      return(p)
+    })
+    
+    output$celltype_presence_plot_discrim = renderPlot({
+      
+      validate(
+        need(input$celltype1 != input$celltype2,
+             "The selected celltypes must not be the same" )
+      )
+      
+      coords = get_coord()
+      meta = get_meta()
+      cols = sapply(meta$celltype, function(x){
+        if(x == input$celltype1){
+          return("celltype1")
+        } else if (x == input$celltype2){
+          return("celltype2")
+        } else {
+          return("other")
+        }
+      })
+      order = order(cols, decreasing = TRUE)
+      
+      
+      p = ggplot(as.data.frame(coords)[order,], aes(x = X, y = Y, col = cols[order])) +
+        geom_point() +
+        scale_color_manual(values = c("celltype1" = "red", "celltype2" = "blue", "other" = "darkgrey")) +
+        theme(legend.position = "none",
+              axis.title = element_blank(),
+              axis.ticks = element_blank(),
+              axis.text = element_blank(),
+              axis.line = element_blank()) +
+        labs(caption = "Regions of the overview visualisation where the\nselected cells are present (red - celltype 1; blue - celltype 2).")
       
       
       return(p)
@@ -407,7 +493,25 @@ shinyServer(
       
     })
     
-    # ENDODERM PLOTS
+    output$celltype_gene_plot_discrim = renderPlot({
+      row = input$celltype_markers_discrim_row_last_clicked
+      validate(
+        need(!is.null(row),
+             "Please click on a gene in the marker table" )
+      )
+      gene= get_markers_discrim()[row, "MGI"]
+      
+      
+      
+      return(makeGenePlot(gene_name = gene,
+                          gene_counts = get_count_gene(gene),
+                          x_coord= get_coord()[,1],
+                          y_coord = get_coord()[,2])+
+               labs(caption = "Gene expression is overlaid on the overview plot."))
+      
+    })
+    
+    #### ENDODERM PLOTS
     get_count_gene_endo = function(gene = "Hbb-bh1"){
       #get the gene count into memory
       count = as.numeric(link[,match(as.character(gene), as.character(genes[,2]))])
