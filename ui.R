@@ -117,7 +117,7 @@ fluidPage(introjsUI(),
                 ),
                 selectizeInput("gene", "Gene", choices = NULL, selected = 26600),
                 checkboxInput("numbers", "Annotate clusters in plot"),
-                checkboxInput("subset", "Subset cells"),
+                checkboxInput("subset", "Subset cells (faster plots when many points present)"),
                 selectInput(
                   "subset_degree",
                   label = "Subsetting severity",

@@ -512,12 +512,12 @@ shinyServer(
       )
       gene= get_markers()[row, "MGI"]
       
-      
+      allowed = get_subset()
       
       return(makeGenePlot(gene_name = gene,
-                          gene_counts = get_count_gene(gene),
-                          x_coord= get_coord()[,1],
-                          y_coord = get_coord()[,2])+
+                          gene_counts = get_count_gene(gene)[allowed],
+                          x_coord= get_coord()[allowed,1],
+                          y_coord = get_coord()[allowed,2])+
                labs(caption = "Gene expression is overlaid on the overview plot."))
       
     })
@@ -530,12 +530,12 @@ shinyServer(
       )
       gene= get_markers_discrim()[row, "MGI"]
       
-      
+      allowed = get_subset()
       
       return(makeGenePlot(gene_name = gene,
-                          gene_counts = get_count_gene(gene),
-                          x_coord= get_coord()[,1],
-                          y_coord = get_coord()[,2])+
+                          gene_counts = get_count_gene(gene)[allowed],
+                          x_coord= get_coord()[allowed,1],
+                          y_coord = get_coord()[allowed,2])+
                labs(caption = "Gene expression is overlaid on the overview plot."))
       
     })
