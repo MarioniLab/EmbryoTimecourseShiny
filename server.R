@@ -153,6 +153,11 @@ shinyServer(
       }
     })
     
+    get_subset_force = reactive({
+      coord = get_coord()
+      return(subsetPointsByGrid(coord[,1], coord[,2], 50))
+    })
+    
     #### SELCTIZE SPEEDUP
     updateSelectizeInput(session = session, inputId = 'gene', choices = genes[,2], server = TRUE, selected = "T") #DONT remove T, appears to be a bug that it vanishes
   
@@ -427,8 +432,15 @@ shinyServer(
     
     
     output$celltype_presence_plot = renderPlot({
-      coords = get_coord()
-      meta = get_meta()
+      if(input$stage == "all"){
+        allowed = get_subset_force()
+      } else {
+        allowed = get_subset()
+      }
+      
+      coords = get_coord()[allowed,]
+      meta = get_meta()[allowed,]
+
       order = order(meta$celltype == input$celltype)
       
       p = ggplot(as.data.frame(coords)[order,], aes(x = X, y = Y, col = (meta$celltype == input$celltype)[order])) +
@@ -457,8 +469,15 @@ shinyServer(
              "The selected celltypes must not be the same" )
       )
       
-      coords = get_coord()
-      meta = get_meta()
+      if(input$stage == "all"){
+        allowed = get_subset_force()
+      } else {
+        allowed = get_subset()
+      }
+      
+      coords = get_coord()[allowed,]
+      meta = get_meta()[allowed,]
+      
       cols = sapply(meta$celltype, function(x){
         if(x == input$celltype1){
           return("celltype1")
