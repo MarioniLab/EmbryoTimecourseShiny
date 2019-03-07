@@ -400,6 +400,11 @@ shinyServer(
     get_markers_discrim = reactive({
       
       validate(
+        need(!is.null(input$celltype1) & !is.null(input$celltype2),
+             "Loading..." )
+      )
+      
+      validate(
         need(input$celltype1 != input$celltype2,
              "The selected celltypes must not be the same" )
       )
@@ -441,6 +446,11 @@ shinyServer(
     })
     
     output$celltype_presence_plot_discrim = renderPlot({
+      
+      validate(
+        need(!is.null(input$celltype1) & !is.null(input$celltype2),
+             "Loading..." )
+      )
       
       validate(
         need(input$celltype1 != input$celltype2,
