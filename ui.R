@@ -243,7 +243,7 @@ fluidPage(introjsUI(),
                   ),
                   br(),
                   HTML(
-                    "You can download the processed data using the script at our <a href=\"https://github.com/MarioniLab/EmbryoTimecourse2018\">Github repo</a>."
+                    "Use the <a href=\"https://doi.org/doi:10.18129/B9.bioc.MouseGastrulationData\">MouseGastrulationData</a> R package to download the processed data."
                   ),
                   br(), br(),
                   actionButton("help", "Press me to restart the tour.")
